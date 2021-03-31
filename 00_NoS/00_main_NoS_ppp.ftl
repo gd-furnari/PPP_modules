@@ -3,7 +3,7 @@
 <#-- Import common macros and functions -->
 <#import "macros_common_general.ftl" as com>
 <#import "macros_common_studies_and_summaries.ftl" as studyandsummaryCom>
-<#include "NoS.ftl">
+<#include "macros_NoS.ftl">
 
 <!-- Example template file -->
 <#assign locale = "en" />

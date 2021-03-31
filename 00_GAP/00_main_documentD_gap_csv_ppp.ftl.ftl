@@ -43,7 +43,7 @@ ${content}
             <#if printHeader>
                 Owner (legal entity),
             <#else>
-                <#if ownerLegalEntity??>
+                <#if ownerLegalEntity?? && ownerLegalEntity?has_content>
                     "<@com.text ownerLegalEntity.GeneralInfo.LegalEntityName/>",
                 <#else>
                     "",

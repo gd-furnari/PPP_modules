@@ -2,7 +2,7 @@
 
 <#-- Import common modules to quickly access their substance and study content -->
 <#import "macros_common_general.ftl" as com>
-<#import "gap.ftl" as keyGap>
+<#import "macros_gap.ftl" as keyGap>
 
 <#assign locale = "en" />
 <#assign sysDateTime = .now>

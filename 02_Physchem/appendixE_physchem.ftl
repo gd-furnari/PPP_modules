@@ -43,7 +43,7 @@
 		</#if>
 
 		<#if !resultStudyList?has_content>
-			<#if !dataWaivingStudyList?has_content>No relevant individual studies available.</#if>
+			<#if !dataWaivingStudyList?has_content><para>No relevant individual studies available.</para></#if>
 
 		<#else>
 
@@ -56,7 +56,7 @@
 			<#list resultStudyList as study>
 
 				<sect4 xml:id="${study.documentKey.uuid!}" label="/${study_index+1}" role="NotInToc"><title  role="HEAD-5" >${study.name}</title>
-					
+
 					<#--appendixE header-->
 					<para><emphasis role="HEAD-WoutNo">1. Information on the study</emphasis></para>
 					<@appendixEheader _subject study/>
