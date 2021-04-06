@@ -1,0 +1,39 @@
+KCA
+--------------------------------
+8.1.1 - Effects on birds
+	- created 2 new sections:
+		- "other short-term" for endpoints: short-term toxicity to birds: avoidance (repellency) test, short-term toxicity to birds
+		- "other"
+
+8.2.2 - Long term toxicity fish
+	- missing endpoints, maybe add to existing sections?
+		- early life: add "fish short-term toxicity test on embryo and sac-fry stages", "fish, juvenile growth test" to existing "fish early-life stage toxicity"
+		- full life: add "adult fish: sub(lethal) effects", "long-term toxicity to fish, other" to existing "fish life cycle toxicity"
+
+
+8.2.5.4: if select long-term endpoint, where do the rest go? for the moment all endpoints will be potentially shown.
+
+8.2.6: where to put endpoint "toxicity to aquatic algae and cyanobacteria". In cross walks this is in the main section, but probably doesn't make sense.
+
+8.2.8: no specific doc exists, so this needs to necessarily point to section 8.7.
+
+8.3.1.3: do all endpoints refer to actual development? + endpoints refer only to bees and not honeybees. We could correct this, but then another section should exist for the rest.
+
+8.3.2.: section added for arthropods different than the two listed.
+
+8.4: 	- eartworm: only sub-lethal? I include all of them for the moment.
+	- unclear split (species level testing only for two species?), so far species level testing omitted. 
+	Solution for the moment: just divided in earthworm/not earthworm based on species.
+
+KMA
+----------------------------------
+Toxicity to earthworms: in reality all studies on macroorganisms will be here (regardless of being earthworm or not)
+
+KCP
+----------------------------------
+10.1.1.1: in the crosswalks also other non-acute endpoints are included, but i don't consider them in order to be consistent with KCA
+10.3.1.1: needs alignment with KCA in crosswalks, which looks better i.e. and i will based on that
+	NOTE: also, no distinction of honeybee from other species
+10.3.2.5: not possibile to distinguish at the moment - will be included in the sections above
+10.4.1.1: sub-lethal includes everything on earthworms not being a field study.
+10.6.1/2: merged together as remainder from studies (not field/semifield, extended) in 10.6.1 - to see if this makes sense

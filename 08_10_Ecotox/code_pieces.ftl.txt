@@ -1,0 +1,108 @@
+OLD ECOTOX SUMMARY TABLE
+		<#-- consider case where links are outside of the table-->
+		<#local generalLinks=""/>
+		<#if csa?parent.hasElement("LinkToRelevantStudyRecord.Link") && csa?parent.LinkToRelevantStudyRecord.Link?has_content>
+			<#local generalLinks><#compress>
+				<#list csa?parent.LinkToRelevantStudyRecord.Link as link>
+					<#if link?has_content>
+						<#local studyReference = iuclid.getDocumentForKey(link) />
+						<command  linkend="${studyReference.documentKey.uuid!}">
+							<@com.text studyReference.name/>
+						</command>
+						<#if link_has_next><?linebreak?></#if>
+					</#if>
+				</#list>
+			</#compress></#local>
+		</#if>
+
+		<table border="1">
+			<tbody>
+
+			<tr>
+				<th><?dbfo bgcolor="#FBDDA6" ?><emphasis role="bold">Test type</emphasis></th>
+				<th><?dbfo bgcolor="#FBDDA6" ?><emphasis role="bold">Study</emphasis></th>
+				<th><?dbfo bgcolor="#FBDDA6" ?><emphasis role="bold">Organism</emphasis></th>
+				<th><?dbfo bgcolor="#FBDDA6" ?><emphasis role="bold">Substance</emphasis></th>
+				<th><?dbfo bgcolor="#FBDDA6" ?><emphasis role="bold">Endpoint</emphasis></th>
+			</tr>
+
+			<#list csa?children as block>
+				<#if block?node_type=="repeatable" && block?has_content>
+					<#local testType=block?node_name?replace("([A-Z]{1})", " $1", "r")?replace("_list", "")?lower_case?cap_first/>
+
+					<#list block as item>
+						<tr>
+							<td>
+								${testType}
+								<#if item.hasElement("TypeOfStudy") && item.TypeOfStudy?has_content>
+									<?linebreak?>(<@com.picklist item.TypeOfStudy/>)
+								</#if>
+							</td>
+							<td>
+								<#if item.hasElement("Link")>
+									<#if item.Link?has_content>
+										<#local studyReference = iuclid.getDocumentForKey(item.Link) />
+										<command  linkend="${studyReference.documentKey.uuid!}">
+											<@com.text studyReference.name/>
+										</command>
+									</#if>
+								<#elseif generalLinks?has_content>
+									${generalLinks}
+								</#if>
+							</td>
+							<td>
+								<#if item.hasElement("AnimalGroup") && item.AnimalGroup?has_content>
+									<#if item.AnimalGroup?node_type=="picklist_multi">
+										<@com.picklistMultiple item.AnimalGroup/>
+									<#else>
+										<@com.text item.AnimalGroup/>
+									</#if>
+									<#if item.TestOrganismsSpecies?has_content>: </#if>
+								</#if>
+								<#if item.hasElement("TestOrganismsSpecies") && item.TestOrganismsSpecies?has_content>
+									<@com.picklistMultiple item.TestOrganismsSpecies/>
+								</#if>
+							</td>
+							<td>
+								<#if item.Substance?has_content>
+									<#local refSubstance=iuclid.getDocumentForKey(item.Substance)/>
+									<@com.text refSubstance.ChemicalName/>
+								</#if>
+								<#if item.ParentMetabolite?has_content>
+									<?linebreak?>(<@com.picklist item.ParentMetabolite/>)
+								</#if>
+<#--								PreparationApplicationTestSubstance (richText) details preparation/application substance-->
+							</td>
+							<td>
+								<#if item.DoseDescriptor?has_content>
+									<@com.picklist item.DoseDescriptor/>:
+									<#if item.hasElement("EffectConcentration")><@com.range item.EffectConcentration/>
+									<#elseif item.hasElement("EffectConc")><@com.range item.EffectConc/>
+									<#elseif item.hasElement("EffectValue")><@com.range item.EffectValue/>
+									</#if>
+								</#if>
+								<#if item.hasElement("NominalMeasured") && item.NominalMeasured?has_content>
+									<?linebreak?>(<@com.picklist item.NominalMeasured/>)
+								</#if>
+								<#if item.BasisForEffect?has_content>
+									<?linebreak?>(basis: <@com.picklistMultiple item.BasisForEffect/>)
+								</#if>
+							</td>
+						</tr>
+					</#list>
+				</#if>
+			</#list>
+
+			<#--special cases-->
+			<#if csa.hasElement("EcTenLcTenNoecMarineWaterFish") && csa.EcTenLcTenNoecMarineWaterFish?has_content>
+				<tr>
+					<td>Long-term toxicity to marine fish</td>
+					<td>${generalLinks}</td>
+					<td>Marine fish</td>
+					<td></td>
+					<td>EC10 / LC10 / NOEC: <@com.range csa.EcTenLcTenNoecMarineWaterFish/></td>
+				</tr>
+			</#if>
+
+			</tbody>
+		</table>

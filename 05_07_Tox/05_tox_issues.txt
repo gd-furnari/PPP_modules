@@ -1,0 +1,113 @@
+
+Mismatches between IUCLID/KCA:
+- Short-term toxicity:
+	Endpoints are short-term, sub-chronic, chronic and other.
+     - division between 28d/90d for oral: based on endpoint short-term (assumed 28 day) and sub-chronic (assumed 90 day), and not on actual duration value.
+     - other routes: doesn't have divisions but in IUCLID there is inhalation, dermal and other. Currently this subsections are added. 
+	Another option: merge all togeter in one bigger section "other" (as in legis)
+     - general issue: chronic should go to long-term studies, but, what to do with "OTHER"? At the moment: for oral, a section "other" is created. For the rest (dermal, inhalation, other)
+	they are included in this section together with short-term and sub-chronic studies.
+	Another option: put "other" together with "sub_chronic"
+
+- Genotoxicity: in vivo studies
+	- divided into somatic and germ studies, based on endpoint BUT some endpoints overlap (correspond or can correspond to both). For the time being this section is not considered.
+	All in vivo studies are shown together. Another options: add subsection "other" for ambiguous cases or ignore.
+
+- Long-term toxicity and carcinogenicity: the doc in iuclid only refers to carcinogenicity. However, there are endpoints for long-term toxicity in the documents in
+repeated dose-toxicity (chronic). These will be included but separated in two sections. NEED TO MODIFY THE CROSSWALKS.
+	- problem: summary document in repeated dose toxicity includes chronic toxicity. But in carcinogenicity PPP doc there is also long-term tox...This one is used only.
+		other option: fetch data if "chronic" and show only in this subsection?
+
+- Reproductive toxicity: whole section very confusing, endpoints don't seem to be in the right places. Probably to redo and to MODIFY CROSSWALKS.
+	- uncategorised study record includes generational studies (+ some developmental, +other)
+	- generational studies include only endpoint "other"
+	- developmental studies include endpoint "developmental toxicity" but not other included in the first (developmental immunotixicity, neurotoxicity)
+	At the moment, this section is rearranged in repgen:
+		- new section: ToxicityReproductionOther (at moment in dev section ??) + endpoints from ToxicityReproduction not included in other sections
+		- generational studies: all endpoints "generation" from ToxicityReproduction
+		- dev: endpoints "developmental immuno/neurotoxicity" from ToxicityReproduction + DevelopmentalToxicityTeratogenicity
+		Another option: merge "new section" into generational studies.
+
+- neurotoxicity:
+      - in rodents: list of rodents? only rat and mouse? (there are hamsters too) what if "other"? what about non-rodents? Options:
+		1. Add section "other" (current)
+		2. Ignore.
+		3. Remove "rodents" of section and just list everything.
+      - delayed polyneuropathy: select "other" and write explicitely (OK, but need to exclude this option from first section (not to repeat if this was in rodents))
+
+- metabolites (see how to accommodate this)
+
+- other toxicological studies: 
+	- where to put additional toxicological information? Options:
+		- without category - not optimal
+		- separate category - but doesn't exist in legislation (current)
+		- under supplementary studies 
+	- suplementary studies: it doesn't have distinctions, but IUCLID has two - probaby best option is to add these two
+	- intermediate effects: does not exist in legislation
+
+- medical data:
+	- for directOsbersvationsClinicalCases: not context in crosswalks. How to split between sections in legislation? Options:
+		1. split
+		2. All in one section (current)
+
+Other:
+- how to order studies? e.g. in some dossiers they first report on dogs, then rats, etc...should we have some sort of criteria for ordering?
+- duration of exposure: change from free text to value + unit (day, month, year, h, min, s...)
+- species: possibility of multiple list?
+
+Inclusion/exclusion results from endpoint study records:
+-----------------------------------------------------------
+5.1 -> missing preliminary studies, enzymatic activity and bioaccessibility.
+5.2.1-2-3,7 -> only effect levels; missing fields: preliminary study, mortality, clinical signs, body weight, gross pathology, other findings
+5.2.4.1-2 -> missing some fields in in vivo/in vitro (other effects, irritant/corrosive response data); and also the tables don't include all values 
+5.2.5 -> (invitro) missing: outcome of prediction model, other effects (inVivoLLNA) missing cellular proliferation data. NOTE!: if endpoint "other" is selected, these resutls are not printed at all!
+5.2.6 -> whole new
+5.3.1-2-3-4, 5.5,5.7,5.8.2.1 -> missing results of examinations
+5.4.1-2 -> just missing details
+5.6.1 -> only includes effects levels and system/organ tox!
+5.6.2 -> missing observed effects
+5.6.3 -> only includes effect levels and abnormalities
+5.8.2.1 -> no examinations/immonological specific
+5.8.2.2 -> new as a loop (TO DO: add labels)
+5.8.3 -> new, but missing examinations (to do same as with others)
+5.8.4 -> TODO
+5.9.1,2,4 -> all
+5.9.3 -> only results of examinations
+
+Summary results
+--------------------------------------------------
+1. ToxRefValues -> missing
+2. Toxicokinetics -> macro exists. Questions:
+	- why document only has endpoints for absortion (and not rest of ADME)? In existing dossiers there is a nice table compiled for that.
+	- why in linked studies there is an option of Dermal Absortion?
+	- in the macro i would change how things are displayed e.g. 
+		- link to study records: more compact, with a title, with LINK, and ONLY RECORDS FOR WHICH STUDIES ARE DISPLAYED (same to be applied in physchem table)
+		- sections: key information, value used for CSA, links, discussion
+2. Acute Toxicity/irritation/sensisisation/phototoxicity(this one missing): sections don't make sense as of new regarding these summaries. Options:
+	1. Redefine sections.
+	2. Merge summary documents into a big summary at the beginning of the whole section (i favour this option). Maybe an option would be a summary table a la physchem. Probably a macro can be done, that can accomodate different input for different sections?
+	
+3. Repeated dose toxicity. Very similar considerations as above. Table format would be good. And also:
+	- both summary records and endpoint study records have three types of study: short/subacute, subchronic, chronic. It would make sense one summary for each of them, but this value can be given
+	independentely to every endpoint. 
+	Idea: validation rule -> ensure that all values are the same? Also in this case it wouldn't fit the option of only one summary record but up to 3 could be used.
+	Also, this links with the long-term studies not being properly classified (under carcinogenicity)
+
+4. Genotoxicity. Exists. Similar comment, maybe table format not so worth in this case (but could also be used). In this case key information is within section, and not general.
+5. Carcinogenicity. Missing (exist but not EU_PPP), although the existing one can work for the carcinogenicity part.
+	- question: there is summary for long term toxicity, but in this section no endpoint summary for this are available. This is all confusing.
+6. Reproductive toxicity: missing (it's EU PPP)
+7-8. Neurotox / other. Exists but combined into one (also with Immunotox)-> i would need to separate it, at minimum.
+	8.2.2 -> livestock doesn't exist
+	8.3 -> EndocrineDisruptingPropertiesAssessmentPest odes not exist -> and has a very different structure!
+
+9. Medical data. Exists.
+
+10. NonDietaryExposure
+	- terrible document: mistake in paths etc
+
+-> conclusion of this:
+	- some summaries could be put into a table: they have a similar structure with endpoints etc...
+	- others are very basic (medical data, additional properties etc) and could be treated in non-table format, but in the same way
+	- only a few are very specific: ED? something else?
+	I think it could all be treated in a macro. DONE.

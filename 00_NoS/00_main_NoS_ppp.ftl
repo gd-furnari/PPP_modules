@@ -37,6 +37,7 @@
     <#elseif dossier.documentSubType=="EU_PPP_PESTICIDE_PRODUCT">
         <#assign app=dossier.ApplicationForOrAmendmentToPlantProtectionProductAuthorisation/>
         <#assign nosinfo=""/>
+        <#--NOTE: nosinfo would raise error if run with this context (not possible at moment)-->
         <#--NOTE: not considered for the moment. Fields:-->
         <#--ApplicationForOrAmendmentToPlantProtectionProductAuthorisation.ApplicationIsMadeThroughARepresentativeOfTheApplicant (picklist)-->
         <#--ApplicationForOrAmendmentToPlantProtectionProductAuthorisation.AuthorisationPreviouslyGrantedForPlantProtectionProduct (picklist)-->
