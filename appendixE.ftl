@@ -56,7 +56,7 @@
 
 			<#list resultStudyList as study>
 
-				<sect4 xml:id="${study.documentKey.uuid!}" label="/${study_index+1}" role="NotInToc"><title  role="HEAD-5" >${study.name}</title>
+				<sect4 xml:id="${study.documentKey.uuid!}" label="/${study_index+1}" role="NotInToc"><title  role="HEAD-5" ><@com.text study.name/></title>
 
 					<#--appendixE header-->
 					<para><emphasis role="HEAD-WoutNo">1. Information on the study</emphasis></para>
