@@ -134,8 +134,8 @@
                 <para><emphasis role="bold">Purpose of the application:</emphasis>
                     <#--for basic-->
                     <#if app.hasElement("ScopeApp")>
-                        <@com.picklist app.ApplicationPurpose/>
-                        <#if app.ApplicationPurpouse?has_content>
+                        <@com.picklist app.ScopeApp/>
+                        <#if app.ApplicationPurpose?has_content>
                             - <@com.text app.ApplicationPurpose/>
                         </#if>
                     <#--for mixtures-->
@@ -200,19 +200,21 @@
                 </para>
 
                 <#-- Preapp id-->
-                <para><emphasis role="bold">Pre-application identification:</emphasis>
-                     <#if nosinfo.PreApplicationId?has_content>
-                        <#list nosinfo.PreApplicationId as paid>
-                            <@com.text paid.PreApplicationId/>
-                            <#if paid_has_next>; </#if>
-                        </#list>
-                     </#if>
-                </para>
+                <#if nosinfo?has_content>
+                    <para><emphasis role="bold">Pre-application identification:</emphasis>
+                         <#if nosinfo.PreApplicationId?has_content>
+                            <#list nosinfo.PreApplicationId as paid>
+                                <@com.text paid.PreApplicationId/>
+                                <#if paid_has_next>; </#if>
+                            </#list>
+                         </#if>
+                    </para>
 
-                <#-- NoS id justification-->
-                <para>
-                    <command linkend="justNoSlist"><emphasis role="bold">Studies requiring NoS justification:</emphasis></command> ${nosinfo.StudiesReqJustification?size}
-                </para>
+                    <#-- NoS id justification-->
+                    <para>
+                        <command linkend="justNoSlist"><emphasis role="bold">Studies requiring NoS justification:</emphasis></command> ${nosinfo.StudiesReqJustification?size}
+                    </para>
+                </#if>
 
                 <#-- NoS ids-->
                 <para>
@@ -226,38 +228,40 @@
 
         </chapter>
 
-        <chapter xml:id="justNoSlist">
-            <title>List of justified studies in the application</title>
-            <#if nosinfo.StudiesReqJustification?has_content>
-                <table border="1">
-                    <col width="25%"/>
-                    <col width="75%"/>
+        <#if nosinfo?has_content>
+            <chapter xml:id="justNoSlist">
+                <title>List of justified studies in the application</title>
+                <#if nosinfo.StudiesReqJustification?has_content>
+                    <table border="1">
+                        <col width="25%"/>
+                        <col width="75%"/>
 
-                    <tbody>
-                        <tr>
-                            <th><?dbfo bgcolor="#d3d3d3" ?><emphasis role="bold">NoS ID</emphasis></th>
-                            <th><?dbfo bgcolor="#d3d3d3" ?><emphasis role="bold">Justification</emphasis></th>
-                        </tr>
-
-                        <#list nosinfo.StudiesReqJustification as nos>
+                        <tbody>
                             <tr>
-                                <td>
-                                    <#if nos.hasElement("NosId")>
-                                        <@com.text nos.NosId/>
-                                    <#elseif  nos.hasElement("NoSID")>
-                                        <@com.text nos.NoSID/>
-                                    <#--basic-->
-                                    <#elseif nos.hasElement("EFSAStudyIdentification")>
-                                        <@com.text nos.EFSAStudyIdentification/>
-                                    </#if>
-                                </td>
-                                <td><@com.text nos.Justification/></td>
+                                <th><?dbfo bgcolor="#d3d3d3" ?><emphasis role="bold">NoS ID</emphasis></th>
+                                <th><?dbfo bgcolor="#d3d3d3" ?><emphasis role="bold">Justification</emphasis></th>
                             </tr>
-                        </#list>
-                    </tbody>
-                </table>
-            </#if>
-        </chapter>
+
+                            <#list nosinfo.StudiesReqJustification as nos>
+                                <tr>
+                                    <td>
+                                        <#if nos.hasElement("NosId")>
+                                            <@com.text nos.NosId/>
+                                        <#elseif  nos.hasElement("NoSID")>
+                                            <@com.text nos.NoSID/>
+                                        <#--basic-->
+                                        <#elseif nos.hasElement("EFSAStudyIdentification")>
+                                            <@com.text nos.EFSAStudyIdentification/>
+                                        </#if>
+                                    </td>
+                                    <td><@com.text nos.Justification/></td>
+                                </tr>
+                            </#list>
+                        </tbody>
+                    </table>
+                </#if>
+            </chapter>
+        </#if>
 
         <chapter xml:id="NoSlist">
             <title>List of notified studies in the application</title>

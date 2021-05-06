@@ -24,21 +24,6 @@
 <#assign ownerLegalEntity = iuclid.getDocumentForKey(_subject.OwnerLegalEntity) />
 <#assign docUrl=iuclid.webUrl.entityView(_subject.documentKey)/>
 
-<#--get substance-->
-<#if _subject.documentType=="MIXTURE">
-    <#assign activeSubstanceList = getActiveSubstanceComponents(_subject) />
-    <#if activeSubstanceList?has_content>
-        <#assign activeSubstance = activeSubstanceList[0] />
-    </#if>
-    <#global _subject=activeSubstance/>
-<#elseif _subject.documentType=="SUBSTANCE">
-    <#assign activeSubstance=_subject/>
-</#if>
-
-<#--section number hardcoded for individual sections-->
-<#assign sectionNb="8"/>
-<#assign entName><@com.text _subject.ChemicalName/></#assign>
-
 <#--get the context, and docname to print
     NOTE: this works for dossier only; in future also for dataset.-->
 <#assign docFullName=""/>
@@ -54,6 +39,20 @@
         <#assign docName="CA"/>
         <#assign docFullName="Ecotoxicological studies on the active substance"/>
     </#if>
+</#if>
+
+<#--section number hardcoded for individual sections-->
+<#assign sectionNb="8"/>
+
+<#--get subject-->
+<#if _subject.documentType=="MIXTURE">
+    <#assign activeSubstanceList = getActiveSubstanceComponents(_subject) />
+    <#if activeSubstanceList?has_content>
+        <#assign activeSubstance = activeSubstanceList[0] />
+        <#global _subject=activeSubstance/>
+    </#if>
+<#elseif _subject.documentType=="SUBSTANCE">
+    <#assign activeSubstance=_subject/>
 </#if>
 
 <#--get error message if no active substance or dossier-->
@@ -86,7 +85,7 @@
             <para role="rule">
 
             <@com.emptyLine/>
-            <ulink url="${docUrl}">${entName}</ulink>
+            <ulink url="${docUrl}">${_subject.ChemicalName}</ulink>
             </para>
 
         </title>

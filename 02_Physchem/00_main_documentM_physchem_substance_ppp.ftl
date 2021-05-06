@@ -9,7 +9,7 @@
 <#import "common_module_physical_chemical_summary_properties.ftl" as keyPhysChemSummary/>
 <#import "common_module_human_health_hazard_assessment_of_physicochemical_properties.ftl" as keyPhyschem>
 <#import "common_module_biological_properties_microorganism.ftl" as keyBioPropMicro>
-<#import "appendixE_physchem.ftl" as keyAppendixE>
+<#import "appendixE.ftl" as keyAppendixE>
 
 <#assign locale = "en" />
 <#assign sysDateTime = .now>
@@ -23,24 +23,8 @@
 <#--Initialize relevance-->
 <@com.initiRelevanceForPPP relevance/>
 
-<#--<#global dataset = mixture/>-->
 <#assign ownerLegalEntity = iuclid.getDocumentForKey(_subject.OwnerLegalEntity) />
 <#assign docUrl=iuclid.webUrl.entityView(_subject.documentKey)/>
-
-<#--get name of the entity-->
-<#if _subject.documentType=="MIXTURE">
-    <#assign activeSubstanceList = getActiveSubstanceComponents(_subject) />
-    <#if activeSubstanceList?has_content>
-        <#assign activeSubstance = activeSubstanceList[0] />
-    </#if>
-    <#global _subject=activeSubstance/>
-<#elseif _subject.documentType=="SUBSTANCE">
-    <#assign activeSubstance=_subject/>
-</#if>
-
-<#--section number hardcoded for individual sections-->
-<#assign sectionNb="2"/>
-<#assign entName><@com.text _subject.ChemicalName/></#assign>
 
 <#--get the context, and docname to print
     NOTE: this works for dossier only; in future also for dataset.-->
@@ -63,6 +47,20 @@
         <#assign docFullName="Physical and chemical properties of the active substance"/>
     </#if>
 </#if>
+
+<#--get subject-->
+<#if _subject.documentType=="MIXTURE">
+    <#assign activeSubstanceList = getActiveSubstanceComponents(_subject) />
+    <#if activeSubstanceList?has_content>
+        <#assign activeSubstance = activeSubstanceList[0] />
+        <#global _subject=activeSubstance/>
+    </#if>
+<#elseif _subject.documentType=="SUBSTANCE">
+    <#assign activeSubstance=_subject/>
+</#if>
+
+<#--section number hardcoded for individual sections-->
+<#assign sectionNb="2"/>
 
 <#--get error message if no active substance or dossier-->
 <#if !(activeSubstance??)>
@@ -94,7 +92,7 @@
             <para role="rule">
 
             <@com.emptyLine/>
-            <ulink url="${docUrl}">${entName}</ulink>
+            <ulink url="${docUrl}">${_subject.ChemicalName}</ulink>
             </para>
 
         </title>

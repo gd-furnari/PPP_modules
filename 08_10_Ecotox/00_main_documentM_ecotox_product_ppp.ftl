@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<#--Documents M - Section 7 (Tox) for a mixture/product.
+<#--Documents M - Section 10 (Ecotox) for a mixture/product.
     To be run from a DOSSIER. -->
 
 <#-- Import common modules to quickly access their substance and study content -->
@@ -29,7 +29,8 @@
 <#assign entName><@com.text _subject.MixtureName/></#assign>
 
 <#--get the context, and docname to print
-    NOTE: this works for dossier only; in future also for dataset.-->
+    NOTE: this works for dossier only; in future also for dataset.
+    NOTE2: not used for MRL-->
 <#assign docFullName=""/>
 <#assign docName=""/>
 <#if _subject.submissionType?has_content>

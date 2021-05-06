@@ -23,9 +23,9 @@
 
 		<#-- Data waiving-->
 		<#if dataWaivingStudyList?has_content>
-			<para><@com.emptyLine/><emphasis role="HEAD-WoutNo">Data waiving</emphasis></para>
-			<@studyandsummaryCom.dataWaiving dataWaivingStudyList name false/>
 			<@com.emptyLine/>
+			<para><emphasis role="HEAD-WoutNo">Data waiving</emphasis></para>
+			<@studyandsummaryCom.dataWaiving dataWaivingStudyList name false/>
 		</#if>
 
 		<#-- Testing proposal
@@ -38,20 +38,21 @@
 
 		<#-- Study results-->
 		<#if !dataWaivingStudyList?has_content || resultStudyList?has_content >
-			<para><@com.emptyLine/><emphasis role="HEAD-WoutNo">Studies</emphasis></para>
+			<@com.emptyLine/>
+			<para><emphasis role="HEAD-WoutNo">Studies</emphasis></para>
 		</#if>
-
 		<@com.emptyLine/>
 
+		<#--Get requirement name to display-->
+		<#if name==""><#local name>${docSubTypes[0]?replace("([A-Z]{1})", " $1", "r")?lower_case}</#local></#if>
+
 		<#if !resultStudyList?has_content>
-			<#if !dataWaivingStudyList?has_content>No relevant individual studies available.</#if>
+			<#if !dataWaivingStudyList?has_content>No relevant individual studies for ${name} available.</#if>
 
 		<#else>
 
-			<#--Get requirement name to display-->
-			<#if name==""><#local name>${docSubTypes[0]?replace("([A-Z]{1})", " $1", "r")?lower_case}</#local></#if>
-
-			${resultStudyList?size} individual <#if resultStudyList?size==1>study<#else>studies</#if> for ${name} <#if resultStudyList?size==1>is<#else>are</#if> summarised below:
+			<para>${resultStudyList?size} individual <#if resultStudyList?size==1>study<#else>studies</#if> for ${name} <#if resultStudyList?size==1>is<#else>are</#if> summarised below:</para>
+			<@com.emptyLine/>
 
 			<#list resultStudyList as study>
 
@@ -70,21 +71,28 @@
 						<@appendixEmethods _subject study/>
 					<#elseif study.hasElement("GeneralInformation") && study.documentSubType=="EffectivenessAgainstTargetOrganisms">
 						<@keyBioPropMicro.generalInfo_effectivenessTargetOrg study/>
+					<#elseif study.hasElement("Background") && study.Background.BackgroundInformation?has_content>
+						<para><emphasis role="bold">Background information:</emphasis></para>
+						<para role="indent"><@com.text study.Background.BackgroundInformation/></para>
 					</#if>
 
-					<@com.emptyLine/>
+					<#--					<@com.emptyLine/>-->
 
 					<@appendixEresults _subject study/>
+
 					<@com.emptyLine/>
 
 					<#--appendixE Assessment and Conclusion-->
 					<@appendixEconclusion _subject study/>
 
 				</sect4>
+
+				<@com.emptyLine/>
+
 			</#list>
 		</#if>
 
-		<@com.emptyLine/>
+<#--		<@com.emptyLine/>-->
 
 	</#compress>
 </#macro>
@@ -210,27 +218,23 @@
 <#macro appendixEconclusion _subject study>
 	<#compress>
 		<para><emphasis role="HEAD-WoutNo">3. Assessment and conclusion </emphasis> </para>
-<#--		<@com.emptyLine/>-->
 
-	<#--		<para><emphasis role="bold">a) Assessment and conclusion by applicant:</emphasis></para>-->
+		<#--		<para><emphasis role="bold">a) Assessment and conclusion by applicant:</emphasis></para>-->
 
 		<#--NOTE: Interpretation of results does not exists for all documents-->
 		<#if study.hasElement("ApplicantSummaryAndConclusion.InterpretationOfResults") && study.ApplicantSummaryAndConclusion.InterpretationOfResults?has_content>
-			<@com.emptyLine/>
 			<para>
 				<emphasis role="bold">Interpretation of results: </emphasis><@com.picklist study.ApplicantSummaryAndConclusion.InterpretationOfResults/>
 			</para>
 		</#if>
 
 		<#if study.hasElement("ApplicantSummaryAndConclusion.ValidityCriteriaFulfilled") && study.ApplicantSummaryAndConclusion.ValidityCriteriaFulfilled?has_content>
-			<@com.emptyLine/>
 			<para>
 				<emphasis role="bold">Validity criteria fulfilled: </emphasis><@com.picklist study.ApplicantSummaryAndConclusion.ValidityCriteriaFulfilled/>
 			</para>
 		</#if>
 
 		<#if study.ApplicantSummaryAndConclusion.ExecutiveSummary?has_content>
-			<@com.emptyLine/>
 			<para>
 				<emphasis role="bold">Executive summary:</emphasis>
 				<@com.richText study.ApplicantSummaryAndConclusion.ExecutiveSummary/>
@@ -238,16 +242,14 @@
 		</#if>
 
 		<#if study.ApplicantSummaryAndConclusion.Conclusions?has_content>
-			<@com.emptyLine/>
 			<para>
 				<emphasis role="bold">Conclusion:</emphasis>
 				<@com.text study.ApplicantSummaryAndConclusion.Conclusions/>
 			</para>
 		</#if>
 
-		<@com.emptyLine/>
-	<#--		<para><emphasis role="bold">b) Assessment and conclusion by RMS:</emphasis></para>-->
-	<#--		<itemizedlist><listitem>- Outcome and conclusion of the study: RMS should indicate if they agree to the results and conclusions of the APPL.</listitem></itemizedlist>-->
+		<#--		<para><emphasis role="bold">b) Assessment and conclusion by RMS:</emphasis></para>-->
+		<#--		<itemizedlist><listitem>- Outcome and conclusion of the study: RMS should indicate if they agree to the results and conclusions of the APPL.</listitem></itemizedlist>-->
 	</#compress>
 </#macro>
 
@@ -265,29 +267,33 @@
 							"ecotox":["ToxicityToBirds", "ToxicityToOtherAboveGroundOrganisms", "ShortTermToxicityToFish", "LongTermToxToFish", "BioaccumulationAquaticSediment",
 										"EndocrineDisrupterTestingInAqua", "ShortTermToxicityToAquaInv", "LongTermToxicityToAquaInv", "SedimentToxicity", "ToxicityToAquaticAlgae",
 										"ToxicityToAquaticPlant", "AdditionalEcotoxicologicalInformation", "ToxicityToTerrestrialArthropods", "ToxicityToSoilMacroorganismsExceptArthropods",
-										"BioaccumulationTerrestrial", "ToxicityToSoilMicroorganisms", "ToxicityToTerrestrialPlants", "ToxicityToMicroorganisms", "BiologicalEffectsMonitoring"]
+										"BioaccumulationTerrestrial", "ToxicityToSoilMicroorganisms", "ToxicityToTerrestrialPlants", "ToxicityToMicroorganisms", "BiologicalEffectsMonitoring"],
+							"res":["StabilityOfResiduesInStoredCommod", "MetabolismInCrops", "MetabolismInLivestock", "ResiduesInLivestock",
+									"NatureResiduesInProcessedCommod", "MagnitudeResidInProcessedComm", "ResiduesInRotationalCrops",
+									"ExpectedExposureAndProposedAcceptableResidues", "AdditionalInfoOnResiduesInFood", "ResiduesProcessedCommodities", "MigrationOfResidues"],
+							"anmeth":["AnalyticalMethods"],
+							"fate":["BiodegradationInSoil", "PhotoTransformationInSoil", "FieldStudies", "AdsorptionDesorption", "AgedSorption", "OtherDistributionData",
+									"Hydrolysis", "Phototransformation", "BiodegradationInWaterScreeningTests", "BiodegradationInWaterAndSedimentSimulationTests",
+									"PhototransformationInAir", "TransportViaAir", "AdditionalInformationOnEnvironmentalFateAndBehaviour", "MonitoringData"]
 	}/>
 
 
 	<para><emphasis role="bold">a) Materials and methods</emphasis></para>
 
 	<!-- Test material-->
-	<para>
-		<emphasis role="bold">Test material:</emphasis>
-		<#assign testMat=study.MaterialsAndMethods.TestMaterials/>
-		<span role="indent"><@studyandsummaryCom.testMaterialInformation testMat.TestMaterialInformation/></span>
+	<para><emphasis role="bold">Test material:</emphasis></para>
+	<#assign testMat=study.MaterialsAndMethods.TestMaterials/>
+	<para role="indent"><@studyandsummaryCom.testMaterialInformation testMat.TestMaterialInformation/></para>
 
-		<#if testMat.SpecificDetailsOnTestMaterialUsedForTheStudy?has_content>
-			<span role="indent">
+	<#if testMat.SpecificDetailsOnTestMaterialUsedForTheStudy?has_content>
+		<para role="indent">
 			Specific details:
-				<?linebreak?><@com.text study.MaterialsAndMethods.TestMaterials.SpecificDetailsOnTestMaterialUsedForTheStudy/>
-			</span>
-		</#if>
+			<span role="indent2"><@com.text study.MaterialsAndMethods.TestMaterials.SpecificDetailsOnTestMaterialUsedForTheStudy/></span>
+		</para>
+	</#if>
 
-		<@com.children path=testMat exclude=["TestMaterialInformation", "SpecificDetailsOnTestMaterialUsedForTheStudy",
-					"SpecificDetailsOnTestMaterialUsedForTheStudyConfidential"]/>
-
-	</para>
+	<@com.children path=testMat exclude=["TestMaterialInformation", "SpecificDetailsOnTestMaterialUsedForTheStudy",
+											"SpecificDetailsOnTestMaterialUsedForTheStudyConfidential"]/>
 
 	<!-- Specific methods -->
 	<#list docCategoryMap?keys as methodkey>
@@ -297,10 +303,16 @@
 					<@keyTox.humanStudyMethod study/>
 				<#elseif methodkey=="tox_nonhuman">
 					<@keyTox.nonHumanStudyMethod study/>
-				<#elseif methodkey="ecotox">
+				<#elseif methodkey=="ecotox">
 					<@keyEcotox.ecotoxMethod study/>
 				<#elseif methodkey=="physchem">
-					<@physchemMethod study/>
+					<@keyPhysChem.physchemMethod study/>
+				<#elseif methodkey=="res">
+					<@keyRes.residuesMethod study/>
+				<#elseif methodkey=="anmeth">
+					<@keyAnMeth.analyticalMethodsMethod study/>
+				<#elseif methodkey=="fate">
+					<@keyFate.fateMethod study/>
 				</#if>
 			</#if>
 		</#list>
@@ -308,10 +320,8 @@
 
 	<#--Any other information-->
 	<#if study.MaterialsAndMethods.hasElement("AnyOtherInformationOnMaterialsAndMethodsInclTables") && study.MaterialsAndMethods.AnyOtherInformationOnMaterialsAndMethodsInclTables.OtherInformation?has_content>
-		<para>
-			<emphasis role="bold">Other information:</emphasis><?linebreak?>
-			<@com.richText study.MaterialsAndMethods.AnyOtherInformationOnMaterialsAndMethodsInclTables.OtherInformation/>
-		</para>
+		<para><emphasis role="bold">Other information:</emphasis></para>
+		<para><@com.richText study.MaterialsAndMethods.AnyOtherInformationOnMaterialsAndMethodsInclTables.OtherInformation/></para>
 	</#if>
 
 </#macro>
@@ -569,33 +579,32 @@
 
 			<#elseif study.documentSubType=="EffectivenessAgainstTargetOrganisms">
 				<#if study.ResultsAndDiscussion.DetailsOnResults?has_content>
-					<para>Details:
-						<@com.text study.ResultsAndDiscussion.DetailsOnResults/>
-					</para>
+					<para>Details:</para>
+					<para><@com.text study.ResultsAndDiscussion.DetailsOnResults/></para>
 				</#if>
 
 			<#--NOTE: this is for microorg, but at least in chemicals, it's used in ecotox-->
-<#--			<#elseif study.documentSubType=="ToxicityToOtherAboveGroundOrganisms" && keyBioPropMicro??>-->
-<#--				<#if study.ResultsAndDiscussion.EffectConcentrations?has_content>-->
-<#--					<para>Effect concentrations:-->
-<#--						<@keyBioPropMicro.effectList study.ResultsAndDiscussion.EffectConcentrations study/>-->
-<#--					</para>-->
-<#--				</#if>-->
-<#--				<#if study.ResultsAndDiscussion.ResultsDetails?has_content>-->
-<#--					<para>Details:-->
-<#--						<@com.text study.ResultsAndDiscussion.ResultsDetails/>-->
-<#--					</para>-->
-<#--				</#if>-->
-<#--				<#if study.ResultsAndDiscussion.ResultsRefSubstance?has_content>-->
-<#--					<para>Results with reference substance:-->
-<#--						<@com.text study.ResultsAndDiscussion.ResultsRefSubstance/>-->
-<#--					</para>-->
-<#--				</#if>-->
-<#--				<#if study.ResultsAndDiscussion.Statistics?has_content>-->
-<#--					<para>Statistics:-->
-<#--						<@com.text study.ResultsAndDiscussion.Statistics/>-->
-<#--					</para>-->
-<#--				</#if>-->
+			<#elseif study.documentSubType=="ToxicityToOtherAboveGroundOrganisms" && keyBioPropMicro??>
+				<#if study.ResultsAndDiscussion.EffectConcentrations?has_content>
+					<para>Effect concentrations:
+						<@keyBioPropMicro.effectList study.ResultsAndDiscussion.EffectConcentrations study/>
+					</para>
+				</#if>
+				<#if study.ResultsAndDiscussion.ResultsDetails?has_content>
+					<para>Details:
+						<@com.text study.ResultsAndDiscussion.ResultsDetails/>
+					</para>
+				</#if>
+				<#if study.ResultsAndDiscussion.ResultsRefSubstance?has_content>
+					<para>Results with reference substance:
+						<@com.text study.ResultsAndDiscussion.ResultsRefSubstance/>
+					</para>
+				</#if>
+				<#if study.ResultsAndDiscussion.Statistics?has_content>
+					<para>Statistics:
+						<@com.text study.ResultsAndDiscussion.Statistics/>
+					</para>
+				</#if>
 
 			<#--5. Tox-->
 
@@ -664,7 +673,73 @@
 
 			<#elseif study.documentSubType=="BioaccumulationAquaticSediment" || study.documentSubType=="BioaccumulationTerrestrial">
 				<@keyEcotox.results_bioaccumulation study/>
+
+			<#-- 6. Residues-->
+
+			<#elseif study.documentSubType=="StabilityOfResiduesInStoredCommod">
+				<@keyRes.results_stabilityOfResiduesInStoredCommod study/>
+
+			<#elseif study.documentSubType=="ResiduesInLivestock">
+				<@keyRes.results_residuesInLivestock study/>
+
+			<#elseif study.documentSubType=="NatureResiduesInProcessedCommod">
+				<@keyRes.results_natureResiduesInProcessedCommod study/>
+
+			<#elseif study.documentSubType=="MigrationOfResidues">
+				<@keyRes.results_migrationOfResidues study/>
+
+			<#elseif study.documentSubType=="AdditionalInfoOnResiduesInFood" || study.documentSubType=="ExpectedExposureAndProposedAcceptableResidues">
+				<#if study.ResultsAndDiscussion.DetailsOnResults?has_content>
+					<para>Details:</para>
+					<para role="indent"><@com.text study.ResultsAndDiscussion.DetailsOnResults/></para>
+				</#if>
+
+			<#elseif study.documentSubType=="ResiduesInRotationalCrops">
+				<@keyRes.results_residuesInRotationalCrops study/>
+			<#--				<para role="indent">[Excel]</para>-->
+
+			<#elseif study.documentSubType=="MagnitudeResidInProcessedComm">
+				<@keyRes.results_magnitudeResidInProcessedComm study/>
+			<#--				<para role="indent">[Excel]</para>-->
+
+			<#elseif study.documentSubType=="MetabolismInCrops" || study.documentSubType=="MetabolismInLivestock">
+				<@com.emptyLine/>
+				<para role="indent">[Add here the result tables obtained with the render tool of MSS Composer]</para>
+
+			<#-- NOTE: "ResiduesProcessedCommodities" no specific results	-->
+
+			<#--Analytical methods-->
+			<#elseif study.documentSubType=="AnalyticalMethods">
+				<@keyAnMeth.results_analyticalMethods study/>
+
+			<#--FATE-->
+			<#elseif study.documentSubType=="BiodegradationInSoil">
+				<@keyFate.results_biodegradationInSoil study/>
+<#--				NOTE: maybe could be combined with the other biodegradations-->
+
+			<#elseif study.documentSubType=="PhotoTransformationInSoil" || study.documentSubType=="Phototransformation" ||
+						study.documentSubType=="PhototransformationInAir">
+				<@keyFate.results_phototransformation study/>
+
+			<#elseif study.documentSubType=="AdsorptionDesorption">
+				<@keyFate.results_adsorptionDesorption study/>
+
+			<#elseif study.documentSubType=="Hydrolysis">
+				<@keyFate.results_hydrolysis study/>
+
+			<#elseif study.documentSubType=="BiodegradationInWaterScreeningTests">
+				<@keyFate.results_biodegradationWaterScreening study/>
+
+			<#elseif study.documentSubType=="BiodegradationInWaterScreeningTests">
+				<@keyFate.results_biodegradationWaterSedimentSimulation study/>
+
+			<#elseif study.documentSubType=="MonitoringData">
+				<@keyFate.results_monitoring study/>
+
 			</#if>
+
+<#--			Without specific results: "FieldStudies", "AgedSorption", "OtherDistributionData", "TransportViaAir",
+				"AdditionalInformationOnEnvironmentalFateAndBehaviour"-->
 
 			<#--2. Other information including tables
 			 NOTE: in some cases ("technical characteristics" at least) the path of results is different (probably by error)-->
@@ -673,28 +748,116 @@
 			</#if>
 
 			<#-- OtherInformation is the most common field but there might be others-->
+			<#assign excludeResultsOtherInfo=["MetabolismInCrops","MetabolismInLivestock"]/>
 			<#if resultsPath.AnyOtherInformationOnResultsInclTables.hasElement("OtherInformation") &&
-					resultsPath.AnyOtherInformationOnResultsInclTables.OtherInformation?has_content>
-				<para>
-					Remarks: <@com.richText resultsPath.AnyOtherInformationOnResultsInclTables.OtherInformation/>
-				</para>
+					resultsPath.AnyOtherInformationOnResultsInclTables.OtherInformation?has_content &&
+					!(excludeResultsOtherInfo?seq_contains(study.documentSubType))>
+				<para>Other information:</para>
+				<para role="indent"><@com.richText resultsPath.AnyOtherInformationOnResultsInclTables.OtherInformation/></para>
 			</#if>
 
-			<#-- Iterate over all other fields if any -->
+			<#-- Iterate over all other HTML fields if any -->
 			<#list resultsPath?children as child>
-				<#if child?node_type?contains("html") && child?node_name!="OtherInformation">
+				<#if child?node_type?contains("html") && child?node_name!="OtherInformation" && child?has_content>
 					<#assign childName=child?node_name?replace("([A-Z]{1})", " $1", "r")?lower_case?cap_first/>
-					<para>
-						${childName}: <@com.richText child/>
-					</para>
+					<para>${childName}:</para>
+					<para role="indent"><@com.richText child/></para>
 				</#if>
 			</#list>
 
 			<#--3. Remarks on results-->
 			<#if study.OverallRemarksAttachments.RemarksOnResults?has_content>
-				<para>Overall remarks: <@com.richText study.OverallRemarksAttachments.RemarksOnResults/></para>
+				<para>Overall remarks:</para>
+				<para role="indent"><@com.richText study.OverallRemarksAttachments.RemarksOnResults/></para>
 			</#if>
 
+	</#compress>
+</#macro>
+
+<#--To be tested-->
+<#macro metabolitesStudies mixture activeSubstance studySubTypes=[] studyContext="" studyName="" summarySubTypes=[] summaryMacroCall="keyTox.summarySingle">
+	<#compress>
+
+		<#local metabCompList = iuclid.getSectionDocumentsForParentKey(mixture.documentKey, "FLEXIBLE_SUMMARY", "Metabolites") />
+		<#local metabList=[]/>
+
+		<#-- get list of metabolites-->
+		<#if metabCompList?has_content>
+
+			<#list metabCompList as metabComp>
+
+				<#local parentLink=metabComp.MetabolitesInfo.ParentOfMetabolites/>
+				<#if parentLink?has_content>
+					<#local parent=iuclid.getDocumentForKey(parentLink)/>
+					<#local asReference=iuclid.getDocumentForKey(activeSubstance.ReferenceSubstance.ReferenceSubstance)/>
+
+					<#-- Consider case where parent of metabolite is substance or reference substance-->
+					<#if (parent.documentType=="SUBSTANCE" && parent.documentKey.uuid==activeSubstance.documentKey.uuid) ||
+					(parent.documentType=="REFERENCE_SUBSTANCE" && parent.documentKey.uuid==asReference.documentKey.uuid)>
+						<#list metabComp.ListMetabolites.Metabolites as metabolite>
+							<#if metabolite.LinkMetaboliteDataset?has_content>
+								<#local metaboliteDataset=iuclid.getDocumentForKey(metabolite.LinkMetaboliteDataset)/>
+								<#if metaboliteDataset.documentType=="SUBSTANCE">
+									<#local metabList = com.addDocumentToSequenceAsUnique(metaboliteDataset, metabList)/>
+								</#if>
+							</#if>
+						</#list>
+					</#if>
+				</#if>
+			</#list>
+		</#if>
+
+		<#-- iterate over the list of metabolites and get all tox studies-->
+		<#if metabList?has_content>
+
+			<para>${metabList?size} metabolite dataset<#if metabList?size gt 1>s are<#else> is</#if> present for ${activeSubstance.ChemicalName}
+
+				<#if metabList?size gt 1>
+					:
+					<#list metabList as metab>
+						<command linkend="${metab.documentKey.uuid!}">${metab.ChemicalName}</command>
+						<#if metab_has_next><#if metab_index==(metabList?size-2)> and <#else>, </#if></#if>
+					</#list>
+				</#if>
+			</para>
+			<@com.emptyLine/>
+
+			<#list metabList as metab>
+
+				<para xml:id="${metab.documentKey.uuid!}" role="HEAD-5">
+<#--					<title  role="HEAD-5" >Metabolite<#if metabList?size gt 1>#${metab_index+1}</#if>: ${metab.ChemicalName}</title>-->
+					Metabolite <#if metabList?size gt 1>#${metab_index+1}</#if>: <emphasis  role="underline" >${metab.ChemicalName}</emphasis>
+				</para>
+					<#--Get all summaries: iterate over list and output one by one-->
+					<#local summaryFirst=true/>
+					<#list summarySubTypes as summarySubType>
+
+						<#local summaryCallString="<@" + summaryMacroCall + " " + summarySubType + " />"/>
+						<#local summaryCall=summaryCallString?interpret/>
+						<#local summary><@summaryCall/></#local>
+
+						<#if summary?has_content>
+							<#if summaryFirst>
+								<#local summaryFirst=false/>
+								<para><emphasis role="HEAD-WoutNo">Summaries</emphasis></para>
+								<para>Summaries for studies on metabolite ${metab.ChemicalName} are provided below:</para>
+							</#if>
+							<#local summaryDocFullName=summarySubType?replace("_EU_PPP", "")?replace("([A-Z]{1})", " $1", "r")?lower_case?cap_first/>
+							<#if (summarySubTypes?size > 1)>
+								${summary?replace('<para><emphasis role="HEAD-WoutNo">Summary</emphasis></para>',
+								'<para>-- for <emphasis role="HEAD-WoutNo">${summaryDocFullName}</emphasis>:</para>')}
+							<#else>
+								${summary?replace('<para><emphasis role="HEAD-WoutNo">Summary</emphasis></para>', '')}
+							</#if>
+						</#if>
+					</#list>
+
+					<#--Get all studies-->
+					<@keyAppendixE.appendixEstudies _subject=metab
+						docSubTypes=studySubTypes context=studyContext name="${studyName} of metabolite ${metab.ChemicalName}"/>
+
+			</#list>
+		</#if>
 	</#compress>
 </#macro>
 
@@ -721,7 +884,25 @@
 
 					<#-- Convert value depending on type -->
 					<#if ctxt["type"]=="picklist">
-						<#local contextVal2><@com.picklist contextVal/></#local>
+
+						<#-- get the value of the picklist without remarks!!-->
+						<#local contextVal2>
+							<#compress>
+								<#escape x as x?html>
+									<#local picklistPhrase = iuclid.localizedPhraseDefinitionFor(contextVal.code, 'en') />
+									<#if picklistPhrase?has_content>
+										<#if !picklistPhrase.open || !(picklistPhrase.text?matches("other:"))>
+											${picklistPhrase.text}<#t>
+										<#elseif picklistPhrase.open && contextVal.otherText?has_content>
+											${contextVal.otherText}<#t>
+										</#if>
+									</#if>
+									<#lt>
+								</#escape>
+							</#compress>
+						</#local>
+
+<#--						<#local contextVal2><@com.picklist contextVal/></#local>-->
 					<#elseif ctxt["type"]=="text">
 						<#local contextVal2><@com.text contextVal/></#local>
 					</#if>

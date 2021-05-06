@@ -7,7 +7,7 @@
 <#import "macros_common_general.ftl" as com>
 <#import "macros_common_studies_and_summaries.ftl" as studyandsummaryCom>
 <#import "common_module_human_health_hazard_assessment.ftl" as keyTox>
-<#import "appendixE_tox.ftl" as keyAppendixE>
+<#import "appendixE.ftl" as keyAppendixE>
 
 <#assign locale = "en" />
 <#assign sysDateTime = .now>

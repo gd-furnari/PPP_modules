@@ -8,7 +8,7 @@
 <#import "macros_common_studies_and_summaries.ftl" as studyandsummaryCom>
 <#import "common_module_physical_chemical_summary_properties.ftl" as keyPhysChemSummary/>
 <#import "common_module_human_health_hazard_assessment_of_physicochemical_properties.ftl" as keyPhyschem>
-<#import "appendixE_physchem.ftl" as keyAppendixE>
+<#import "appendixE.ftl" as keyAppendixE>
 
 <#assign locale = "en" />
 <#assign sysDateTime = .now>

@@ -46,110 +46,216 @@
 	* _subject (:DocumentHashModel) //The dossier subject document or, if not in a dossier context, the root document, never empty
 	-->
 <@com.initializeMainVariables/>
+<#assign ownerLegalEntity = iuclid.getDocumentForKey(_subject.OwnerLegalEntity) />
 
-<#--<#assign ownerLegalEntity = iuclid.getDocumentForKey(_subject.OwnerLegalEntity) />-->
-<#--<#assign docUrl=iuclid.webUrl.entityView(_subject.documentKey)/>-->
+<#if _dossierHeader?has_content>
 
-<book version="5.0" xmlns="http://docbook.org/ns/docbook" xmlns:xi="http://www.w3.org/2001/XInclude">
+    <#assign dossier = _dossierHeader />
 
-<#--    <#assign mixture = com.getReportSubject(rootDocument) />-->
+    <#--get context and paths-->
+    <#if dossier.documentSubType=="EU_PPP_MAXIMUM_RESIDUE_LEVELS">
+        <#assign app=dossier.MRLApplication.DossierSpecificInformation/>
+    <#elseif dossier.documentSubType=="EU_PPP_MICROORGANISMS_FOR_MIXTURES" || dossier.documentSubType=="EU_PPP_ACTIVE_SUBSTANCE_FOR_MIXTURES">
+        <#assign app=dossier.ActiveSubstanceApproval/>
+    <#elseif dossier.documentSubType=="EU_PPP_BASIC_SUBSTANCE">
+        <#assign app=dossier.BasicSubstanceApproval/>
+    <#elseif dossier.documentSubType=="EU_PPP_PESTICIDE_PRODUCT">
+        <#assign app=dossier.ApplicationForOrAmendmentToPlantProtectionProductAuthorisation/>
+        <#--NOTE: not considered for the moment. Fields:-->
+        <#--ApplicationForOrAmendmentToPlantProtectionProductAuthorisation.ApplicationIsMadeThroughARepresentativeOfTheApplicant (picklist)-->
+        <#--ApplicationForOrAmendmentToPlantProtectionProductAuthorisation.AuthorisationPreviouslyGrantedForPlantProtectionProduct (picklist)-->
+        <#--ApplicationForOrAmendmentToPlantProtectionProductAuthorisation.ConclusionSOfTheMemberStateAssessingEquivalence (picklist)-->
+    </#if>
 
-<#--    &lt;#&ndash; Stop if the root document is not mixture &ndash;&gt;-->
-<#--	<#if false>-->
-<#--		<#stop "BPR Confidentiality Claims template expects a mixture/product as root document. The root document is not a mixture/product!" />-->
-<#--	</#if>-->
+    <#--<#assign docUrl=iuclid.webUrl.entityView(_subject.documentKey)/>-->
 
-<#--    <#assign left_header_text = ''/>-->
-<#--    <#assign central_header_text = com.getReportSubject(rootDocument).name?html />-->
-<#--    <#assign right_header_text = ''/>-->
+    <book version="5.0" xmlns="http://docbook.org/ns/docbook" xmlns:xi="http://www.w3.org/2001/XInclude">
 
-<#--    <#assign left_footer_text = sysDateTime?string["dd/MM/yyyy"] + " - IUCLID 6 " + iuclid6Version!/>-->
-<#--    <#assign central_footer_text = 'Confidentiality report' />-->
-<#--    <#assign right_footer_text = ''/>-->
+        <#assign left_header_text = ''/>
+        <#assign central_header_text = com.getReportSubject(rootDocument).name?html />
+        <#assign right_header_text = ''/>
 
-    <info>
-        <title>
-<#--            <para role="i6header5_nobold"><#if ownerLegalEntity?has_content><@com.text ownerLegalEntity.GeneralInfo.LegalEntityName/></#if></para>-->
-<#--            <@com.emptyLine/>-->
+        <#assign left_footer_text = sysDateTime?string["dd/MM/yyyy"] + " - IUCLID 6 " + iuclid6Version!/>
+        <#assign central_footer_text = 'Confidentiality report' />
+        <#assign right_footer_text = ''/>
 
-<#--            <para role="rule">-->
+        <info>
+            <title>
+                <para role="i6header5_nobold"><#if ownerLegalEntity?has_content><@com.text ownerLegalEntity.GeneralInfo.LegalEntityName/></#if></para>
+                <@com.emptyLine/>
 
-<#--            &lt;#&ndash;                <#assign prodDocUrl=iuclid.webUrl.entityView(mixture.documentKey)/>&ndash;&gt;-->
+                <para role="rule">
 
-<#--            <@com.emptyLine/>-->
-<#--            &lt;#&ndash;                <ulink url="${prodDocUrl}">&ndash;&gt;-->
-<#--            <ulink url="${docUrl}"><@com.text _subject.MixtureName/></ulink>-->
-<#--            &lt;#&ndash;                </ulink>&ndash;&gt;-->
-<#--            </para>-->
-        </title>
+                <#assign dossierUrl=iuclid.webUrl.entityView(dossier.documentKey)/>
 
-        <subtitle>
-            <para role="align-center">
+                <@com.emptyLine/>
+                <ulink url="${dossierUrl}">
+                Dossier: <@com.text dossier.name />
+                </ulink>
+                </para>
+            </title>
+
+            <subtitle>
+                <para role="align-center">
+                    <#if _subject.documentType=="MIXTURE">for mixture <@com.text _subject.MixtureName/>
+                    <#elseif _subject.documentType=="SUBSTANCE">for substance <@com.text _subject.ChemicalName/></#if>
+                </para>
+                <@com.emptyLine/>
+                <para role="rule"/>
+            </subtitle>
+
+            <subtitle>
+                <para role="align-right">
+                    <para>Confidentiality report</para>
+                    <para></para>
+                </para>
+                <@com.emptyLine/>
+
+                <para role="align-right">
+                    <para role="cover.i6subtext">
+                        ${left_footer_text}
+                    </para>
+                </para>
+            </subtitle>
+
+        </info>
+
+        <chapter>
+            <title role="HEAD-4">Administrative information</title>
+
+             Dossier details
+            <para><emphasis role="bold">Application dossier details:</emphasis>
+                <para role="indent"><itemizedlist>
+                    <listitem>Dossier name: <@com.text dossier.name /></listitem>
+                    <listitem>Dossier UUID: <@com.text dossier.subjectKey /></listitem>
+                    <listitem>Dossier submission remarks: <@com.text dossier.remarks /></listitem>
+                    <listitem>Dossier creation date and time: <@com.text dossier.creationDate /></listitem>
+                    <listitem>Submission type: <@com.text dossier.submissionType /></listitem>
+                    <listitem>Submitting legal entity:
+                        <#if ownerLegalEntity?has_content><@com.text ownerLegalEntity.GeneralInfo.LegalEntityName/></#if>
+                    </listitem>
+                </itemizedlist></para>
             </para>
-            <@com.emptyLine/>
-            <para role="rule"/>
-        </subtitle>
 
-        <subtitle>
-            <para role="align-right">
-                <para>Confidentiality report</para>
-                <para></para>
+            <#-- EU reference nb-->
+            <para><emphasis role="bold">European reference number:</emphasis>
+                <#--for mixtures-->
+                <#if app.hasElement("EuropeanReferenceNumber")>
+                    <@com.text app.EuropeanReferenceNumber/>
+                <#--for basic and MRL-->
+                <#elseif app.hasElement("EUReferenceNumber")>
+                    <@com.text app.EUReferenceNumber/>
+                <#--for authorisations-->
+                <#elseif app.hasElement("ReferenceNumber")>
+                    <@com.text app.ReferenceNumber/>
+                </#if>
             </para>
-            <@com.emptyLine/>
 
-            <para role="align-right">
-<#--                <para role="cover.i6subtext">-->
-<#--                    ${left_footer_text}-->
-<#--                </para>-->
+            <#-- Purpose-->
+            <para><emphasis role="bold">Purpose of the application:</emphasis>
+                <#--for basic-->
+                <#if app.hasElement("ScopeApp")>
+                    <@com.picklist app.ScopeApp/>
+                    <#if app.ApplicationPurpose?has_content>
+                        - <@com.text app.ApplicationPurpose/>
+                    </#if>
+                <#--for mixtures-->
+                <#elseif app.hasElement("ApplicationPurpose")>
+                    <@com.picklist app.ApplicationPurpose/>
+                <#--MRL-->
+                <#elseif app.hasElement("Purpose")>
+                    <@com.picklist app.Purpose/>
+                <#--for authorisations-->
+                <#elseif app.hasElement("ReferenceNumber")>
+                    <@com.text app.ReferenceNumber/>
+                </#if>
             </para>
-        </subtitle>
 
-    </info>
+            <#-- RMs/EMs-->
+            <#--for mixtures-->
+            <#if app.hasElement("RapporteurMemberState")>
+                <para><emphasis role="bold">Rapporteur Member State (RMS):</emphasis>
+                    <@com.picklist app.RapporteurMemberState/>
+                    <#if app.hasElement("CoRms") && app.CoRms?has_content>
+                        (Co-RMS: <@com.picklistMultiple app.CoRms/>)
+                    </#if>
+                    <#if app.hasElement("CompetentAuthority") && app.CompetentAuthority?has_content>
+                        <para role="indent">- Competent Authority: <@com.text app.CompetentAuthority/></para>
+                    </#if>
+                    <#--NOTE: missing JointApplication (picklist)-->
+                </para>
+            <#--MRL-->
+            <#elseif app.hasElement("EMS")>
+                <para><emphasis role="bold">Evaluating Member State (EMS):</emphasis>
+                    <@com.picklist app.EMS/>
+                </para>
+            <#--Basic-->
+            <#elseif app.hasElement("Contributors")>
+                <para><emphasis role="bold">Contributors:</emphasis>
+                    <@com.text app.Contributors/>
+                </para>
+            </#if>
 
-    <chapter>
-        <title role="HEAD-4">Confidentiality requests</title>
+            <#--Only for MRL-->
+            <#if dossier.documentSubType=="EU_PPP_MAXIMUM_RESIDUE_LEVELS">
+                <para><emphasis role="bold">Applicant:</emphasis><@com.picklistMultiple app.Applicant/></para>
+                <para><emphasis role="bold">Data requirements:</emphasis><@com.picklist app.DataRequirements/></para>
+            </#if>
 
-        <table border="1">
-            <title>Confidentiality requests</title>
-<#--            <col width="10%" />-->
-<#--            <col width="8%" />-->
-<#--            <col width="11.5%" />-->
-<#--            <col width="11.5%" />-->
-<#--            <col width="11.5%" />-->
-<#--            <col width="17.5%" />-->
-<#--            <col width="10%" />-->
-<#--            <col width="10%" />-->
-<#--            <col width="10%" />-->
-            <tbody>
-            <tr>
-                <th><?dbfo bgcolor="#33B7FF" ?><emphasis role="bold">Doc. type</emphasis></th>
-                <th><?dbfo bgcolor="#33B7FF" ?><emphasis role="bold">Doc. name</emphasis></th>
-                <th><?dbfo bgcolor="#33B7FF" ?><emphasis role="bold">Doc. UUID</emphasis></th>
-                <th><?dbfo bgcolor="#33B7FF" ?><emphasis role="bold">Doc. section</emphasis></th>
-                <th><?dbfo bgcolor="#33B7FF" ?><emphasis role="bold">Justification</emphasis></th>
+        </chapter>
 
-                <th><?dbfo bgcolor="#FFD17D" ?><emphasis role="bold">Accept/Do Not Accept confidentiality claim</emphasis></th>
-<#--                <th><?dbfo bgcolor="#FFD17D" ?><emphasis role="bold">Is the decision based on dossier assessment or additional information, or both of these two sources</emphasis></th>-->
-<#--                <th><?dbfo bgcolor="#FFD17D" ?><emphasis role="bold">ECHA's assessment remarks</emphasis></th>-->
-            </tr>
+        <chapter>
+            <title role="HEAD-4">Confidentiality requests</title>
 
-            <#global entity=_subject.documentType/>
-            <#assign toc=iuclid.localizeTreeFor(_subject.documentType, _subject.submissionType, _subject.documentKey)/>
-            <#recurse toc/>
+            <para role="small">
+            <table border="1">
+                <title>Confidentiality requests</title>
+                <col width="15%" />
+                <col width="15%" />
+                <col width="15%" />
+                <col width="10%" />
+                <col width="10%" />
+                <col width="25%" />
+                <col width="10%" />
 
-            <#assign components=getComponentsList(_subject)/>
-            <#list components as comp>
-                <#global entity=comp.documentType/>
-                <#assign toc=iuclid.localizeTreeFor(comp.documentType, comp.submissionType, comp.documentKey)/>
+                <tbody valign="middle">
+                <tr  align="center">
+                    <th><?dbfo bgcolor="#33B7FF" ?><emphasis role="bold">IUCLID section</emphasis></th>
+                    <th><?dbfo bgcolor="#33B7FF" ?><emphasis role="bold">Doc. type</emphasis></th>
+                    <th><?dbfo bgcolor="#33B7FF" ?><emphasis role="bold">Doc. name</emphasis></th>
+                    <th><?dbfo bgcolor="#33B7FF" ?><emphasis role="bold">Doc. UUID</emphasis></th>
+                    <th><?dbfo bgcolor="#33B7FF" ?><emphasis role="bold">Doc. section</emphasis></th>
+                    <th><?dbfo bgcolor="#33B7FF" ?><emphasis role="bold">Justification</emphasis></th>
+                    <th><?dbfo bgcolor="#FFD17D" ?><emphasis role="bold">Accept / Do Not Accept</emphasis></th>
+                </tr>
+
+                <#global entity=_subject.documentType/>
+                <#global toc=iuclid.localizeTreeFor(_subject.documentType, _subject.submissionType, _subject.documentKey)/>
                 <#recurse toc/>
-            </#list>
 
-            </tbody>
-        </table>
+                <#assign components=getComponentsList(_subject)/>
+                <#list components as comp>
+                    <#global entity=comp.documentType/>
+                    <#global toc=iuclid.localizeTreeFor(comp.documentType, comp.submissionType, comp.documentKey)/>
+                    <#recurse toc/>
+                </#list>
 
-    </chapter>
+                </tbody>
+            </table>
+            </para>
+        </chapter>
 
-</book>
+    </book>
+<#else>
+    <book version="5.0" xmlns="http://docbook.org/ns/docbook" xmlns:xi="http://www.w3.org/2001/XInclude">
+        <info>
+            <title>Confidentiality report expects a dossier as root document. The root document is not a dossier!
+                    Please, create a dossier from your mixture/substance dataset and try again.
+            </title>
+        </info>
+        <part></part>
+    </book>
+</#if>
 
 
 <#macro "section_tree_node">
@@ -173,7 +279,7 @@
             </#if>
 
             <#if flagPath?has_content && isDataProtectionAvailable(doc, flagPath)>
-                <@tableRowForConfidentialityFlag doc doc flagPath entity/>
+                <@tableRowForConfidentialityFlag doc doc flagPath entity "Full document"/>
             </#if>
 
             <#--if it's a specific doc type, then check in hashMap and add-->
@@ -193,7 +299,6 @@
                         <#list blockPath?eval as path>
                             <#assign secName=flagId.name+"#${path_index+1}"/>
                             <@tableRowForConfidentialityFlag doc path flagId.field entity secName/>
-    <#--                        #add code for info on reference (name)-->
                         </#list>
                     </#if>
                 </#list>
@@ -208,31 +313,68 @@
     <#compress>
         <#if isDataProtectionAvailable(section, flagPath)>
 
-    <#--         <#local reference=getStudyReference(doc)/>-->
-
-    <#--                <#if reference?has_content>-->
             <tr><?dbfo bgcolor="#97DAFF"?>
 
-            <#-- Type-->
+            <#-- IUCLID section -->
             <td>
-                ${entityName}: <@com.text document.documentType/> : <@com.text document.documentSubType/>
+                <#assign docTypeSubtype>
+                    <#compress>
+                        ${document.documentType}<#if document.documentSubType?has_content>.${document.documentSubType}</#if>
+                    </#compress>
+                </#assign>
+                <#if docTypeSubtype?has_content>
+                    <#if docTypeSubtype=="MIXTURE">
+                        1.1 Identity of the plant protection product, trade name or proposed trade name, and applicant
+                    <#elseif docTypeSubtype=="SUBSTANCE">
+                        <#if subType?contains("MICRO")>
+                            1.3 Name, species description, strain characterisation and applicant
+                        <#else>
+                            1.1 Identity of the active substance and applicant
+                        </#if>
+                    <#else>
+                        <#assign numberToC = toc.nodeFor[docTypeSubtype].number />
+                        ${numberToC}
+
+                        <#assign titleToC = toc.nodeFor[docTypeSubtype].title />
+                        ${titleToC}
+                    </#if>
+                </#if>
+            </td>
+
+            <#-- Type -->
+            <td>
+                ${entityName?replace("_", " ")?capitalize}: ${document.documentType?replace("_", " ")?capitalize}<#if document.documentSubType?has_content>: <@com.text document.documentSubType/></#if>
             </td>
 
             <#-- Document Name -->
             <td>
                 <@com.text document.name />
-            </td>
 
-            <#-- UUID -->
-            <td>
-                <#assign docUrl=iuclid.webUrl.documentView(documentKey) />
-                <#if docUrl?has_content>
-                    <ulink url="${docUrl}"><@com.text document.documentKey.uuid/></ulink>
-                <#else>
-                    <@com.text document.documentKey.uuid/>
+                <#-- reference if exists -->
+                <#if document.hasElement("DataSource.Reference")>
+                    <#assign reference=getStudyReference(document)/>
+                    <#if reference?has_content>
+                        <para>(ref: <@com.text reference.GeneralInfo.Name/>, <@com.text reference.GeneralInfo.ReferenceYear/>)</para>
+                    </#if>
                 </#if>
             </td>
-    <#--            document.documentKey.snapshotUuid-->
+
+            <#-- UUID (note: it's too long and doesn't show properly)-->
+            <td>
+                <#--<#assign uuid=document.documentKey.uuid?replace("-", "-<?linebreak?>")/>-->
+<#--                <#assign uuid=document.documentKey.uuid/>-->
+                <#assign uuid><#compress>
+                    <#list document.documentKey.uuid?matches('.{1,14}', 's') as chunk>
+                        ${chunk}<#if chunk_has_next><?linebreak?></#if>
+                    </#list>
+                </#compress></#assign>
+                <#assign docUrl=iuclid.webUrl.documentView(documentKey)/>
+                <#if docUrl?has_content>
+                    <ulink url="${docUrl}">${uuid}</ulink>
+                <#else>
+                    ${uuid}
+                </#if>
+            </td>
 
             <#-- Field Name -->
             <td>
@@ -276,15 +418,6 @@
 
             </td>
 
-    <#--        <!-- Decision based on dossier assessment or additional information, or both of these two sources &ndash;&gt;-->
-    <#--        <td><?dbfo bgcolor="#FFFFFF" ?>-->
-
-    <#--        </td>-->
-
-    <#--        <!-- ECHA's assessment remarks &ndash;&gt;-->
-    <#--        <td><?dbfo bgcolor="#FFFFFF" ?>-->
-
-    <#--        </td>-->
             </tr>
         </#if>
     </#compress>
@@ -326,12 +459,37 @@
                 <#local substance = iuclid.getDocumentForKey(component.Reference)/>
                 <#if substance.documentType=="SUBSTANCE" || substance.documentType=="MIXTURE">
                     <#local substanceList = com.addDocumentToSequenceAsUnique(substance, substanceList)/>
+
+                    <#-- if mixture, call function again-->
+                    <#if substance.documentType=="MIXTURE">
+                        <#local substanceList = substanceList + getComponentsList(substance)/>
+                    </#if>
                 </#if>
             </#if>
         </#list>
     </#list>
 
     <#return substanceList />
+</#function>
+
+<#function getStudyReference study>
+
+    <#local reference=""/>
+
+    <#local referenceLinksList=study.DataSource.Reference/>
+
+    <#if referenceLinksList?has_content>
+        <#list referenceLinksList as referenceLink>
+            <#local referenceEntry = iuclid.getDocumentForKey(referenceLink)/>
+            <#local litType><@com.picklist referenceEntry.GeneralInfo.LiteratureType/></#local>
+            <#if litType=="study report">
+                <#local reference=referenceEntry/>
+                <#break>
+            </#if>
+        </#list>
+    </#if>
+
+    <#return reference>
 </#function>
 
 

@@ -7,7 +7,7 @@
 <#import "macros_common_general.ftl" as com>
 <#import "macros_common_studies_and_summaries.ftl" as studyandsummaryCom>
 <#import "common_module_human_health_hazard_assessment.ftl" as keyTox>
-<#import "appendixE_tox.ftl" as keyAppendixE>
+<#import "appendixE.ftl" as keyAppendixE>
 
 <#assign locale = "en" />
 <#assign sysDateTime = .now>
@@ -23,23 +23,6 @@
 
 <#assign ownerLegalEntity = iuclid.getDocumentForKey(_subject.OwnerLegalEntity) />
 <#assign docUrl=iuclid.webUrl.entityView(_subject.documentKey)/>
-
-<#--get substance-->
-<#if _subject.documentType=="MIXTURE">
-    <#assign activeSubstanceList = getActiveSubstanceComponents(_subject) />
-    <#if activeSubstanceList?has_content>
-        <#assign activeSubstance = activeSubstanceList[0] />
-    </#if>
-    <#global _subjectMixture=_subject/>
-    <#global _subject=activeSubstance/>
-
-<#elseif _subject.documentType=="SUBSTANCE">
-    <#assign activeSubstance=_subject/>
-</#if>
-
-<#--section number hardcoded for individual sections-->
-<#assign sectionNb="5"/>
-<#assign entName><@com.text _subject.ChemicalName/></#assign>
 
 <#--get the context, and docname to print
     NOTE: this works for dossier only; in future also for dataset.-->
@@ -62,6 +45,20 @@
         <#assign docFullName="Toxicological and metabolism studies"/>
     </#if>
 </#if>
+
+<#--get substance-->
+<#if _subject.documentType=="MIXTURE">
+    <#assign activeSubstanceList = getActiveSubstanceComponents(_subject) />
+    <#if activeSubstanceList?has_content>
+        <#assign activeSubstance = activeSubstanceList[0] />
+        <#global _subject=activeSubstance/>
+    </#if>
+<#elseif _subject.documentType=="SUBSTANCE">
+    <#assign activeSubstance=_subject/>
+</#if>
+
+<#--section number hardcoded for individual sections-->
+<#assign sectionNb="5"/>
 
 <#--get error message if no active substance or dossier-->
 <#if !(activeSubstance??)>
@@ -93,7 +90,7 @@
             <para role="rule">
 
             <@com.emptyLine/>
-            <ulink url="${docUrl}">${entName}</ulink>
+            <ulink url="${docUrl}">${_subject.ChemicalName}</ulink>
             </para>
 
         </title>

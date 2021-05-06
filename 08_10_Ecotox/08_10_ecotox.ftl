@@ -1,156 +1,93 @@
+<#assign ecotoxContext = { "ToxicityToBirds_oral" : [{"path": "AdministrativeData.Endpoint", "val" : ["acute oral"], "qual" : "lk", "type" : "picklist"}],
 
-<#assign ecotoxContext = { "ToxicityToBirds_oral" : [{"path": "AdministrativeData.Endpoint",
-                                                        "val" : ["short-term toxicity to birds: acute oral toxicity test (LD50-slope)",
-                                                                    "short-term toxicity to birds: acute oral toxicity test (LD50-only)",
-                                                                    "short-term toxicity to birds: acute oral toxicity test"],
-                                                        "qual" : "eq",
-                                                     "type" : "picklist"}],
+                            "ToxicityToBirds_dietary" : [{"path": "AdministrativeData.Endpoint", "val" : ["dietary"], "qual" : "lk", "type" : "picklist"}],
 
-                            "ToxicityToBirds_dietary" : [{"path": "AdministrativeData.Endpoint",
-                                                        "val" : ["short-term toxicity to birds: dietary toxicity test"],
-                                                        "qual" : "eq",
-                                                        "type" : "picklist"}],
-<#--                            "ToxicityToBirds_short" : [{"path": "AdministrativeData.Endpoint",-->
-<#--                                                        "val" : ["short-term toxicity to birds: avoidance (repellency) test", "short-term toxicity to birds"],-->
-<#--                                                        "qual" : "eq",-->
-<#--                                                        "type" : "picklist"}],-->
-                            "ToxicityToBirds_long" : [{"path": "AdministrativeData.Endpoint",
-                                                            "val" : ["long-term toxicity to birds: reproduction test", "long-term toxicity to birds"],
-                                                            "qual" : "eq",
-                                                            "type" : "picklist"}],
-                            "ToxicityToBirds_other" : [{"path": "AdministrativeData.Endpoint",
-                                                            "val" : ["short-term toxicity to birds: avoidance (repellency) test", "short-term toxicity to birds",
-                                                                        "effects in field conditions", "toxicity to birds, other"],
-                                                            "qual" : "eq",
-                                                            "type" : "picklist"}],
-                            "ToxicityToBirds_nonOral" : [{"path": "AdministrativeData.Endpoint",
-                                                            "val" : ["short-term toxicity to birds:acute oral toxicity test (LD50-slope)",
-                                                                        "short-term toxicity to birds:acute oral toxicity test (LD50-only)",
-                                                                        "short-term toxicity to birds:acute oral toxicity test"],
-                                                            "qual" : "ne",
-                                                            "type" : "picklist"}],
+                            "ToxicityToBirds_long" : [{"path": "AdministrativeData.Endpoint", "val" : ["long-term"], "qual" : "lk", "type" : "picklist"}],
 
-                            "LongTermToxToFish_early" : [{"path": "AdministrativeData.Endpoint",
-                                                            "val" : ["fish early-life stage toxicity", "fish short-term toxicity test on embryo and sac-fry stages", "fish, juvenile growth test"],
-                                                            "qual" : "eq",
-                                                            "type" : "picklist"}],
+                            "ToxicityToBirds_other" : [{"path": "AdministrativeData.Endpoint", "val" : ["acute oral", "dietary","long-term" ],
+                                                            "qual" : "nl", "type" : "picklist"}],
 
-                            "LongTermToxToFish_full" : [{"path": "AdministrativeData.Endpoint",
-                                                            "val" : ["fish life cycle toxicity", "adult fish: sub(lethal) effects", "long-term toxicity to fish, other"],
-                                                            "qual" : "eq",
-                                                            "type" : "picklist"}],
+                            "ToxicityToBirds_nonOral" : [{"path": "AdministrativeData.Endpoint", "val" : ["acute oral"], "qual" : "nl", "type" : "picklist"}],
 
-                            "ShortTermToxicityToAquaInv_daphnia" : [{"path": "MaterialsAndMethods.TestOrganisms.TestOrganismsSpecies",
-                                                                        "val" : ["Daphnia magna"],
-                                                                        "qual" : "lk",
-                                                                        "type" : "picklist"}],
+                            "LongTermToxToFish_early" : [{"path": "AdministrativeData.Endpoint", "val" : ["fish early-life", "embryo and sac-fry", "juvenile growth"],
+                                                            "qual" : "lk", "type" : "picklist"}],
+
+                            "LongTermToxToFish_full" : [{"path": "AdministrativeData.Endpoint", "val" : ["fish early-life", "embryo and sac-fry", "juvenile growth"],
+                                                            "qual" : "nl", "type" : "picklist"}],
+
+                            "ShortTermToxicityToAquaInv_daphnia" : [{"path": "MaterialsAndMethods.TestOrganisms.TestOrganismsSpecies", "val" : ["Daphnia magna"],
+                                                                        "qual" : "lk", "type" : "picklist"}],
 
                             "ShortTermToxicityToAquaInv_other" : [{"path": "MaterialsAndMethods.TestOrganisms.TestOrganismsSpecies",
-                                                                        "val" : ["Daphnia magna"],
-                                                                        "qual" : "nl",
-                                                                        "type" : "picklist"}],
+                                                                        "val" : ["Daphnia magna"], "qual" : "nl", "type" : "picklist"}],
 
                             "LongTermToxicityToAquaInv_daphnia" : [{"path": "MaterialsAndMethods.TestOrganisms.TestOrganismsSpecies",
-                                                                        "val" : ["Daphnia magna"],
-                                                                        "qual" : "lk",
-                                                                        "type" : "picklist"}],
+                                                                        "val" : ["Daphnia magna"], "qual" : "lk", "type" : "picklist"}],
 
                             "LongTermToxicityToAquaInv_chironomus" : [{"path": "MaterialsAndMethods.TestOrganisms.TestOrganismsSpecies",
-                                                                        "val" : ["Chironomus"],
-                                                                        "qual" : "lk",
-                                                                        "type" : "picklist"}],
+                                                                        "val" : ["Chironomus riparius"], "qual" : "lk", "type" : "picklist"}],
 
                             "LongTermToxicityToAquaInv_other" : [{"path": "MaterialsAndMethods.TestOrganisms.TestOrganismsSpecies",
-                                                                            "val" : ["Chironomus", "Daphnia magna"],
-                                                                            "qual" : "nl",
-                                                                            "type" : "picklist"}],
+                                                                            "val" : ["Chironomus riparius", "Daphnia magna"], "qual" : "nl", "type" : "picklist"}],
 
-                            "ToxicityToAquaticAlgae_green" : [{"path": "AdministrativeData.Endpoint",
-                                                                            "val" : ["effects on growth of green algae"],
-                                                                            "qual" : "eq",
-                                                                            "type" : "picklist"}],
+                            "ToxicityToAquaticAlgae_green" : [{"path": "AdministrativeData.Endpoint", "val" : ["green algae"],
+                                                                            "qual" : "lk", "type" : "picklist"}],
 
-                            "ToxicityToAquaticAlgae_additional" : [{"path": "AdministrativeData.Endpoint",
-                                                                            "val" : ["effects on growth of an additional algal species", "toxicity to aquatic algae and cyanobacteria"],
-                                                                            "qual" : "eq",
-                                                                            "type" : "picklist"}],
+                            "ToxicityToAquaticAlgae_additional" : [{"path": "AdministrativeData.Endpoint", "val" : ["green algae"],
+                                                                            "qual" : "nl", "type" : "picklist"}],
 
                             "ToxicityToTerrestrialArthropods_acuteOralBees" : [{"path": "AdministrativeData.Endpoint",
-                                                                                "val" : ["toxicity to bees: acute oral"],
-                                                                                "qual" : "eq",
-                                                                                "type" : "picklist"}],
+                                                                                "val" : ["toxicity to bees: acute oral"], "qual" : "eq", "type" : "picklist"}],
 
                             "ToxicityToTerrestrialArthropods_acuteContactBees" : [{"path": "AdministrativeData.Endpoint",
-                                                                                    "val" : ["toxicity to bees: acute contact"],
-                                                                                    "qual" : "eq",
-                                                                                    "type" : "picklist"}],
+                                                                                    "val" : ["toxicity to bees: acute contact"], "qual" : "eq", "type" : "picklist"}],
 
                             "ToxicityToTerrestrialArthropods_chronicOralBees" : [{"path": "AdministrativeData.Endpoint",
-                                                                                    "val" : ["toxicity to bees: chronic oral"],
-                                                                                    "qual" : "eq",
-                                                                                    "type" : "picklist"}],
+                                                                                    "val" : ["toxicity to bees: chronic oral"], "qual" : "eq", "type" : "picklist"}],
 
                             "ToxicityToTerrestrialArthropods_developmentBees" : [{"path": "AdministrativeData.Endpoint",
-                                                                                    "val" : ["bee larval toxicity - acute", "bee larval toxicity - chronic", "toxicity to bees: residues on foliage, nectar and pollen",
-                                                                                                "toxicity to bees: cage and tunnel tests", "toxicity to bees: field tests"],
-                                                                                    "qual" : "eq",
-                                                                                    "type" : "picklist"}],
+                                                                                    "val" : ["bee larval", "residues on foliage, nectar and pollen",
+                                                                                                "cage and tunnel", "field tests"],
+                                                                                    "qual" : "lk", "type" : "picklist"}],
+
                             "ToxicityToTerrestrialArthropods_developmentBees2" : [{"path": "AdministrativeData.Endpoint",
-                                                                                "val" : ["bee larval toxicity - acute", "bee larval toxicity - chronic",
-                                                                                            "toxicity to bees: residues on foliage, nectar and pollen"],
-                                                                                "qual" : "eq",
-                                                                                "type" : "picklist"}],
+                                                                                "val" : ["bee larval", "residues on foliage, nectar and pollen"],
+                                                                                "qual" : "lk", "type" : "picklist"}],
 
-                            "ToxicityToTerrestrialArthropods_cageBees" : [{"path": "AdministrativeData.Endpoint",
-                                                                        "val" : ["toxicity to bees: cage and tunnel tests"],
-                                                                        "qual" : "eq",
-                                                                        "type" : "picklist"}],
+                            "ToxicityToTerrestrialArthropods_cageBees" : [{"path": "AdministrativeData.Endpoint", "val" : ["cage and tunnel"],
+                                                                        "qual" : "lk", "type" : "picklist"}],
 
-                            "ToxicityToTerrestrialArthropods_fieldBees" : [{"path": "AdministrativeData.Endpoint",
-                                                                        "val" : ["toxicity to bees: field tests"],
-                                                                        "qual" : "eq",
-                                                                        "type" : "picklist"}],
+                            "ToxicityToTerrestrialArthropods_fieldBees" : [{"path": "AdministrativeData.Endpoint", "val" : ["field tests"],
+                                                                        "qual" : "lk", "type" : "picklist"}],
 
-                            "ToxicityToTerrestrialArthropods_sublethalBees" : [{"path": "AdministrativeData.Endpoint",
-                                                                                    "val" : ["toxicity to bees: sublethal effects (reproduction, homing flight activity)"],
-                                                                                    "qual" : "eq",
-                                                                                    "type" : "picklist"}],
+                            "ToxicityToTerrestrialArthropods_sublethalBees" : [{"path": "AdministrativeData.Endpoint", "val" : ["bees: sublethal"],
+                                                                                    "qual" : "lk", "type" : "picklist"}],
 
-                            "ToxicityToTerrestrialArthropods_aphidiusRho" : [{"path": "MaterialsAndMethods.TestOrganisms.TestOrganismsSpecies",
-                                                                                "val" : ["Aphidius rhopalosiphi"],
-                                                                                "qual" : "lk",
-                                                                                "type" : "picklist"}],
+                            "ToxicityToTerrestrialArthropods_aphidiusRho" : [{"path": "AdministrativeData.Endpoint", "val" : ["bee"], "qual" : "nl", "type" : "picklist"},
+                                                                                {"path": "MaterialsAndMethods.TestOrganisms.TestOrganismsSpecies",
+                                                                                "val" : ["Aphidius rhopalosiphi"], "qual" : "lk", "type" : "picklist"}],
 
-                            "ToxicityToTerrestrialArthropods_typhlodromusPyr" : [{"path": "MaterialsAndMethods.TestOrganisms.TestOrganismsSpecies",
-                                                                                "val" : ["Typhlodromus pyri"],
-                                                                                "qual" : "lk",
-                                                                                "type" : "picklist"}],
+                            "ToxicityToTerrestrialArthropods_typhlodromusPyr" : [{"path": "AdministrativeData.Endpoint", "val" : ["bee"], "qual" : "nl", "type" : "picklist"},
+                                                                                    {"path": "MaterialsAndMethods.TestOrganisms.TestOrganismsSpecies",
+                                                                                        "val" : ["Typhlodromus pyri"], "qual" : "lk", "type" : "picklist"}],
 
-                            "ToxicityToTerrestrialArthropods_other" : [{"path": "AdministrativeData.Endpoint",
-                                                                        "val" : ["NTA other than pollinators"],
-                                                                        "qual" : "lk", "type" : "picklist"},
+                            "ToxicityToTerrestrialArthropods_other" : [{"path": "AdministrativeData.Endpoint", "val" : ["bee"], "qual" : "nl", "type" : "picklist"},
                                                                         {"path": "MaterialsAndMethods.TestOrganisms.TestOrganismsSpecies",
-                                                                                    "val" : ["Typhlodromus pyri", "Aphidius rhopalosiphi"],
-                                                                                    "qual" : "nl",
-                                                                                    "type" : "picklist"}],
-                            "ToxicityToTerrestrialArthropods_otherStandardOther" : [{"path": "AdministrativeData.Endpoint",
-                                                                                    "val" : ["toxicity to non-target arthropods on inert substrate (NTA other than pollinators)",
-                                                                                                "toxicity to non-target arthropods on natural substrate (NTA other than pollinators)",
-                                                                                                "toxicity to non-target arthropods (aged residue studies) (NTA other than pollinators)"],
-                                                                                    "qual" : "eq", "type" : "picklist"},
-                                                                                {"path": "MaterialsAndMethods.StudyDesign.StudyType",
-                                                                                "val" : ["extended laboratory study"],
-                                                                                "qual" : "ne", "type" : "picklist"}],
+                                                                                    "val" : ["Typhlodromus pyri", "Aphidius rhopalosiphi"], "qual" : "nl", "type" : "picklist"}],
 
-<#--                            "ToxicityToTerrestrialArthropods_otherAgedResidue" : [{"path": "AdministrativeData.Endpoint",-->
-<#--                                                                                "val" : ["toxicity to non-target arthropods (aged residue studies) (NTA other than pollinators)"],-->
-<#--                                                                                "qual" : "eq", "type" : "picklist"}],-->
+                            "ToxicityToTerrestrialArthropods_otherAgedResidue" : [{"path": "AdministrativeData.Endpoint",
+                                                                                "val" : ["aged residue"],
+                                                                                "qual" : "lk", "type" : "picklist"}],
 
-                            "ToxicityToTerrestrialArthropods_otherExtended" : [{"path": "AdministrativeData.Endpoint",
-                                                                                "val" : ["toxicity to non-target arthropods on inert substrate (NTA other than pollinators)",
-                                                                                          "toxicity to non-target arthropods on natural substrate (NTA other than pollinators)",
-                                                                                          "toxicity to non-target arthropods (aged residue studies) (NTA other than pollinators)"],
-                                                                                "qual" : "eq", "type" : "picklist"},
+                            "ToxicityToTerrestrialArthropods_otherStandard" : [{"path": "AdministrativeData.Endpoint",
+                                                                                    "val" : ["bee", "aged residue", "semi-field", "field"],
+                                                                                    "qual" : "nl", "type" : "picklist"},
+                                                                                    {"path": "MaterialsAndMethods.StudyDesign.StudyType",
+                                                                                    "val" : ["laboratory study"],
+                                                                                    "qual" : "eq", "type" : "picklist"}],
+
+                            "ToxicityToTerrestrialArthropods_otherExtended" : [{"path": "AdministrativeData.Endpoint", "val" : ["bee", "semi-field", "field", "aged residue"],
+                                                                                    "qual" : "nl", "type" : "picklist"},
                                                                                 {"path": "MaterialsAndMethods.StudyDesign.StudyType",
                                                                                 "val" : ["extended laboratory study"],
                                                                                 "qual" : "eq", "type" : "picklist"}],
@@ -158,37 +95,40 @@
                             "ToxicityToTerrestrialArthropods_otherSemifield" : [{"path": "AdministrativeData.Endpoint",
                                                                                 "val" : ["toxicity to non-target arthropods semi-field studies (NTA other than pollinators)"],
                                                                                 "qual" : "eq", "type" : "picklist"}],
-                            <#--NOTE: could be also in STudy type-->
+                            <#--NOTE: could be also in study type-->
 
                             "ToxicityToTerrestrialArthropods_otherField" : [{"path": "AdministrativeData.Endpoint",
                                                                                 "val" : ["toxicity to non-target arthropods field studies (NTA other than pollinators)"],
                                                                                 "qual" : "eq", "type" : "picklist"}],
-                            <#--NOTE: could be also in STudy type-->
+                            <#--NOTE: could be also in study type-->
+
+                            "ToxicityToTerrestrialArthropods_otherOther" : [{"path": "AdministrativeData.Endpoint",
+                                                                                "val" : ["bee", "aged residue", "semi-field", "field"],
+                                                                                "qual" : "nl", "type" : "picklist"},
+                                                                                {"path": "MaterialsAndMethods.StudyDesign.StudyType",
+                                                                                "val" : ["laboratory study", "extended laboratory study"],
+                                                                                "qual" : "ne", "type" : "picklist"}],
 
                             "ToxicityToTerrestrialArthropods_bees" : [{"path": "AdministrativeData.Endpoint", "val" : ["bee"], "qual" : "lk", "type" : "picklist"}],
 
-                            "ToxicityToTerrestrialArthropods_other_micro" : [{"path": "AdministrativeData.Endpoint", "val" : ["NTA other than pollinators"], "qual" : "lk", "type" : "picklist"}],
+                            <#--    probably this is wrong-->
+                            "ToxicityToTerrestrialArthropods_other_micro" : [{"path": "AdministrativeData.Endpoint", "val" : ["bee"], "qual" : "nl", "type" : "picklist"}],
 
                             "ToxicityToSoilMacroorganismsExceptArthropods_earthworm" : [
-<#--                                                                                                {"path": "AdministrativeData.Endpoint",-->
-<#--                                                                                                    "val" : ["toxicity to soil macroorganisms except arthropods: short-term"],-->
-<#--                                                                                                    "qual" : "eq", "type" : "picklist"},-->
-                                                                                                    {"path": "MaterialsAndMethods.TestOrganisms.TestOrganismsSpecies",
-                                                                                                    "val" : ["Eisenia", "Aporrectodea", "Enchytraeus", "Lumbricus", "Cognettia"],
-<#--                                                                                                        the next one I added manually-->
-<#--                                                                                                    "Allolobophor", "Murchieona", "Octolasion", "Prosellodrilus", "Microscolex", "Hormogaster", "Dendrobaena", "Octodrilus", -->
-<#--                                                                                                    "Postandrilus", "Scherotheca", "Amynthas", "Eukerria", "Ocnerodrilus"],-->
-                                                                                                    "qual" : "lk", "type" : "picklist"}],
+                                            {"path": "MaterialsAndMethods.TestOrganisms.TestOrganismsSpecies",
+                                            "val" : ["Eisenia", "Aporrectodea", "Enchytraeus", "Lumbricus", "Cognettia"],
+                                                    <#-- other possibilities:-->
+                                                    <#-- "Allolobophor", "Murchieona", "Octolasion", "Prosellodrilus", "Microscolex", "Hormogaster", "Dendrobaena", "Octodrilus", -->
+                                                    <#-- "Postandrilus", "Scherotheca", "Amynthas", "Eukerria", "Ocnerodrilus"],-->
+                                            "qual" : "lk", "type" : "picklist"}],
 
-                            "ToxicityToSoilMacroorganismsExceptArthropods_earthwormNofield" : [{"path": "MaterialsAndMethods.StudyDesign.StudyType",
-                                                                                                "val" : ["field study"],
+                            "ToxicityToSoilMacroorganismsExceptArthropods_earthwormNofield" : [{"path": "MaterialsAndMethods.StudyDesign.StudyType", "val" : ["field study"],
                                                                                                 "qual" : "ne", "type" : "picklist"},
                                                                                                 {"path": "MaterialsAndMethods.TestOrganisms.TestOrganismsSpecies",
                                                                                                 "val" : ["Eisenia", "Aporrectodea", "Enchytraeus", "Lumbricus", "Cognettia"],
                                                                                                 "qual" : "lk", "type" : "picklist"}],
 
-                            "ToxicityToSoilMacroorganismsExceptArthropods_earthwormField" : [{"path": "MaterialsAndMethods.StudyDesign.StudyType",
-                                                                                                "val" : ["field study"],
+                            "ToxicityToSoilMacroorganismsExceptArthropods_earthwormField" : [{"path": "MaterialsAndMethods.StudyDesign.StudyType", "val" : ["field study"],
                                                                                                 "qual" : "eq", "type" : "picklist"},
                                                                                                 {"path": "MaterialsAndMethods.TestOrganisms.TestOrganismsSpecies",
                                                                                                 "val" : ["Eisenia", "Aporrectodea", "Enchytraeus", "Lumbricus", "Cognettia"],
@@ -218,7 +158,6 @@
                             "ToxicityToTerrestrialPlants_other":[{"path": "MaterialsAndMethods.StudyDesign.StudyType",
                                                                         "val" : ["semi-field study", "field study", "extended laboratory study"],
                                                                         "qual" : "ne", "type" : "picklist"}]
-
 }/>
 
 
@@ -227,6 +166,7 @@
     <#if _subject.documentType=="SUBSTANCE">
 
         <@keyEcotox.ecotoxRiskAssessmentPPP/>
+
         <sect1>
             <title role="HEAD-2">Effects on birds and other terrestrial vertebrates</title>
 
@@ -246,7 +186,8 @@
                     <title role="HEAD-4">Sub-chronic and reproductive toxicity to birds</title>
                     <@keyAppendixE.appendixEstudies _subject "ToxicityToBirds" ecotoxContext["ToxicityToBirds_long"] "sub-chronic and reproductive toxicity to birds"/>
                 </sect3>
-                <#--#NEW SECTION: -->
+
+                <#--NEW SECTION: -->
                 <sect3>
                     <title role="HEAD-4">Other toxicity to birds</title>
                     <@keyAppendixE.appendixEstudies _subject "ToxicityToBirds" ecotoxContext["ToxicityToBirds_other"] "other toxicity to birds"/>
@@ -283,7 +224,7 @@
 
             <sect2>
                 <title role="HEAD-3">Endocrine disrupting properties</title>
-                <para>Study summaries for endocrine disrupting properties are provided in <command  linkend="CA583">Section 5.8.3</command> above.</para>
+                <para>Study summaries for endocrine disrupting properties are provided in Section 5 (<command  linkend="CA583">5.8.3</command>).</para>
 
             </sect2>
         </sect1>
@@ -293,6 +234,7 @@
         <sect1>
             <title role="HEAD-2">Effects on aquatic organisms</title>
             <@keyEcotox.ecotoxPPPsummary _subject "AquaticToxicityRacReporting"/>
+
             <sect2>
                 <title role="HEAD-3">Acute toxicity to fish</title>
                 <@keyEcotox.ecotoxPPPsummary _subject "Short-termToxicityToFish_EU_PPP"/>
@@ -462,7 +404,7 @@
                 <sect3>
                     <title role="HEAD-4">Effects on other non-target arthropods</title>
                     <@keyAppendixE.appendixEstudies _subject "ToxicityToTerrestrialArthropods" ecotoxContext["ToxicityToTerrestrialArthropods_other"]
-                    "toxicity to other arthropods"/>
+                            "toxicity to other arthropods"/>
                 </sect3>
             </sect2>
 
@@ -477,7 +419,7 @@
             <sect2>
                 <title role="HEAD-3">Earthworm, sub-lethal effects</title>
                 <@keyAppendixE.appendixEstudies _subject "ToxicityToSoilMacroorganismsExceptArthropods" ecotoxContext["ToxicityToSoilMacroorganismsExceptArthropods_earthworm"]
-                "toxicity to earthworms"/>
+                    "toxicity to earthworms"/>
             </sect2>
 
             <sect2>
@@ -522,7 +464,7 @@
             </sect2>
             <sect2>
                 <title role="HEAD-3">Testing on non-target plants</title>
-                <para>For general testing on non-target plants see <command  linkend="CA861">Section 8.6.1 above</command>.</para>
+                <para>For general testing on non-target plants see <command  linkend="CA861">Section 8.6.1</command> above.</para>
 
             </sect2>
         </sect1>
@@ -552,7 +494,9 @@
         </sect1>
 
     <#elseif _subject.documentType=="MIXTURE">
+
         <@keyEcotox.ecotoxRiskAssessmentPPP/>
+
         <sect1>
             <title role="HEAD-2">Effects on birds and other terrestrial vertebrates</title>
 
@@ -621,8 +565,8 @@
 
             <sect2>
                 <title role="HEAD-3">Further testing on aquatic organisms</title>
-                <@keyEcotox.ecotoxPPPsummary _subject "BioaccumulationAquaticSediment EU_PPP"/>
-                <@keyAppendixE.appendixEstudies _subject "BioaccumulationAquaticSediment"/>
+                <@keyEcotox.ecotoxPPPsummary _subject "BioaccumulationAquaticSediment_EU_PPP"/>
+                <@keyAppendixE.appendixEstudies _subject "BioaccumulationAquaticSediment" "" "bioconcentration in fish"/>
             </sect2>
         </sect1>
 
@@ -643,32 +587,38 @@
                         <@keyAppendixE.appendixEstudies _subject "ToxicityToTerrestrialArthropods" ecotoxContext["ToxicityToTerrestrialArthropods_acuteOralBees"]
                             "actue oral toxicity to bees"/>
                     </sect4>
+
                     <sect4>
                         <title role="HEAD-4">Acute contact toxicity to bees</title>
                         <@keyAppendixE.appendixEstudies _subject "ToxicityToTerrestrialArthropods" ecotoxContext["ToxicityToTerrestrialArthropods_acuteContactBees"]
                             "acute contact toxicity to bees"/>
                     </sect4>
                 </sect3>
+
                 <sect3>
                     <title role="HEAD-4">Chronic toxicity to bees</title>
                     <@keyAppendixE.appendixEstudies _subject "ToxicityToTerrestrialArthropods" ecotoxContext["ToxicityToTerrestrialArthropods_chronicOralBees"]
                         "chronic toxicity to bees"/>
                 </sect3>
+
                 <sect3>
                     <title role="HEAD-4">Effects on honeybee development and other honeybee life stages</title>
                     <@keyAppendixE.appendixEstudies _subject "ToxicityToTerrestrialArthropods" ecotoxContext["ToxicityToTerrestrialArthropods_developmentBees2"]
                         "effects on bee development and other life stages"/>
                 </sect3>
+
                 <sect3>
                     <title role="HEAD-4">Sub-lethal effects</title>
                     <@keyAppendixE.appendixEstudies _subject "ToxicityToTerrestrialArthropods" ecotoxContext["ToxicityToTerrestrialArthropods_sublethalBees"]
                         "sub-lethal effects"/>
                 </sect3>
+
                 <sect3>
                     <title role="HEAD-4">Cage and tunnel tests</title>
                     <@keyAppendixE.appendixEstudies _subject "ToxicityToTerrestrialArthropods" ecotoxContext["ToxicityToTerrestrialArthropods_cageBees"]
                         "cage and tunnel tests"/>
                 </sect3>
+
                 <sect3>
                     <title role="HEAD-4">Field tests with honeybees</title>
                     <@keyAppendixE.appendixEstudies _subject "ToxicityToTerrestrialArthropods" ecotoxContext["ToxicityToTerrestrialArthropods_fieldBees"]
@@ -682,14 +632,25 @@
 
                 <sect3>
                     <title role="HEAD-4">Standard laboratory testing for non-target arthropods</title>
-                    <@keyAppendixE.appendixEstudies _subject "ToxicityToTerrestrialArthropods" ecotoxContext["ToxicityToTerrestrialArthropods_otherStandardOther"]
+                    <@keyAppendixE.appendixEstudies _subject "ToxicityToTerrestrialArthropods" ecotoxContext["ToxicityToTerrestrialArthropods_otherStandard"]
                         "standard laboratory testing for non-target arthropods"/>
                 </sect3>
 
                 <sect3>
+                    <#--NOTE: this section requires two types of documents, so sub-sections are created-->
                     <title role="HEAD-4">Extended laboratory testing, aged residue studies with non-target arthropods</title>
-                    <@keyAppendixE.appendixEstudies _subject "ToxicityToTerrestrialArthropods" ecotoxContext["ToxicityToTerrestrialArthropods_otherExtended"]
-                        "extended laboratory tests with non-target arthropods"/>
+                    <sect4>
+                        <title role="HEAD-4">Extended laboratory testing</title>
+                        <@keyAppendixE.appendixEstudies _subject "ToxicityToTerrestrialArthropods" ecotoxContext["ToxicityToTerrestrialArthropods_otherExtended"]
+                            "extended laboratory tests with non-target arthropods"/>
+                    </sect4>
+
+                    <sect4>
+                        <title role="HEAD-4">Aged residue studies</title>
+                        <@keyAppendixE.appendixEstudies _subject "ToxicityToTerrestrialArthropods" ecotoxContext["ToxicityToTerrestrialArthropods_otherAgedResidue"]
+                        "aged residue studies"/>
+                    </sect4>
+
                 </sect3>
 
                 <sect3>
@@ -705,8 +666,12 @@
                 </sect3>
 
                 <sect3>
+                    <#-- NOTE: this sections contains everything left from the ones above-->
                     <title role="HEAD-4">Other routes of exposure for non-target arthropods</title>
-                    <para>Any additional studies for other routes of exposure are provided in the corresponding sections above.</para>
+                    <@keyAppendixE.appendixEstudies _subject "ToxicityToTerrestrialArthropods" ecotoxContext["ToxicityToTerrestrialArthropods_otherOther"]
+                        "other toxicity for non-target arthropods"/>
+                    <#--<para>Any additional studies for other routes of exposure are provided in the corresponding sections above.</para>-->
+
                 </sect3>
             </sect2>
 
@@ -738,17 +703,17 @@
             <sect2>
                 <title role="HEAD-3"> Effects on non-target soil meso- and macrofauna (other than earthworms) </title>
 
-                        <sect3>
-                            <title role="HEAD-4">Species level testing</title>
-                            <@keyAppendixE.appendixEstudies _subject "ToxicityToSoilMacroorganismsExceptArthropods" ecotoxContext["ToxicityToSoilMacroorganismsExceptArthropods_folsomiaAndHypoaspis"]
-                            "effects on Folsomia candida and/or Hypoaspis aculeifer"/>
-                        </sect3>
+                    <sect3>
+                        <title role="HEAD-4">Species level testing</title>
+                        <@keyAppendixE.appendixEstudies _subject "ToxicityToSoilMacroorganismsExceptArthropods" ecotoxContext["ToxicityToSoilMacroorganismsExceptArthropods_folsomiaAndHypoaspis"]
+                        "effects on Folsomia candida and/or Hypoaspis aculeifer"/>
+                    </sect3>
 
-                        <sect3>
-                            <title role="HEAD-4">Higher tier testing</title>
-                            <@keyAppendixE.appendixEstudies _subject "ToxicityToSoilMacroorganismsExceptArthropods" ecotoxContext["ToxicityToSoilMacroorganismsExceptArthropods_noSpecies"]
-                            "other effects on non-target soil meso- and macrofauna other than earthworms"/>
-                        </sect3>
+                    <sect3>
+                        <title role="HEAD-4">Higher tier testing</title>
+                        <@keyAppendixE.appendixEstudies _subject "ToxicityToSoilMacroorganismsExceptArthropods" ecotoxContext["ToxicityToSoilMacroorganismsExceptArthropods_noSpecies"]
+                        "other effects on non-target soil meso- and macrofauna other than earthworms"/>
+                    </sect3>
             </sect2>
         </sect1>
 
@@ -756,21 +721,20 @@
 
         <sect1>
             <title role="HEAD-2">Effects on soil nitrogen transformation</title>
-            <@keyEcotox.ecotoxPPPsummary _subject "ToxicityToSoilMicroorganisms"/>
+            <@keyEcotox.ecotoxPPPsummary _subject "ToxicityToSoilMicroorganisms_EU_PPP"/>
             <@keyAppendixE.appendixEstudies _subject "ToxicityToSoilMicroorganisms"/>
         </sect1>
 
         <sect1>
             <title role="HEAD-2">Effects on terrestrial non-target higher plants</title>
             <@keyEcotox.ecotoxPPPsummary _subject "ToxicityToTerrestrialPlants_EU_PPP"/>
-            <@keyAppendixE.appendixEstudies _subject "ToxicityToTerrestrialPlants"/>
             <#--NOTE: The first two sections are really not clear, so everything (not in 3 and 4) is included in the first one-->
             <#--        Summary of screening data-->
             <#--        Testing on non-target plants-->
             <sect2 xml:id="CP1061">
                 <title role="HEAD-3">Summary of screening data</title>
                 <@keyAppendixE.appendixEstudies _subject "ToxicityToTerrestrialPlants" ecotoxContext["ToxicityToTerrestrialPlants_other"]
-                "non-target plants"/>
+                                "non-target plants"/>
             </sect2>
             <sect2>
                 <title role="HEAD-3">Testing on non-target plants</title>
@@ -806,6 +770,7 @@
 <#elseif workingContext=="MICRO">
 
     <#--    NOTE: substance and mixture have the same content, except for the first summary (and the additional studies)-->
+
     <#if _subject.documentType=="SUBSTANCE">
         <@keyEcotox.ecotoxRiskAssessmentPPP/>
     <#elseif _subject.documentType=="MIXTURE">
@@ -898,11 +863,13 @@
         <#if _subject.documentType=="SUBSTANCE">
             <@keyEcotox.ecotoxPPPsummary_merged _subject=_subject
                 docSubTypes=["ToxicityMicroorganisms","ToxicityToTerrestrialPlants_EU_PPP","AdditionalEcotoxicologicalInformation"]/>
+            <@keyAppendixE.appendixEstudies _subject=_subject docSubTypes=["ToxicityToTerrestrialPlants", "ToxicityToMicroorganisms", "AdditionalEcotoxicologicalInformation"]
+            name="other toxicity"/>
         <#elseif _subject.documentType=="MIXTURE">
             <@keyEcotox.ecotoxPPPsummary _subject "ToxicityToTerrestrialPlants_EU_PPP"/>
+            <@keyAppendixE.appendixEstudies _subject "ToxicityToTerrestrialPlants" "" "other toxicity"/>
         </#if>
-        <@keyAppendixE.appendixEstudies _subject=_subject docSubTypes=["ToxicityToTerrestrialPlants", "ToxicityToMicroorganisms", "AdditionalEcotoxicologicalInformation"]
-            name="other toxicity"/>
+
 
     </sect1>
 </#if>
