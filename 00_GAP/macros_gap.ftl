@@ -1,92 +1,105 @@
 <#macro GAPsummary _subject selectedDoc="">
 
-    <#assign gapFullList = iuclid.getSectionDocumentsForParentKey(_subject.documentKey, "FLEXIBLE_RECORD", "GAP") />
+    <#local gapFullList = iuclid.getSectionDocumentsForParentKey(_subject.documentKey, "FLEXIBLE_RECORD", "GAP") />
 
-    <#--initialize hashMap with GAP data-->
-    <@populateGapDhash gapFullList/>
+    <#if gapFullList?has_content>
+        <#--initialize hashMap with GAP data-->
+        <#local gapDhash=getGapDhash(gapFullList, selectedDoc)/>
+<#--        <@populateGapDhash gapFullList/>-->
 
-    <#list gapDhash?keys as docDtype>
-        <#if !(selectedDoc?has_content) || docDtype==selectedDoc>
-        <#if gapDhash[docDtype]?has_content>
-                <#list gapDhash[docDtype]?keys as prodKey>
-                    <section>
+<#--        <#list gapDhash?keys as docDtype>-->
+<#--            <#if !(selectedDoc?has_content) || docDtype==selectedDoc>-->
+<#--                <#if gapDhash[docDtype]?has_content>-->
+        <#if gapDhash?has_content>
 
-                        <#local product=iuclid.getDocumentForKey(prodKey)/>
-                        <#local docUrl=getCorrectDocUrl(_subject, product)/>
+<#--            <#list gapDhash[docDtype]?keys as prodKey>-->
+            <#list gapDhash?keys as prodKey>
+                <section>
 
-                        <title>Product <#if (gapDhash[docDtype]?keys?size > 1 )>${prodKey_index+1}</#if>:
-                                <ulink url="${docUrl}"><@com.text product.GeneralInformation.Name/></ulink>
-                        </title>
+<#--                        <#local product=iuclid.getDocumentForKey(prodKey)/>-->
+<#--                    <#assign gapList=gapDhash[docDtype][prodKey]/>-->
+                    <#local gapList=gapDhash[prodKey]/>
 
-                        <#-- Get mixture composition, with safeners and synergists, if any-->
-                        <para>
-                            <emphasis role="bold">Characteristics of the mixture composition:</emphasis>
-                            <para role="indent">
-                                <@mixtureComposition _subject product/>
-                            </para>
-                        </para>
+                    <#local product=iuclid.getDocumentForKey(gapList[0].AdministrativeDataSummary.Product)/>
+                    <#local docUrl=getDocUrl(_subject, product)/>
 
-                        <@com.emptyLine/>
+<#--                    <title>Product <#if (gapDhash[docDtype]?keys?size > 1 )>${prodKey_index+1}</#if>:-->
+                    <title>Product <#if (gapDhash?keys?size > 1 )>${prodKey_index+1}</#if>:
+                            <ulink url="${docUrl}"><@com.text product.GeneralInformation.Name/></ulink>
+                    </title>
 
-                        <#--GAP table-->
-                        <para><emphasis role="bold">GAP table:</emphasis></para>
-                        <para role="small">
-                            <table border="1">
-
-                                <col width="11%" />
-                                <col width="5%" />
-                                <col width="3%" />
-                                <col width="11%" />
-                                <col width="10%" />
-                                <col width="10%" />
-                                <col width="3%" />
-                                <col width="5%" />
-                                <col width="6%" />
-                                <col width="6%" />
-                                <col width="6%" />
-                                <col width="4%" />
-                                <col width="20%" />
-
-                                <tbody>
-                                <tr>
-                                    <th rowspan="2"><?dbfo bgcolor="#d3d3d3" ?><emphasis role="bold">Crop /<?linebreak?>situation</emphasis></th>
-                                    <th rowspan="2"><?dbfo bgcolor="#d3d3d3" ?><emphasis role="bold">MS /<?linebreak?>country</emphasis></th>
-                                    <th rowspan="2"><?dbfo bgcolor="#d3d3d3" ?><emphasis role="bold">F, G<?linebreak?>or I</emphasis></th>
-                                    <th rowspan="2"><?dbfo bgcolor="#d3d3d3" ?><emphasis role="bold">Pests controlled</emphasis></th>
-                                    <th colspan="4"><?dbfo bgcolor="#d3d3d3" ?><emphasis role="bold">Application</emphasis> </th>
-                                    <th colspan="3"><?dbfo bgcolor="#d3d3d3" ?><emphasis role="bold">Application rate per treatment</emphasis></th>
-                                    <th rowspan="2"><?dbfo bgcolor="#d3d3d3" ?><emphasis role="bold">PHI</emphasis></th>
-                                    <th rowspan="2"><?dbfo bgcolor="#d3d3d3" ?><emphasis role="bold">Remarks</emphasis></th>
-                                </tr>
-
-                                <tr>
-                                    <td><?dbfo bgcolor="#d3d3d3" ?><emphasis role="bold" >Method /<?linebreak?>kind </emphasis></td>
-                                    <td><?dbfo bgcolor="#d3d3d3" ?><emphasis role="bold" >Growth stage<?linebreak?>and season</emphasis></td>
-                                    <td><?dbfo bgcolor="#d3d3d3" ?><emphasis role="bold" >No</emphasis></td>
-                                    <td><?dbfo bgcolor="#d3d3d3" ?><emphasis role="bold" >Interval</emphasis></td>
-                                    <td><?dbfo bgcolor="#d3d3d3" ?><emphasis role="bold" >A.s.</emphasis></td>
-                                    <td><?dbfo bgcolor="#d3d3d3" ?><emphasis role="bold" >Water</emphasis></td>
-                                    <td><?dbfo bgcolor="#d3d3d3" ?><emphasis role="bold" >Conc. dilution</emphasis></td>
-
-                                </tr>
-
-
-                                <#-- Iterate over gap documents of this product and D document-->
-                                <#assign gapList=gapDhash[docDtype][prodKey]/>
-
-                                <#list gapList as gap>
-                                    <@tableRow _subject gap/>
-                                </#list>
-                                </tbody>
-                            </table>
-                        </para>
-                    </section>
+                    <#-- Get mixture composition, with safeners and synergists, if any-->
                     <@com.emptyLine/>
 
-                </#list>
+                    <para>
+                        <emphasis role="bold">Characteristics of the mixture composition:</emphasis>
+                        <para role="indent">
+                            <@mixtureComposition _subject product/>
+                        </para>
+                    </para>
+
+                    <@com.emptyLine/>
+
+                    <#--GAP table-->
+                    <para><emphasis role="bold">GAP table:</emphasis></para>
+                    <para role="small">
+                        <table border="1">
+
+                            <col width="11%" />
+                            <col width="5%" />
+                            <col width="3%" />
+                            <col width="11%" />
+                            <col width="10%" />
+                            <col width="10%" />
+                            <col width="3%" />
+                            <col width="5%" />
+                            <col width="6%" />
+                            <col width="6%" />
+                            <col width="6%" />
+                            <col width="4%" />
+                            <col width="20%" />
+
+                            <thead align="center" valign="middle">
+
+                            <tr>
+                                <th rowspan="2"><?dbfo bgcolor="#d3d3d3" ?><emphasis role="bold">Crop /<?linebreak?>situation</emphasis></th>
+                                <th rowspan="2"><?dbfo bgcolor="#d3d3d3" ?><emphasis role="bold">MS /<?linebreak?>country</emphasis></th>
+                                <th rowspan="2"><?dbfo bgcolor="#d3d3d3" ?><emphasis role="bold">F, G<?linebreak?>or I</emphasis></th>
+                                <th rowspan="2"><?dbfo bgcolor="#d3d3d3" ?><emphasis role="bold">Pests controlled</emphasis></th>
+                                <th colspan="4"><?dbfo bgcolor="#d3d3d3" ?><emphasis role="bold">Application</emphasis> </th>
+                                <th colspan="3"><?dbfo bgcolor="#d3d3d3" ?><emphasis role="bold">Application rate per treatment</emphasis></th>
+                                <th rowspan="2"><?dbfo bgcolor="#d3d3d3" ?><emphasis role="bold">PHI</emphasis></th>
+                                <th rowspan="2"><?dbfo bgcolor="#d3d3d3" ?><emphasis role="bold">Remarks</emphasis></th>
+                            </tr>
+
+                            <tr>
+                                <td><?dbfo bgcolor="#d3d3d3" ?><emphasis role="bold" >Method /<?linebreak?>kind </emphasis></td>
+                                <td><?dbfo bgcolor="#d3d3d3" ?><emphasis role="bold" >Growth stage<?linebreak?>and season</emphasis></td>
+                                <td><?dbfo bgcolor="#d3d3d3" ?><emphasis role="bold" >No</emphasis></td>
+                                <td><?dbfo bgcolor="#d3d3d3" ?><emphasis role="bold" >Interval</emphasis></td>
+                                <td><?dbfo bgcolor="#d3d3d3" ?><emphasis role="bold" >A.s.</emphasis></td>
+                                <td><?dbfo bgcolor="#d3d3d3" ?><emphasis role="bold" >Water</emphasis></td>
+                                <td><?dbfo bgcolor="#d3d3d3" ?><emphasis role="bold" >Conc. dilution</emphasis></td>
+
+                            </tr>
+                            </thead>
+
+                            <tbody valign="middle">
+                            <#-- Iterate over gap documents of this product and D document-->
+<#--                            <#assign gapList=gapDhash[docDtype][prodKey]/>-->
+
+                            <#list gapList as gap>
+                                <@tableRow _subject gap/>
+                            </#list>
+                            </tbody>
+                        </table>
+                    </para>
+                </section>
+                <@com.emptyLine/>
+
+            </#list>
         </#if>
-        </#if>
-    </#list>
+    </#if>
 </#macro>
 
 <#macro tableRow _subject gap>
@@ -95,12 +108,13 @@
         <tr>
             <#--Crop and/or situation, and link to document-->
             <td>
-                <#local gapUrl=getCorrectDocUrl(_subject, gap)/>
+                <#local gapUrl=getDocUrl(_subject, gap)/>
                 <ulink url="${gapUrl}">
-                    <#-- <@com.picklistMultiple gap.KeyInformation.CropInformation.Crop/>-->
+<#--                     <@com.picklistMultiple gap.KeyInformation.CropInformation.Crop/>-->
                     <#if gap.KeyInformation.CropInformation.Crop?has_content>
                         <#escape x as x?html>
                             <#list gap.KeyInformation.CropInformation.Crop as crop>
+                                <para>
                                 <#local cropPhrase = iuclid.localizedPhraseDefinitionFor(crop.code, 'en') />
                                 <#if cropPhrase.open && crop.otherText?has_content>
                                     <#local cropName=crop.otherText/>
@@ -118,14 +132,16 @@
                                     <#--add EPPO-->
                                     <#if eppoMatch?has_content><#local cropName=cropName + " (" + eppoMatch[0] + ")"/></#if>
                                 </#if>
-                                ${cropName}<#if crop_has_next>;<?linebreak?></#if>
+                                ${cropName}
+<#--                                    <#if crop_has_next>;</#if>-->
+                                </para>
                             </#list>
                         </#escape>
                     </#if>
                 </ulink>
                 <#if gap.KeyInformation.CropInformation.GeneticalModification?has_content>
                     <#if com.picklistValueMatchesPhrases(gap.KeyInformation.CropInformation.GeneticalModification, [".*yes.*"])>
-                        <?linebreak?>genetic modification: ${gap.KeyInformation.CropInformation.GeneticalModification.remarks}
+                        <para>genetic modification: ${gap.KeyInformation.CropInformation.GeneticalModification.remarks}</para>
                     </#if>
                 </#if>
 
@@ -136,37 +152,45 @@
                 <#--<@com.picklistMultiple gap.KeyInformation.CropInformation.CountryOrTerritory/>-->
                 <#local addParenthesis=false/>
                 <#if gap.KeyInformation.CropInformation.AuthorisationZone?has_content>
-                    <@com.picklist gap.KeyInformation.CropInformation.AuthorisationZone/><?linebreak?>
+                    <@com.picklist gap.KeyInformation.CropInformation.AuthorisationZone/>
                     <#local addParenthesis=true/>
                 </#if>
                 <#if gap.KeyInformation.CropInformation.CountryOrTerritory?has_content>
-                    <#if addParenthesis>(</#if>
+<#--                    <#if addParenthesis>(</#if>-->
                     <#escape x as x?html>
                         <#list gap.KeyInformation.CropInformation.CountryOrTerritory as country>
                             <#local countryPhrase = iuclid.localizedPhraseDefinitionFor(country.code, 'en') />
 
                             <#local countryName=countryPhrase.description>
-                            ${countryName}<#if country_has_next>;</#if>
+                            <#if addParenthesis && country_index==0>(</#if>${countryName}<#if country_has_next>;<#else><#if addParenthesis>)</#if></#if>
                         </#list>
                     </#escape>
-                    <#if addParenthesis>)</#if>
+<#--                    <#if addParenthesis>)</#if>-->
                 </#if>
             </td>
 
             <#-- F, G or I-->
             <td>
                 <#--                        <@com.picklist gap.KeyInformation.CropInformation.CropLocation/>-->
+                <#local cropLocation=[]/>
                 <#if gap.KeyInformation.CropInformation.CropLocation?has_content>
-                    <#escape x as x?html>
-                        <#local locPhrase = iuclid.localizedPhraseDefinitionFor(gap.KeyInformation.CropInformation.CropLocation.code, 'en') />
-                        ${locPhrase.text?substring(0,1)}
-                    </#escape>
+                    <#list gap.KeyInformation.CropInformation.CropLocation as cropLoc>
+                        <#local locPhrase = iuclid.localizedPhraseDefinitionFor(cropLoc.code, 'en') />
+                        <#if locPhrase?has_content>
+                            <#local locPhrase><#escape x as x?html>${locPhrase.text?substring(0,1)}</#escape></#local>
+                            <#if !cropLocation?seq_contains(locPhrase)>
+                                <#local cropLocation = cropLocation + [locPhrase]/>
+                            </#if>
+                        </#if>
+                    </#list>
                 </#if>
+                <#if cropLocation?has_content>${cropLocation?join(", ")}</#if>
             </td>
 
             <#--Pests or group of pests controlled-->
             <td>
                 <#list gap.PestDiseaseTreated.TargetOrganisms as targOrg>
+                    <para>
                     <#local pestSci><@com.picklist targOrg.ScientificName/></#local>
                 <#--                                <#local pestSci=pestSci?replace(" \\([A-Z]{6}\\)", "", "r")/>-->
                     <#local pestCom><@com.text targOrg.CommonName/></#local>
@@ -176,8 +200,8 @@
                     ${pestSci}
                     <#if pestCom?has_content && pestSci?has_content>]</#if>
 
-                    <#if targOrg_has_next>;<?linebreak?></#if>
-
+<#--                    <#if targOrg_has_next>;<?linebreak?></#if>-->
+                    </para>
                 </#list>
             </td>
 
@@ -197,7 +221,7 @@
                             <#--<#local methodName=methodPhrase.description/>-->
                                 <#local methodName=methodPhrase.text/>
                             </#if>
-                            ${methodName}<#if method_has_next> / <?linebreak?></#if>
+                            ${methodName}<#if method_has_next> / </#if>
                         </#list>
                     </#escape>
                 </#if>
@@ -210,7 +234,7 @@
                     <#else>
                         <#local targetName=targetPhrase.text/>
                     </#if>
-                    <?linebreak?>on ${targetName}
+                    on ${targetName}
                 </#if>
             </td>
 
@@ -260,7 +284,7 @@
                             <#if (stageLast?has_content && slBBCH) && !(stageFirst?has_content && sfBBCH)>BBCH </#if>
                             ${stageLast}
 
-                            <#if growth.TreatmentSeason?has_content><?linebreak?>(<@com.picklistMultiple growth.TreatmentSeason/>)</#if>
+                            <#if growth.TreatmentSeason?has_content> (<@com.picklistMultiple growth.TreatmentSeason/>)</#if>
                         </para>
                         <#--                            <para>between <@com.picklist growth.GrowthStageCropFirst/> and <@com.picklist growth.GrowthStageCropLast/><?linebreak?>-->
                         <#--                                season: <@com.picklistMultiple growth.TreatmentSeason/>-->
@@ -299,66 +323,90 @@
 
             <#-- PHI -->
             <td>
-                <@com.range app.PreharvestInterval/>
+                <@com.picklist app.PreharvestInterval/>
             </td>
 
             <#-- Remarks: rest of fields -->
             <td>
                 <#if gap.KeyInformation.CropInformation.CropDestination?has_content>
-                    Crop destination: <@com.picklistMultiple gap.KeyInformation.CropInformation.CropDestination/>
+                    <para>Crop destination: <@com.picklistMultiple gap.KeyInformation.CropInformation.CropDestination/></para>
+                </#if>
+
+                <#if app.ApplicationEquipment?has_content>
+                    <para>App. equipment: <@com.picklistMultiple app.ApplicationEquipment/></para>
                 </#if>
 
                 <#if app.SafenerSynergistAdjuvant?has_content>
-                    <?linebreak?>Safener / synergist / adjuvant added: <@com.picklist app.SafenerSynergistAdjuvant/>
+                    <para>Safener / synergist / adjuvant added: <@com.picklist app.SafenerSynergistAdjuvant/></para>
                 </#if>
 
                 <#if app.SeasonalAplication?has_content>
-                    <?linebreak?>Max. seasonal app. rate (a.s.): <@com.range app.SeasonalAplication/>
+                    <para>Max. annual app. rate (a.s.): <@com.range app.SeasonalAplication/></para>
+                </#if>
+
+                <#if app.NonTargetAS?has_content>
+                    <para> Non-target a.s.:
+                        <#list app.NonTargetAS as ntasEntry>
+                            <#local ntas = iuclid.getDocumentForKey(ntasEntry.NonTargetAS)/>
+                            <@com.text ntas.ReferenceSubstanceName/>
+                            <#if ntasEntry.ApplicationRatePerTreatmentForOtherASRange?has_content || ntasEntry.MaximumAnnualApplicationRateForOtherAS?has_content>
+                                (
+                                <#if ntasEntry.ApplicationRatePerTreatmentForOtherASRange?has_content>
+                                    rate:<@com.range ntasEntry.ApplicationRatePerTreatmentForOtherASRange/>.
+                                </#if>
+                                <#if ntasEntry.MaximumAnnualApplicationRateForOtherAS?has_content>
+                                    max. annual:<@com.range ntasEntry.MaximumAnnualApplicationRateForOtherAS/>.
+                                </#if>
+                                )
+                            </#if>
+                            <#if ntasEntry_has_next>;</#if>
+                        </#list>
+                    </para>
                 </#if>
 
                 <#if app.TreatmentWindowDispensers?has_content>
-                    <?linebreak?>Treatment window: <@com.text app.TreatmentWindowDispensers/>
+                    <para>Treatment window: <@com.text app.TreatmentWindowDispensers/></para>
                 </#if>
 
                 <#if app.MaxSeedingRate?has_content>
-                    <?linebreak?>Max. seeding rate: <@com.quantity app.MaxSeedingRate/>
+                    <para>Max. seeding rate: <@com.range app.MaxSeedingRate/></para>
                 </#if>
 
                 <#if app.PlantingDensity?has_content>
-                    <?linebreak?>Planting density: <@com.text app.PlantingDensity/>
+                    <para>Planting density: <@com.text app.PlantingDensity/></para>
                 </#if>
 
                 <#if app.ReentryPeriod?has_content>
-                    <?linebreak?>Re-entry period: <@com.quantity app.ReentryPeriod/>
+                    <para>Re-entry period: <@com.quantity app.ReentryPeriod/></para>
                 </#if>
 
                 <#if app.ReentryPeriodLivestock?has_content>
-                    <?linebreak?>Re-entry period livestock: <@com.quantity app.ReentryPeriodLivestock/>
+                    <para>Re-entry period livestock: <@com.quantity app.ReentryPeriodLivestock/></para>
                 </#if>
 
                 <#if app.WithholdingPeriod?has_content>
-                    <?linebreak?>Withholding period: <@com.quantity app.WithholdingPeriod/>
+                    <para>Withholding period: <@com.quantity app.WithholdingPeriod/></para>
                 </#if>
 
                 <#if app.WaitingPeriod?has_content>
-                    <?linebreak?>Waiting period: <@com.quantity app.WaitingPeriod/>
+                    <para>Waiting period: <@com.quantity app.WaitingPeriod/></para>
                 </#if>
 
                 <#if app.PlantbackInterval?has_content>
-                    <?linebreak?>Plant-back interval: <@com.quantity app.PlantbackInterval/>
+                    <para>Plant-back interval: <@com.quantity app.PlantbackInterval/></para>
                 </#if>
 
                 <#if app.VentilationPractices?has_content>
-                    <?linebreak?>Ventilation practices: <@com.text app.VentilationPractices/>
+                    <para>Ventilation practices: <@com.text app.VentilationPractices/></para>
                 </#if>
 
                 <#if app.Restrictions?has_content>
-                    <?linebreak?>Restrictions: <@com.text app.Restrictions/>
+                    <para>Restrictions: <@com.text app.Restrictions/></para>
                 </#if>
 
                 <#local keyInfo><@com.richText gap.KeyInformation.field9074/></#local>
                 <#if gap.AdditionalInformation.field7935?has_content || (gap.KeyInformation.field9074?has_content && keyInfo!="authorised use")>
-                    <?linebreak?>NOTE: more information in corresponding GAP document (key/additional information).
+                    <para>NOTE: more information in corresponding GAP document (key/additional information).</para>
                 </#if>
             </td>
 
@@ -369,7 +417,7 @@
 
 <#macro populateGapDhash gapList>
 
-    <#assign gapDhash={"D1":{}, "D2":{}}/>
+    <#assign gapDhash={"D1":{}, "D2":{}, "D3":{}}/>
 
     <#list gapList as gap>
 
@@ -398,7 +446,7 @@
 <#macro mixtureComposition _subject product>
     <#compress>
 
-<#--        <#local docUrl=getCorrectDocUrl(_subject, product)/>-->
+<#--        <#local docUrl=getDocUrl(_subject, product)/>-->
 <#--        <ulink url="${docUrl}"><@com.text product.GeneralInformation.Name/></ulink>-->
 
         <itemizedlist>
@@ -452,25 +500,68 @@
     </#compress>
 </#macro>
 
-<#function getDtype gap>
-    <#local keyInfo><@com.richText gap.KeyInformation.field9074/></#local>
-    <#if keyInfo?matches(".*authori[sz]{1}ed use.*", "i")>
-        <#return "D2">
+<#function isDtype gap type>
+    <#local purpose><@com.picklistMultiple gap.KeyInformation.PurposeOfTheGAP.ActiveSubstanceMicroorganismBasicSubstanceApplications/></#local>
+    <#if purpose?contains(type)>
+        <#return true>
+    <#else>
+        <#if (!purpose?has_content) && type=="D1">
+            <#return true>
+        <#else>
+            <#return false>
+        </#if>
     </#if>
-    <#return "D1"/>
 </#function>
 
-<#function getCorrectDocUrl _subject doc>
+<#--<#function getDtype gap>-->
+
+<#--    &lt;#&ndash; get the type based on picklist; set D1 as default even if not selected. MRL types are not considered.&ndash;&gt;-->
+<#--    <#local type><@com.picklistMultiple gap.KeyInformation.PurposeOfTheGAP.ActiveSubstanceMicroorganismBasicSubstanceApplications/></#local>-->
+<#--    <#if type?contains("D2")>-->
+<#--        <#return "D2">-->
+<#--    <#elseif type?contains("D3")>-->
+<#--        <#return "D3">-->
+<#--    <#else>-->
+<#--        <#return "D1">-->
+<#--    </#if>-->
+
+<#--&lt;#&ndash;    <#local keyInfo><@com.richText gap.KeyInformation.field9074/></#local>&ndash;&gt;-->
+<#--&lt;#&ndash;    <#if keyInfo?matches(".*authori[sz]{1}ed use.*", "i")>&ndash;&gt;-->
+<#--&lt;#&ndash;        <#return "D2">&ndash;&gt;-->
+<#--&lt;#&ndash;    </#if>&ndash;&gt;-->
+<#--&lt;#&ndash;    <#return "D1"/>&ndash;&gt;-->
+<#--</#function>-->
+
+<#function getDocUrl _subject doc>
 
     <#local docUrl=iuclid.webUrl.documentView(doc.documentKey) />
 
-    <#local datasetId = _subject.documentKey?replace("\\/.*$", "", "r")/>
-    <#local datasetEntity = _subject.documentType/>
-
-    <#--1. insert data related to the entity (mixture/substance and id)-->
-    <#local docUrl = docUrl?replace("\\?goto", "\\/raw\\/${datasetEntity}\\/${datasetId}\\?content_uri", "r")/>
-    <#--2. Properly display the colon :-->
-    <#local docUrl = docUrl?replace("\\%3A", "\\:", "r")/>
-
     <#return docUrl>
+</#function>
+
+<#function getGapDhash gapList type>
+
+    <#local gapDhash={}/>
+
+    <#list gapList as gap>
+
+        <#if isDtype(gap, type)>
+
+            <#--identify mixture composition-->
+            <#if gap.AdministrativeDataSummary.Product?has_content>
+                <#local product=iuclid.getDocumentForKey(gap.AdministrativeDataSummary.Product)/>
+                <#local productId=product.documentKey.uuid/>
+
+                <#--add to correspoding hashMap-->
+                <#if gapDhash[productId]??>
+                    <#local gapDProdList = gapDhash[productId] + [gap]/>
+                <#else>
+                    <#local gapDProdList=[gap]/>
+                </#if>
+
+                <#local gapDhash = gapDhash + {productId : gapDProdList}/>
+            </#if>
+        </#if>
+    </#list>
+    <#return gapDhash/>
 </#function>

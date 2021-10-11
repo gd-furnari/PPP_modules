@@ -1,0 +1,18 @@
+CHEM SUB
+---------------------------------
+
+7.1.1.2: instead of being only "anaerobic" it will be everything that is not aerobic.
+
+7.1.2: this whole section is just a summary plus links for the studies. However, how to link to the metabolites? Just say that it should be another section?
+
+7.1.2.2.2: same strategy as in 7112
+
+7.1.4.4: added section to cover "other" endpoints
+
+7.222-4: separated by endpoint and inoculum - update the crosswalks.
+
+7.2.3: same strategy as in 7112 (together with 7.2.2.1)
+
+CHEM MIX
+-------------------
+NOTE: why aerobic mineralisation doc is different than the one used for substance??? makes no sense

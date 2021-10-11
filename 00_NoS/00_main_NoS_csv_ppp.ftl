@@ -24,14 +24,16 @@
 </#if>
 <#assign legalEntityName = ""/>
 <#assign ownerLegalEntity = iuclid.getDocumentForKey(_subject.OwnerLegalEntity) />
-<#if ownerLegalEntity?has_content><#assign legalEntityName=ownerLegalEntity.GeneralInfo.LegalEntityName/></#if>
+<#if ownerLegalEntity?has_content><#assign legalEntityName=ownerLegalEntity.GeneralInfo.LegalEntityName/><#else><#assign legalEntityName=""></#if>
+<#assign submittingLegalEntity = iuclid.getDocumentForKey(dossier.submittingLegalEntityKey) />
+<#if submittingLegalEntity?has_content><#assign submittingLegalEntityName=submittingLegalEntity.GeneralInfo.LegalEntityName/><#else><#assign submittingLegalEntityName=""/></#if>
 <#-- Print the headears for each column -->
 <@printHeader app/>
 
 <#-- Print the content-->
 <#assign content>
-    <@printJustNoS _subject dossier nosinfo app legalEntityName/>
-    <@printNoS _subject dossier nosinfo app legalEntityName/>
+    <@printJustNoS _subject dossier nosinfo app legalEntityName submittingLegalEntityName/>
+    <@printNoS _subject dossier nosinfo app legalEntityName submittingLegalEntityName/>
 </#assign>
 <#assign content=content?replace('", "', '","')/>
 ${content}
@@ -41,17 +43,18 @@ Please run Report Generator from a dossier.
 <#--macros-->
 <#macro printHeader app>
     <@compress single_line=true>
-    NoS ID,Study NoS classification,Remarks/Justification,
-    Reference Type,Title,Author,Year,Bibliographic source,Testing facility,Report no.,Study sponsor,Study no.,Report date,Remarks,Reference uuid,
+    NoS ID,Remarks/Justification,Study NoS classification,
+    Reference Type,Title,Author,Year,Bibliographic source,Testing facility,Report date, Report no.,Study sponsor,Study no.,Remarks,Reference uuid,
+    No records,
     Study period,Endpoint,Guideline,GLP,Adequacy,Study uuid,
     <@printChildren path=app header=true/>
     Subject,Subject ids,Active Substance(s),Pre-application identification,
     Dossier name,Dossier UUID,Dossier submission remarks,Dossier creation date and time,Submission type,
-    Submitting legal entity
+    Owner legal entity, Submitting legal entity
     </@compress>
 </#macro>
 
-<#macro printJustNoS _subject dossier nosinfo app legalEntityName>
+<#macro printJustNoS _subject dossier nosinfo app legalEntityName submittingLegalEntityName>
     <#if nosinfo.StudiesReqJustification?has_content>
         <#list nosinfo.StudiesReqJustification as nos>
             <@compress single_line=true>
@@ -65,83 +68,121 @@ Please run Report Generator from a dossier.
                 </#if>
             </#compress></#local>
             "${nosId}",
-            "justified study",
             "<@com.text nos.Justification/>",
+            "justified study",
             "","","","","","","","","","","","",
-            "","","","","","",
+            "","","","","","","",
             <@printChildren path=app header=false/>
             <@printSubject _subject/>
             <@printPreapp nosinfo/>
             <@printDossierInfo dossier/>
-            "${legalEntityName}"
+            "${legalEntityName}",
+            "${submittingLegalEntityName}"
             </@compress>
 
         </#list>
     </#if>
 </#macro>
 
-<#macro printNoS _subject dossier nosinfo app ownerLegalEntity>
+<#macro printNoS _subject dossier nosinfo app ownerLegalEntity submittingLegalEntityName>
     <#compress>
 
-        <#assign NoSstudyList=[]/>
-        <#assign missingNoSstudyList=[]/>
-        <@endpointStudyRecords _subject/>
+        <#assign NoSstudyList={}/>
+        <#assign missingNoSstudyList={}/>
+        <@populateNoSstudyLists _subject/>
 
         <#assign fullList=NoSstudyList+missingNoSstudyList/>
-        <#list fullList as study>
-            <#local reference=getStudyReference(study)/>
-            <#if reference?has_content>
+<#--        <#list fullList as key,value>-->
+        <#list fullList?keys as key>
+            <#local value = fullList[key]/>
+
+            <#local reference=value['reference']/>
+            <#local studies=value['doc']/>
+
+            <#list studies as study>
+
                 <@compress single_line=true>
                 <#local NoSid=getNoSid(reference)/>
                 "${NoSid}",
+                <#local NoSremarks=getNoSidRemarks(reference)/>
+<#--                <#local remarksList=[]>-->
+<#--                <#if !(NoSid?has_content)>-->
+<#--                    <#list reference.GeneralInfo.StudyIdentifiers as studyId>-->
+<#--                        <#if studyId.Remarks?has_content>-->
+<#--                            <#local remark><#compress>-->
+<#--                                <@com.text studyId.Remarks/>-->
+<#--                                <#if studyId.StudyID?has_content>-->
+<#--                                    : <@com.text studyId.StudyID/>-->
+<#--                                </#if>-->
+<#--                            </#compress></#local>-->
+<#--                            <#local remarksList = remarksList + [remark]/>-->
+<#--                        </#if>-->
+<#--                    </#list>-->
+<#--                </#if>-->
+<#--                <#if remarksList?has_content>"${remarksList?join(" | ")}"<#else>""</#if>,-->
+                <#if NoSremarks?has_content>"${NoSremarks}"<#else>""</#if>,
                 <#if NoSid?has_content>"notified study"<#else>"study lacking notification"</#if>,
-                <#local remarksList=[]>
-                <#if !(NoSid?has_content)>
-                    <#list reference.GeneralInfo.StudyIdentifiers as studyId>
-                        <#if studyId.Remarks?has_content>
-                            <#local remark><#compress>
-                                <@com.text studyId.Remarks/>
-                                <#if studyId.StudyID?has_content>
-                                    : <@com.text studyId.StudyID/>
-                                </#if>
-                            </#compress></#local>
-                            <#local remarksList = remarksList + [remark]/>
-                        </#if>
-                    </#list>
-                </#if>
-                <#if remarksList?has_content>"${remarksList?join(" | ")}"<#else>""</#if>,
-                <@printChildren path=reference.GeneralInfo header=false exclude=["AttachedDocuments", "AttachedSanitisedDocsForPublication", "StudyIdentifiers_list"]/>
+                <@printChildren path=reference.GeneralInfo header=false exclude=["Attachments_list", "StudyIdentifiers_list"]/>
                 "<@com.text reference.documentKey.uuid/>",
+                "${studies?size}",
                 "<@com.text study.AdministrativeData.StudyPeriod/>",
-                "<@com.picklist study.AdministrativeData.Endpoint/>",
+                 <#local endpoint>
+                    <#compress>
+                        <#if study.hasElement("AdministrativeData.Endpoint")>
+                            <@com.picklist study.AdministrativeData.Endpoint/>
+                        <#else>
+                            <#if study.documentSubType=="IntermediateEffects">
+                                intermediate effects: <@com.picklist study.AdministrativeData.StudyResultType/>
+                            </#if>
+                        </#if>
+                    </#compress>
+                 </#local>
+                 "${endpoint}",
+<#--                "<@com.picklist study.AdministrativeData.Endpoint/>",-->
                 <#local guideline><#compress>
-                    <#if study.hasElement("MaterialsAndMethods")>
+                    <#if study.hasElement("MaterialsAndMethods.Guideline")>
                         <@studyandsummaryCom.guidelineList study.MaterialsAndMethods.Guideline/>
                         <#if study.MaterialsAndMethods.MethodNoGuideline?has_content>
                             - other method: <@com.text study.MaterialsAndMethods.MethodNoGuideline/>
+                        </#if>
+                    <#elseif study.hasElement("MaterialsAndMethods.MethodUsed")>
+                        <#if study.hasElement("MaterialsAndMethods.MethodUsed.Qualifier")>
+                            <@com.picklist study.MaterialsAndMethods.MethodUsed.Qualifier/>
+                        </#if>
+                        <#if study.hasElement("MaterialsAndMethods.MethodUsed.MethodUsed")>
+                            method <@com.picklist study.MaterialsAndMethods.MethodUsed.MethodUsed/>
                         </#if>
                     </#if>
                 </#compress></#local>
                 "${guideline}",
                 <#local glp><#compress>
                     <#if study.hasElement("MaterialsAndMethods")>
-                        <@com.picklist study.MaterialsAndMethods.GLPComplianceStatement/>
-                        <#if study.hasElement("MaterialsAndMethods.OtherQualityAssurance") && study.MaterialsAndMethods.OtherQualityAssurance?has_content>
-                            ; other quality assurance: <@com.picklist study.MaterialsAndMethods.OtherQualityAssurance/>
-                        </#if>
+                            <#if study.hasElement("MaterialsAndMethods.GLPComplianceStatement")>
+                                <@com.picklist study.MaterialsAndMethods.GLPComplianceStatement/>
+                            <#elseif study.hasElement("MaterialsAndMethods.MethodUsed.GLPCompliance")>
+                                <@com.picklist study.MaterialsAndMethods.MethodUsed.GLPCompliance/>
+                            </#if>
+
+                            <#if study.hasElement("MaterialsAndMethods.OtherQualityAssurance") && study.MaterialsAndMethods.OtherQualityAssurance?has_content>
+                                ; other quality assurance: <@com.picklist study.MaterialsAndMethods.OtherQualityAssurance/>
+                            <#elseif study.hasElement("MaterialsAndMethods.MethodUsed.OtherQualityFollowed") && study.MaterialsAndMethods.MethodUsed.OtherQualityFollowed?has_content>
+                                ; other quality assurance: <@com.picklist study.MaterialsAndMethods.MethodUsed.OtherQualityFollowed/>
+                            </#if>
                     </#if>
                 </#compress></#local>
                 "${glp}",
-                "<@com.picklist study.AdministrativeData.PurposeFlag/>",
+                <#if study.hasElement("AdministrativeData.PurposeFlag")>"<@com.picklist study.AdministrativeData.PurposeFlag/>"<#else>""</#if>,
+<#--                "<@com.picklist study.AdministrativeData.PurposeFlag/>",-->
                 "<@com.text study.documentKey.uuid/>",
                 <@printChildren path=app header=false/>
                 <@printSubject _subject/>
                 <@printPreapp nosinfo/>
                 <@printDossierInfo dossier/>
-                "${legalEntityName}"
+                "${legalEntityName}",
+                "${submittingLegalEntityName}"
                 </@compress>
 
-            </#if>
+            </#list>
         </#list>
     </#compress>
 </#macro>
@@ -169,9 +210,15 @@ Please run Report Generator from a dossier.
 <#macro printSubject _subject>
     <#compress>
     <#if _subject.documentType=="MIXTURE">
-        <#local actSubs=getComponents(_subject, "active substance")/>
-<#--        <#local actSubName><#if actSubs?has_content></#if><@com.text actSubs[0].ChemicalName/></#local>-->
-        <#local actSubIds><#if actSubs?has_content><@substanceIds actSubs[0]/></#if></#local>
+        <#local actSubs=com.getComponents(_subject, "active substance")/>
+        <#local actSubIds>
+            <#if actSubs?has_content>
+                <#list actSubs as actSub>
+                    <@substanceIds actSub/>
+                    <#if actSub_has_next>; </#if>
+                </#list>
+            </#if>
+        </#local>
         "<@com.text _subject.MixtureName/>","<@mixtureIds _subject/>","${actSubIds}",
     <#elseif _subject.documentType=="SUBSTANCE">
         "<@substanceIds _subject/>"
@@ -211,8 +258,12 @@ Please run Report Generator from a dossier.
                     <@com.number node/>
                 <#elseif nodeType=="multilingual_text_html">
                     <@com.richText node/>
-                <#else>
+                <#elseif nodeType?contains("text")>
                     <@com.text node/>
+                <#elseif nodeType=="date">
+                    <@com.text node/>
+                <#elseif nodeType=="boolean">
+                    <#if node>Y<#else>N</#if>
                 </#if>
             </#compress></#assign>
 
@@ -227,15 +278,35 @@ Please run Report Generator from a dossier.
 <#macro mixtureIds mixture>
     <#compress>
         <@compress single_line=true>
-        <#if mixture.PublicName?has_content>public name: <@com.text mixture.PublicName/>;</#if>
+        <#if mixture.PublicName?has_content>public name: <@com.text mixture.PublicName/><#if mixture.OtherNames?has_content>;</#if></#if>
         <#if mixture.OtherNames?has_content>
-            <#list mixture.OtherNames as name>
-                <@com.picklist name.NameType/>: <@com.text name.Name/>
-                    <#if name.Country?has_content>
-                        in <@com.picklistMultiple name.Country/>
-                    </#if>
-                <#if name.Remarks?has_content>(<@com.text name.Remaks/>)</#if>
-                <#if name_has_next>; </#if>
+            <#list mixture.OtherNames as nameEntry>
+                <#--Substitute : by - in name type and in name-->
+                <#local nameType><@com.picklist nameEntry.NameType/></#local>
+                <#local nameType=nameType?replace(":", "-")/>
+
+                <#local name><@com.text nameEntry.Name/></#local>
+                <#local name=name?replace(":", "-")/>
+
+<#--                <@com.picklist name.NameType/>: <@com.text name.Name/>-->
+                <#if name?has_content>${nameType}: ${name}</#if>
+<#--                    <#if nameEntry.Country?has_content>-->
+<#--                        in <@com.picklistMultiple nameEntry.Country/>-->
+<#--                    </#if>-->
+<#--                <#if nameEntry.hasElement("Remarks") && nameEntry.Remarks?has_content>(<@com.text nameEntry.Remarks/>)</#if>-->
+                <#if nameEntry_has_next>; </#if>
+            </#list>
+        </#if>
+        <#local compositions = iuclid.getSectionDocumentsForParentKey(mixture.documentKey, "FLEXIBLE_RECORD", "MixtureComposition")/>
+        <#if compositions?has_content>
+            <#list compositions as composition>
+                ; composition: <@com.text composition.GeneralInformation.Name/>
+                <#list composition.GeneralInformation.TradeNames as tradeName>
+                    ; <@com.text tradeName.TradeName/>
+                <#--                    <#if tradeName.Country?has_content>-->
+                <#--                        (<@com.picklistMultiple tradeName.Country/>)-->
+                <#--                    </#if>-->
+                </#list>
             </#list>
         </#if>
         </@compress>
@@ -246,14 +317,15 @@ Please run Report Generator from a dossier.
 <#macro substanceIds substance>
     <#compress>
         <@compress single_line=true>
-        <@com.text substance.ChemicalName/>.
-        <@mixtureIds substance/>
+        Name: <@com.text substance.ChemicalName/>;
+        <#local mixIds><@mixtureIds substance/></#local>
+        <#if mixIds?has_content>${mixIds};</#if>
 
-        <#assign referenceSubstance = iuclid.getDocumentForKey(substance.ReferenceSubstance.ReferenceSubstance) />
+        <#local referenceSubstance = iuclid.getDocumentForKey(substance.ReferenceSubstance.ReferenceSubstance) />
             <#if referenceSubstance?has_content>
-            <#--                Reference substance: <@com.text referenceSubstance.ReferenceSubstanceName/>-->
+                Reference substance: <@com.text referenceSubstance.ReferenceSubstanceName/>;
                 <#if referenceSubstance.Inventory?? && referenceSubstance.Inventory.InventoryEntry?has_content>
-                    EC number : <@com.inventoryECNumber com.getReferenceSubstanceKey(substance.ReferenceSubstance.ReferenceSubstance)/>;
+                    EC number: <@com.inventoryECNumber com.getReferenceSubstanceKey(substance.ReferenceSubstance.ReferenceSubstance)/>;
                 </#if>
                 <#if referenceSubstance.Inventory?? && referenceSubstance.Inventory.InventoryEntry?has_content>
                     EC name: <@com.inventoryECName com.getReferenceSubstanceKey(substance.ReferenceSubstance.ReferenceSubstance) />;
@@ -262,7 +334,7 @@ Please run Report Generator from a dossier.
                     CAS number (EC inventory): <@com.inventoryECCasNumber com.getReferenceSubstanceKey(substance.ReferenceSubstance.ReferenceSubstance) />;
                 </#if>
                 <#if referenceSubstance?? && referenceSubstance.Inventory.CASNumber?has_content>
-                    CAS number:<@com.casNumber com.getReferenceSubstanceKey(substance.ReferenceSubstance.ReferenceSubstance) />;
+                    CAS number: <@com.casNumber com.getReferenceSubstanceKey(substance.ReferenceSubstance.ReferenceSubstance) />;
                 </#if>
                 <#if referenceSubstance?? && referenceSubstance.Inventory.CASName?has_content>
                     CAS name: <@com.casName com.getReferenceSubstanceKey(substance.ReferenceSubstance.ReferenceSubstance)/>;
@@ -271,9 +343,10 @@ Please run Report Generator from a dossier.
                     IUPAC name: <@com.iupacName com.getReferenceSubstanceKey(substance.ReferenceSubstance.ReferenceSubstance)/>;
                 </#if>
                 <#if referenceSubstance?? && referenceSubstance.Synonyms.Synonyms?has_content>
-                    <#assign synonyms=getSynonyms(referenceSubstance)?join(" | ")/>
+                    <#local synonyms=getSynonyms(referenceSubstance)?join("; ")/>
                     <#if synonyms?has_content>
-                        Synonyms:${synonyms}
+<#--                        Synonyms:-->
+                        ${synonyms}
                     </#if>
                 </#if>
             </#if>

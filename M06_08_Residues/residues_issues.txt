@@ -1,0 +1,50 @@
+For chemicals
+---------------
+
+- ENDPOINT_SUMMARY.MetabolismPlants is used in 2 places: metabolism in plants and metabolism in rotational crops.
+	- solution implemented: retrieve only the corresponding rotational crop vs primary crop info to display, but then general info might be repeated
+	- alternative: just link to one place
+
+- ENDPOINT_STUDY_RECORD.ResiduesInRotationalCrops is used in 3 places: magnitude in plants, in peel and pulp and in rotational crops.
+	- solution implemented:
+		- distinction between plants (incl peel and pulp) and rotational crops done by using Endpoint value
+		- not possible to distinguish for peel and pulp (ResultsAndDiscussion.SummaryOfRadioactiveResiduesInCrops.SamplingAndResidues.SampledMaterialCommodity IN ["FI 0030", "FT 0026"] is repeatable...) so link provided
+
+- ENDPOINT_SUMMARY.MagnitudeResiduesPlants similar as above
+	- solution implemented: 
+		- separated between plants and rotational crops by flag "KeyInformation.SummaryResiduesData.ResultsApplicableTo", but then general info might be repeated
+	 	- however for peel and pulp the only solution is to provide a link (to primary crops only? or both?)
+
+- FLEXIBLE_SUMMARY.MRLProposal: used in MRLs for both imported and non-imported products.
+	- solution implemented: report in first section and add link in second
+	- alternative: use context MaximumResidueLevel.RationaleForMrl="import of food of animal origin" to split this doc
+
+- 6.8- Proposed safety intervals: 
+	- solution implemented: just message to check GAP
+	- alternative: we could extract info if necessary :)
+		- legislation: pre-harvest intervals for envisaged uses, or withholding periods or storage periods, in the case of post-harvest uses
+		- dossiers have small tables for it
+
+- 6.11 Migration of residues into and their behaviour on food or feeding stuffs -> this doesnt exist in requirements, what to do with it?
+	- solution implemented: add extra section
+	NOTE: it contains endpoints such as viable residues, non viable residues...
+
+For micro
+---------
+
+- Further information required: this section has two main docs (summary and endpoint) without a specific section + viable and non-viable sections which can't be split and include several docs
+	- solution implemented:
+		- the two main endpoint + summary are in the higher-level sectionwhat about making an extra section
+		- merge viable and non viable and output all docs together, for both summaries and endpoints
+	- alternative: add section "other info" or similar to include the high level docs? (just for tidying up the document)
+
+
+For MRL
+-------
+To clarify if to follow chemicals sections (as done for TOX) or do it different
+
+
+Other issues
+------------
+- GAP links don't (cannot) work!!!
+- link to methods section

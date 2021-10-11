@@ -2,7 +2,8 @@
 
 <#-- Import common modules to quickly access their substance and study content -->
 <#import "macros_common_general.ftl" as com>
-<#import "macros_gap.ftl" as keyGap>
+<#--<#import "macros_common_studies_and_summaries.ftl" as studyandsummaryCom>-->
+<#import "macros_docN.ftl" as docN>
 
 <#assign locale = "en" />
 <#assign sysDateTime = .now>
@@ -15,17 +16,13 @@
 
 <#assign ownerLegalEntity = iuclid.getDocumentForKey(_subject.OwnerLegalEntity) />
 
-<#assign docDtitle={"D1":"Intended uses supported in the EU for which data have been provided ",
-                    "D2":"List of currently authorized uses and extent of use",
-                    "D3":"Intended uses supported in the EU for which data will be provided "}/>
-
 <book version="5.0" xmlns="http://docbook.org/ns/docbook" xmlns:xi="http://www.w3.org/2001/XInclude">
     <#assign left_header_text = ''/>
     <#assign central_header_text = com.getReportSubject(rootDocument).name?html />
     <#assign right_header_text = ''/>
 
     <#assign left_footer_text = sysDateTime?string["dd/MM/yyyy"] + " - IUCLID 6 " + iuclid6Version!/>
-    <#assign central_footer_text = 'Documents D1/2 (GAP)' />
+    <#assign central_footer_text = 'Document N3 (Substance and metabolites)' />
     <#assign right_footer_text = ''/>
 
     <info>
@@ -36,12 +33,12 @@
 
             <para role="rule">
 
-                <#assign prodDocUrl=iuclid.webUrl.entityView(_subject.documentKey)/>
+            <#assign prodDocUrl=iuclid.webUrl.entityView(_subject.documentKey)/>
 
-                <@com.emptyLine/>
-                <ulink url="${prodDocUrl}">
-                <@com.text _subject.MixtureName/>
-                </ulink>
+            <@com.emptyLine/>
+            <ulink url="${prodDocUrl}">
+            <@com.text _subject.MixtureName/>
+            </ulink>
             </para>
         </title>
 
@@ -52,12 +49,12 @@
 
         <subtitle>
             <para role="align-right">
-                <para>Document D</para>
-                <para>Uses of the plant protection product</para>
+                <para>Document N3</para>
+                <para>Substance and metabolites: structure, codes, synonyms</para>
             </para>
-			 <@com.emptyLine/>
+            <@com.emptyLine/>
 
-			<para role="align-right">
+            <para role="align-right">
                 <para role="cover.i6subtext">
                     ${left_footer_text}
                 </para>
@@ -66,44 +63,17 @@
         <cover>
             <para role="align-right">
                 <!-- <para role="cover.i6subtext"> -->
-                    <!-- ${left_footer_text} -->
+                <!-- ${left_footer_text} -->
                 <!-- </para> -->
             </para>
         </cover>
         <@com.metadataBlock left_header_text central_header_text right_header_text left_footer_text central_footer_text right_footer_text />
     </info>
 
+
     <chapter>
-        <title role="HEAD-4">Document D1: ${docDtitle["D1"]} </title>
-
-        <#assign D1><@keyGap.GAPsummary _subject "D1"/></#assign>
-        <#if D1?has_content && D1?contains("Product")>
-            ${D1}
-        <#else>
-            <para>No data have been provided for the intended uses of this product.</para>
-        </#if>
-    </chapter>
-
-    <#assign D2><@keyGap.GAPsummary _subject "D2"/></#assign>
-    <chapter>
-        <title role="HEAD-4">Document D2: ${docDtitle["D2"]} </title>
-
-        <#if D2?has_content && D2?contains("Product")>
-            ${D2}
-        <#else>
-            <para>No authorised uses currently exist for this product.</para>
-        </#if>
-    </chapter>
-
-    <#assign D3><@keyGap.GAPsummary _subject "D3"/></#assign>
-    <chapter>
-        <title role="HEAD-4">Document D3: ${docDtitle["D3"]} </title>
-
-        <#if D3?has_content && D3?contains("Product")>
-            ${D2}
-        <#else>
-            <para>No intended uses for which data will be provided have been reported for this product.</para>
-        </#if>
+        <title role="HEAD-4">Substances and metabolites: structures, codes, synonyms</title>
+        <@docN.metabolitesList mixture=_subject/>
     </chapter>
 
 </book>

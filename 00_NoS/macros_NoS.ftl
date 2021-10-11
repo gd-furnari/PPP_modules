@@ -1,150 +1,240 @@
 <#--common macros/functions for NoS reports (PDF and CSV)-->
-<#macro endpointStudyRecords _subject>
-    <#--get docs for the main toc (substance or mixture)-->
-    <#local toc=iuclid.localizeTreeFor(_subject.documentType, _subject.submissionType, _subject.documentKey)/>
-    <#recurse toc/>
 
-    <#--if it's a mixture, iterate over the components/metabolites-->
-    <#if _subject.documentType=="MIXTURE">
-        <#--components-->
-        <#local comps=getComponents(_subject)/>
-        <#if comps?has_content>
-            <#list comps as comp>
-                <#local toc=iuclid.localizeTreeFor(comp.documentType, comp.submissionType, comp.documentKey)/>
-                <#recurse toc/>
-            </#list>
-        </#if>
+<#--
+    populateNoSstudyLists parses the table of contents of a _subject document (MIXTURE, SUBSTANCE) and performs
+    the actions defined in the "section_tree_node" macro below for each node.
+    In case of MIXTUREs, it also parses recursively parses the tocs of all their SUBSTANCE or MIXTURE
+    components as defined in the mixture composition documents and metabolites as defined in the metabolites document, and performs the same actions
+-->
+<#macro populateNoSstudyLists subject>
 
-        <#--metabolites datasets-->
-        <#local metabs=getMetabolites(_subject)/>
-        <#if metabs?has_content>
-            <#list metabs as metab>
-                <#local toc=iuclid.localizeTreeFor(metab.documentType, metab.submissionType, metab.documentKey)/>
-                <#recurse toc/>
-            </#list>
-        </#if>
-    </#if>
+    <#local products=[subject] + com.getOtherRepresentativeProducts(subject)/>
+    <#local components=[]/>
+    <#list products as prod>
+        <#local components=components + com.getComponents(prod)/>
+    </#list>
+    <#local metabolites=com.getMetabolites(subject)/>
+
+    <#--Remove duplicates-->
+    <#local allEntities = products/>
+    <#list components+metabolites as sub>
+        <#local allEntities=com.addDocumentToSequenceAsUnique(sub, allEntities)/>
+    </#list>
+
+    <#--Parse-->
+    <#list allEntities as entity>
+        <#local toc=iuclid.localizeTreeFor(entity.documentType, entity.submissionType, entity.documentKey)/>
+        <#recurse toc/>
+    </#list>
+
 </#macro>
 
+<#--
+    This macro is automatically applied by the #recurse function.
+
+    It loops through the documents on a node, and for each ENDPOINT_STUDY_RECORD
+    or any other documents specified in the variable 'otherDocs' (e.g. FLEXIBLE_RECORD.IntermediateEffects) it:
+    - extracts all the literature references
+    - appends each reference and the study where it is used into two different hashMaps depending on
+    the existence of a NoS ID
+    The path for the reference in the document is either the standard for ENDPOINT_STUDY_RECORDs, or must be
+    hardcoded in the "otherDocs" variable.
+-->
 <#macro "section_tree_node">
+
+    <#--NOTE: these other docs have all literature references, but most likely the only relevant is Intermediate Effects-->
+    <#local otherDocs = {"FLEXIBLE_RECORD.IntermediateEffects":"DataSource.Reference"
+<#--                        ,-->
+<#--                        "FLEXIBLE_RECORD.ProtectionMeasures":"AdditionalInformation.Reference",-->
+<#--                        "FLEXIBLE_SUMMARY.SummaryEvaluation_EU_PPP":"OtherReferencesIncludingSDS.References",-->
+<#--                        "FLEXIBLE_RECORD.LiteratureSearch":"RelevantStudies.LiteratureReference"-->
+    }/>
 
     <#local contents=(.node.content)!/>
 
     <#if contents?has_content>
         <#list contents as doc>
-            <#if doc.documentType=="ENDPOINT_STUDY_RECORD" && doc?has_content>
+            <#local docTypeSubtype>${doc.documentType}.${doc.documentSubType}</#local>
 
-                <#--option 1: just add row-->
-                <#--<@NoStableRow doc/>-->
+            <#if (doc.documentType=="ENDPOINT_STUDY_RECORD" || otherDocs?keys?seq_contains(docTypeSubtype)) && doc?has_content>
 
-                <#--option 2: check for NOS id and append to separate lists-->
-                <#local reference=getStudyReference(doc)/>
+                <#--get path-->
+                <#if otherDocs?keys?seq_contains(docTypeSubtype)>
+                    <#local refPath= "doc." + otherDocs[docTypeSubtype]>
+                    <#local refPath=refPath?eval/>
+                <#else>
+                    <#local refPath=doc.DataSource.Reference/>
+                </#if>
+
+                <#--check if document has a valid reference for NoS id, and retrieve it-->
+                <#local reference=getStudyReference(refPath)/>
 
                 <#if reference?has_content>
-                    <#local NoSid=getNoSid(reference)/>
+                    <#list reference as ref>
+                        <#--check for NoSid-->
+                        <#local NoSid=getNoSid(ref)/>
 
-                    <#if NoSid?has_content>
-                        <#assign NoSstudyList=com.addDocumentToSequenceAsUnique(doc, NoSstudyList)/>
-                    <#else>
-                        <#assign missingNoSstudyList=com.addDocumentToSequenceAsUnique(doc, missingNoSstudyList)/>
-                    </#if>
+                        <#if NoSid?has_content>
+                            <#assign NoSstudyList=addNosStudyAsUnique(ref, doc, NoSstudyList)/>
+                        <#else>
+                            <#-- only if type is study report-->
+                            <#local refType><@com.picklist ref.GeneralInfo.LiteratureType/></#local>
+                            <#if refType=="study report">
+                                <#assign missingNoSstudyList=addNosStudyAsUnique(ref, doc, missingNoSstudyList)/>
+                            </#if>
+                        </#if>
+                    </#list>
                 </#if>
             </#if>
+
         </#list>
     </#if>
 
     <#recurse/>
 </#macro>
 
+
+<#--
+    This macro appends a reference and a study into a pre-defined hashMap
+-->
+<#function addNosStudyAsUnique reference document hash>
+
+    <#local uuid = reference.documentKey.uuid/>
+
+    <#-- get section: to do, if needed-->
+    <#local section = "section"/>
+
+    <#-- if reference exists, add new document to its hash entry; else create a new entry-->
+    <#if hash?keys?seq_contains(uuid)>
+
+        <#local hashEntry = hash[uuid]/>
+        <#local docs = hashEntry['doc']/>
+        <#local sects = hashEntry['section']/>
+
+        <#-- avoid duplicates! only add document if it's not already present-->
+        <#local dup=false/>
+        <#list docs as doc>
+            <#if doc.documentKey==document.documentKey>
+                <#local dup=true>
+                <#break>
+            </#if>
+        </#list>
+        <#if !dup>
+            <#local sects = sects + [section]/>
+            <#local docs = docs + [document]/>
+        </#if>
+
+    <#else>
+
+        <#local docs=[document]/>
+        <#local sects=[section]/>
+
+    </#if>
+
+    <#local hashEntry = { uuid : {'reference': reference, 'section': sects, 'doc': docs}}/>
+    <#local hash = hash + hashEntry/>
+
+    <#return hash/>
+
+</#function>
+
+<#--
+    This macro extracts an NoS ID from a literature reference entity
+    Currently,an NoS id is identified in one of the following situations:
+    - there is an id provided under Other study identifiers and the id follows EFSA's format for NoS IDs
+    - there is an id provided under Other study identifiers and the remarks section indicates "NoS" (or similar)
+    This will change in the October 2021 release when a type of identifier is introduced in the lit ref.
+-->
 <#function getNoSid reference>
 
-    <#local NoSId=""/>
+    <#local NoSIds=[]/>
+<#--    <#if reference.GeneralInfo.StudyIdentifiers?has_content>-->
+<#--        <#list reference.GeneralInfo.StudyIdentifiers as studyId>-->
+<#--            <#if studyId.Remarks?matches(".*NOTIF.*STUD.*", "i") || studyId.Remarks?matches(".*NOS.*", "i") ||-->
+<#--                    studyId.StudyID?matches("EFSA-[0-9]{4}-[0-9]{8}")>-->
+<#--                <#local NoSId = studyId.StudyID/>-->
+<#--                <#if NoSId?has_content>-->
+<#--                    <#return NoSId>-->
+<#--                </#if>-->
+<#--            </#if>-->
+<#--        </#list>-->
+<#--    </#if>-->
     <#if reference.GeneralInfo.StudyIdentifiers?has_content>
         <#list reference.GeneralInfo.StudyIdentifiers as studyId>
-            <#if studyId.Remarks?matches(".*NOTIF.*STUD.*", "i") || studyId.Remarks?matches(".*NOS.*", "i")>
+            <#local idType><@com.picklist studyId.StudyIDType/></#local>
+			<#if idType=="Notification of Studies (NoS) ID">
                 <#local NoSId = studyId.StudyID/>
                 <#if NoSId?has_content>
-                    <#return NoSId>
+                    <#if !NoSIds?seq_contains(NoSId)>
+                        <#local NoSIds = NoSIds + [NoSId]/>
+                    </#if>
                 </#if>
             </#if>
         </#list>
     </#if>
 
-    <#return "">
+    <#if NoSIds?has_content>
+        <#return NoSIds?join("; ")/>
+    <#else>
+        <#return ""/>
+    </#if>
 </#function>
 
-<#function getStudyReference study>
+<#function getNoSidRemarks reference>
 
-    <#local reference=""/>
+    <#local remarks=[]/>
 
-    <#local referenceLinksList=study.DataSource.Reference/>
+    <#if reference.GeneralInfo.StudyIdentifiers?has_content>
+        <#list reference.GeneralInfo.StudyIdentifiers as studyId>
+            <#local idType><@com.picklist studyId.StudyIDType/></#local>
+			<#if idType=="Notification of Studies (NoS) ID">
+                <#local  remark><@com.text studyId.Remarks/></#local>
+                <#if remark?has_content>
+                    <#if !remarks?seq_contains(remark)>
+                        <#local remarks = remarks + [remark]/>
+                    </#if>
+                </#if>
+            </#if>
+        </#list>
+    </#if>
 
-    <#if referenceLinksList?has_content>
-    <#--        <#local referenceList = []/>-->
-        <#list referenceLinksList as referenceLink>
+    <#if remarks?has_content>
+        <#return remarks?join("; ")/>
+    <#else>
+        <#return ""/>
+    </#if>
+
+</#function>
+
+<#--
+    This macro extracts a list of all the literature references from a study,
+    provided a path to find the references.
+    No other criteria (type of lit ref, etc) are used for filtering at the moment.
+-->
+<#function getStudyReference referencePath>
+
+    <#local reference=[]/>
+
+    <#--    <#local referencePath=study.DataSource.Reference/>&ndash;&gt;-->
+
+    <#if referencePath?has_content>
+        <#list referencePath as referenceLink>
             <#local referenceEntry = iuclid.getDocumentForKey(referenceLink)/>
             <#local litType><@com.picklist referenceEntry.GeneralInfo.LiteratureType/></#local>
-            <#if litType=="study report">
-                <#local reference=referenceEntry/>
-                <#break>
-            </#if>
-        <#--            <#local referenceList = referenceList + [reference] />-->
+            <#--            <#if litType=="study report">-->
+            <#local reference= reference + [referenceEntry]/>
+            <#--                <#break>-->
+            <#--            </#if>-->
         </#list>
-    <#--        <#local referenceList = iuclid.sortByField(referenceList, "GeneralInfo.LiteratureType", ["study report", "other company data", "publication", "review article or handbook", "other:"]) />-->
     <#--        <#local reference = referenceList[0]/>-->
     </#if>
 
     <#return reference>
 </#function>
 
-<#function getComponents mixture type="">
-
-    <#local componentsList = [] />
-
-    <#local compositionList = iuclid.getSectionDocumentsForParentKey(mixture.documentKey, "FLEXIBLE_RECORD", "MixtureComposition") />
-
-    <#list compositionList as composition>
-        <#local componentList = composition.Components.Components />
-        <#list componentList as component>
-            <#if component.Reference?has_content>
-                <#if type=="" || isComponentType(component, type)>
-                    <#local substance = iuclid.getDocumentForKey(component.Reference)/>
-                    <#if substance?has_content && substance.documentType=="SUBSTANCE">
-                        <#local componentsList = com.addDocumentToSequenceAsUnique(substance, componentsList)/>
-                    </#if>
-                </#if>
-            </#if>
-        </#list>
-    </#list>
-
-    <#return componentsList />
-</#function>
-
-<#function isComponentType component type>
-    <#return component.Function?has_content && com.picklistValueMatchesPhrases(component.Function, [type]) />
-</#function>
-
-<#function getMetabolites mixture>
-
-    <#local metabolitesList = [] />
-
-    <#local compositionList = iuclid.getSectionDocumentsForParentKey(mixture.documentKey, "FLEXIBLE_SUMMARY", "Metabolites") />
-
-    <#list compositionList as composition>
-        <#local metaboliteList = composition.ListMetabolites.Metabolites />
-        <#list metaboliteList as metabolite>
-            <#if metabolite.LinkMetaboliteDataset?has_content>
-                <#local substance = iuclid.getDocumentForKey(metabolite.LinkMetaboliteDataset)/>
-                <#if substance?has_content && substance.documentType=="SUBSTANCE">
-                    <#local metabolitesList = com.addDocumentToSequenceAsUnique(substance, metabolitesList)/>
-                </#if>
-            </#if>
-        </#list>
-    </#list>
-
-    <#return metabolitesList />
-</#function>
-
+<#--
+    This macro extracts a list of all synonyms of a reference substance
+-->
 <#function getSynonyms referenceSubstanceID>
     <#local synonymsList=[]>
     <#if referenceSubstanceID?has_content && referenceSubstanceID.Synonyms.Synonyms?has_content>
@@ -152,9 +242,9 @@
             <#if synonyms?has_content>
                 <#local syn>
                     <#compress>
-                        <#if synonyms.Identifier?has_content><@com.picklist synonyms.Identifier/>:</#if>
+                        <#if synonyms.Identifier?has_content><@com.picklist synonyms.Identifier/>: </#if>
                         <#if synonyms.Name?has_content><@com.text synonyms.Name/></#if>
-                        <#if synonyms.Remarks?has_content> (<@com.text synonyms.Remarks/>)</#if>
+<#--                        <#if synonyms.Remarks?has_content> (<@com.text synonyms.Remarks/>)</#if>-->
                     </#compress>
                 </#local>
                 <#local synonymsList=synonymsList+[syn]/>

@@ -273,7 +273,7 @@ Please run Report Generator from a dossier.
                     <#if name.Country?has_content>
                         in <@com.picklistMultiple name.Country/>
                     </#if>
-                <#if name.Remarks?has_content>(<@com.text name.Remaks/>)</#if>
+                <#if name.hasElement("Remarks") && name.Remarks?has_content>(<@com.text name.Remarks/>) </#if>
                 <#if name_has_next>; </#if>
             </#list>
         </#if>
