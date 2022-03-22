@@ -1,4 +1,4 @@
-<#--common macros/functions for NoS reports (PDF and CSV)-->
+<#--common macros/functions for NoS reports (PDF and CSV) - for internal use -->
 
 <#--
     populateNoSstudyHashes parses the table of contents of a _subject document (MIXTURE, SUBSTANCE) and performs
@@ -37,6 +37,7 @@
     - extracts all the literature references
     - appends each reference and the study where it is used into two different hashMaps depending on
     the existence of a NoS ID
+    
     The path for the reference in the document is either the standard for ENDPOINT_STUDY_RECORDs, or must be
     hardcoded in the "otherDocs" variable.
 -->
@@ -47,7 +48,7 @@
     						"ENDPOINT_SUMMARY.AnalyticalProfileOfBatches":["AdministrativeDataSummary.BatchAnalysis"], <#-- this is a list! -->
 	                        "FLEXIBLE_RECORD.ProtectionMeasures":["AdditionalInformation.Reference"],
                         	"FLEXIBLE_SUMMARY.SummaryEvaluation_EU_PPP":["OtherReferencesIncludingSDS.References"],
-                        	"FLEXIBLE_RECORD.LiteratureSearch":["RelevantStudies.LiteratureReference"] <#--  also in EvaluationOfTheReview.ExcludedPublications as rep block, but should never be a study-->,
+                        	"FLEXIBLE_RECORD.LiteratureSearch":["RelevantStudies.LiteratureReference"] <#--  also in EvaluationOfTheReview.ExcludedPublications as rep block-->,
                         	"FLEXIBLE_RECORD.BioPropertiesMicro":
                         		["BiologicalPropertiesOfTheMicroorganism.GeneralInformationOnTheMicroorganism.Reference",
                         		"BiologicalPropertiesOfTheMicroorganism.GeneralInformationOnTheMicroorganism.HistoricalBackground.Reference",
@@ -96,13 +97,13 @@
                     <#local refPaths=[doc.DataSource.Reference]/>
                 </#if>
 
-                <#--check if document has a valid reference for NoS id, and retrieve it-->
+                <#--check if document has a valid reference for NoS id (year limit can be included, currently 0), and retrieve it-->
                 <#list refPaths as refPath>
-	                <#local reference=getStudyReference(refPath)/>
+	                <#local reference=getStudyReference(refPath, 0)/>
 	
 	                <#if reference?has_content>
 	                    <#list reference as ref>
-	                       <#--check for NoSid based on specific criteria defined in macro-->
+	                        <#--check for NoSid based on specific criteria defined in macro-->
 	                        <#local NoSid=getNoSid(ref)/>
 							
 							<#-- if NoS ID exists, append to list  -->
@@ -130,6 +131,7 @@
 
     <#recurse/>
 </#macro>
+
 
 <#--
     This macro appends a reference and a study into a pre-defined hashMap
@@ -177,32 +179,50 @@
 
 <#--
     This macro extracts an NoS ID from a literature reference entity
-    A NoS id is identified if entries under Other study identifiers have type "Notification of Studies (NoS) ID"
-    and id matches exactly the format for EFSA NoS id
+    A NoS id is identified if: 
+    	- Entries under Other study identifiers have value CONTAINING the format "EFSA-YYYY-NNNNNNNN" OR
+    	- Year is >= 2021 (if exists) AND 
+	    	- entries under Other study identifiers have type "Notification of Studies (NoS) ID" OR have remarks like "NoS ID" and value is not empty AND
+	    	- the id contains some 8 digits
+	    	
 -->
 <#function getNoSid reference exactMatch=true>
 
     <#local NoSIds=[]/>
 
     <#if reference.GeneralInfo.StudyIdentifiers?has_content>
+    
+    	<#-- get Literature year -->
+    	<#local litYear=getRefYear(reference)/>
+    
+        <#-- iterate through identifiers and get NoS ID if present -->
         <#list reference.GeneralInfo.StudyIdentifiers as studyId>
             <#local idType><@com.picklist studyId.StudyIDType/></#local>
             <#local idValue><@com.text studyId.StudyID/></#local>
+            <#local remark><@com.text studyId.Remarks/></#local>
 
             <#if idValue?has_content>
-				<#if idType=="Notification of Studies (NoS) ID">
-					<#if exactMatch>
-						<#if idValue?matches(".*EFSA-[0-9]{4}-[0-9]{8}.*", "r")>
-		                    <#if !NoSIds?seq_contains(idValue)>
-		                        <#local NoSIds = NoSIds + [idValue]/>
-		                    </#if>
-		                </#if>
-	                <#else>
-	                	<#if !NoSIds?seq_contains(idValue)>
+            	<#if exactMatch>
+	            	<#if idValue?matches(".*EFSA-[0-9]{4}-[0-9]{8}.*", "r") ||
+	            	
+		            	(	((!litYear?has_content) || (litYear >= 2021)) && 
+							
+							(idType=="Notification of Studies (NoS) ID" || remark?matches(".*NOTIF.*STUD.*", "i") || remark?matches(".*NOS.*ID", "i")) &&
+							
+							idValue?matches(".*[0-9]{8}.*", "r")
+						)>
+						
+	                    <#if !NoSIds?seq_contains(idValue)>
 	                        <#local NoSIds = NoSIds + [idValue]/>
 	                    </#if>
-	                </#if>
-                </#if>
+	                 </#if>
+                <#else>    
+                    <#if idType=="Notification of Studies (NoS) ID" || remark?matches(".*NOTIF.*STUD.*", "i") || remark?matches(".*NOS.*ID", "i")>
+                    	<#if !NoSIds?seq_contains(idValue)>
+	                        <#local NoSIds = NoSIds + [idValue]/>
+	                    </#if>
+	                </#if>           
+                </#if>   
             </#if>
         </#list>
     </#if>
@@ -214,21 +234,35 @@
     </#if>
 </#function>
 
-<#function getNoSidRemarks reference>
+<#--
+    This macro extracts relevant remarks for Notification of Studies from a literature reference entity
+    A remark is identified at least one of the following is true:
+	    	- entries under Other study identifiers have type "Notification of Studies (NoS) ID"
+	    	- entries under Other study identifiers have value CONTAINING the format "EFSA-YYYY-NNNNNNNN" OR
+	    	- entries under Other study identifiers have remarks like "NoS ID" and value is not empty.
+-->
+<#function getNoSidRemarks reference >
 
     <#local remarks=[]/>
 
     <#if reference.GeneralInfo.StudyIdentifiers?has_content>
+        
         <#list reference.GeneralInfo.StudyIdentifiers as studyId>
             <#local idType><@com.picklist studyId.StudyIDType/></#local>
-            
-			<#if idType=="Notification of Studies (NoS) ID">
-                <#local remark><@com.text studyId.Remarks/></#local>
-
-                <#if remark?has_content>
+            <#local idValue><@com.text studyId.StudyID/></#local>
+			<#local remark><@com.text studyId.Remarks/></#local>
+			<#if remark?has_content>
+			
+				<#if (idType=="Notification of Studies (NoS) ID" || 
+						idValue?matches(".*EFSA-[0-9]{4}-[0-9]{8}.*", 'r') ||
+						remark?matches(".*NOTIF.*STUD.*", "i") || 
+						remark?matches(".*NOS.*ID", "i")
+				)>
+		
                     <#if !remarks?seq_contains(remark)>
                         <#local remarks = remarks + [remark]/>
                     </#if>
+                    
                 </#if>
             </#if>
         </#list>
@@ -245,18 +279,22 @@
 <#--
     This macro extracts a list of all the literature references from a study,
     provided a path to find the references.
-    No other criteria (type of lit ref, etc) are used for filtering at the moment.
+    A year filter can be included e.g. 2021
 -->
-<#function getStudyReference referencePath>
+<#function getStudyReference referencePath year=2021>
 
     <#local reference=[]/>
-
 
     <#if referencePath?has_content>
         <#list referencePath as referenceLink>
             <#local referenceEntry = iuclid.getDocumentForKey(referenceLink)/>
-            <#local reference= reference + [referenceEntry]/>
             
+            <#if referenceEntry?has_content>
+            	<#local litYear=getRefYear(referenceEntry)/>
+            	<#if (!litYear?has_content) || (litYear >= year)> 
+            		<#local reference= reference + [referenceEntry]/>
+            	</#if>
+            </#if>
         </#list>
     </#if>
 

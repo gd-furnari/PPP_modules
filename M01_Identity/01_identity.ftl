@@ -1,37 +1,36 @@
-<#if workingContext!="MRL">
-    <sect1>
-        <title role="HEAD-2">Applicant</title>
-        <@keyAdm.applicant _subject/>
-    </sect1>
 
-    <?hard-pagebreak?>
+<sect1>
+    <title role="HEAD-2">Applicant</title>
+    <@keyAdm.applicant _subject/>
+</sect1>
 
-    <sect1>
-        <title role="HEAD-2">
-            <#if _subject.documentType=="MIXTURE">
-                <#if workingContext=="MICRO">
-                    Manufacturer of the preparation and the micro-organism(s)
-                <#else>
-                    Producer of the plant protection product and the active substances
-                </#if>
+<?hard-pagebreak?>
+
+<sect1>
+    <title role="HEAD-2">
+        <#if _subject.documentType=="MIXTURE">
+            <#if workingContext=="MICRO">
+                Manufacturer of the preparation and the micro-organism(s)
             <#else>
-                Producer
+                Producer of the plant protection product and the active substances
             </#if>
-        </title>
+        <#else>
+            Producer
+        </#if>
+    </title>
 
-        <sect2>
-            <title role="HEAD-3">Producer(s)</title>
-            <@keyAdm.producer _subject/>
-        </sect2>
+    <sect2>
+        <title role="HEAD-3">Producer(s)</title>
+        <@keyAdm.producer _subject/>
+    </sect2>
 
-        <sect2>
-            <title role="HEAD-3">Manufacturing plant(s)</title>
-            <@keyAdm.manufacturingPlant _subject/>
-        </sect2>
-    </sect1>
+    <sect2>
+        <title role="HEAD-3">Manufacturing plant(s)</title>
+        <@keyAdm.manufacturingPlant _subject/>
+    </sect2>
+</sect1>
 
-    <?hard-pagebreak?>
-</#if>
+<?hard-pagebreak?>
 
 <#if _subject.documentType=="MIXTURE">
 
@@ -109,26 +108,6 @@
             <@keyComp.batchAnalysisSummary _subject/>
         </sect1>
 
-    <#elseif workingContext=="MRL">
-
-        <sect1>
-            <title role="HEAD-2">Names, identifiers and molecular information of the active substance</title>
-            <@keySub.substanceIdentity  _subject/>
-        </sect1>
-
-        <?hard-pagebreak?>
-
-        <sect1>
-            <title role="HEAD-2">Method of manufacture (synthesis pathway) of the active substance</title>
-            <@keyAdm.manufacturer _subject/>
-        </sect1>
-
-        <?hard-pagebreak?>
-
-        <sect1>
-            <title role="HEAD-2">Specification of purity of the active substance, additives and impurities</title>
-            <@keyComp.substanceComposition _subject false/>
-        </sect1>
-
     </#if>
+        
 </#if>

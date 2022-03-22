@@ -89,7 +89,7 @@
             <para role="rule"/>
 
             <@com.emptyLine/>
-            <ulink url="${docUrl}">${_subject.ChemicalName}</ulink>
+            <ulink url="${docUrl}"><@com.text _subject.ChemicalName/></ulink>
 
         </title>
 

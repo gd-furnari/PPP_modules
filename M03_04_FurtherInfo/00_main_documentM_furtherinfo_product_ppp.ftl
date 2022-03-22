@@ -6,6 +6,7 @@
 <#import "macros_common_general.ftl" as com>
 <#import "macros_common_studies_and_summaries.ftl" as studyandsummaryCom>
 <#import "common_module_administrative_information.ftl" as keyAdm/>
+<#import "macros_gap.ftl" as keyGap/>
 
 <#assign locale = "en" />
 <#assign sysDateTime = .now>

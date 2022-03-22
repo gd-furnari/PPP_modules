@@ -25,7 +25,6 @@
 <#-- it's only for chemical PPPP -->
 <#assign sectionNb="10"/>
 <#assign docFullName="Classification and labelling"/>
-<#assign entName><@com.text _subject.MixtureName/></#assign>
 <#assign docName="CA"/>
 <#if _subject.submissionType?has_content>
     <#if !(_subject.submissionType?matches(".*MICRO.*", "i") || _subject.submissionType?matches(".*MAXIM.*", "i")) >
@@ -80,7 +79,7 @@
             <para role="rule"/>
 
             <@com.emptyLine/>
-            <ulink url="${docUrl}">${entName}</ulink>
+            <ulink url="${docUrl}"><@com.text _subject.ChemicalName/></ulink>
 
         </title>
 

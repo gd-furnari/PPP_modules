@@ -23,7 +23,6 @@
 <#-- it's only for chemical PPPP -->
 <#assign sectionNb="9"/>
 <#assign docFullName="Literature data"/>
-<#assign entName><@com.text _subject.MixtureName/></#assign>
 <#if _subject.submissionType?has_content>
     <#if _subject.submissionType?matches(".*MICRO.*", "i")>
         <#assign workingContext="MICRO"/>
@@ -84,7 +83,7 @@
             <para role="rule"/>
 
             <@com.emptyLine/>
-            <ulink url="${docUrl}">${entName}</ulink>
+            <ulink url="${docUrl}"><@com.text _subject.ChemicalName/></ulink>
 
         </title>
 

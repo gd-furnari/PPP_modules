@@ -17,7 +17,6 @@
                                                             "type" : "picklist"}]
 }/>
 
-<#--This is always for the substance-->
 <#if workingContext=="CHEM">
 
     <@keyRes.residuesSummary _subject "ResiduesInFoodAndFeedingstuffs" />
@@ -36,15 +35,21 @@
 
         <sect2 xml:id="CA621">
             <title role="HEAD-3">Plants</title>
-            <@keyRes.residuesSummary subject=_subject docSubType="MetabolismPlants" selection=["PrimaryCrops"]/>
-            <@com.emptyLine/>
-            <@keyAppendixE.appendixEstudies _subject "MetabolismInCrops" residuesContext["metabolismPlants"] "metabolism of residues in plants"/>
+            <#-- <@keyRes.residuesSummary subject=_subject docSubType="MetabolismPlants" selection=["PrimaryCrops"]/> -->
+            <#-- <@com.emptyLine/> -->
+            <#-- <@keyAppendixE.appendixEstudies _subject "MetabolismInCrops" residuesContext["metabolismPlants"] "metabolism of residues in plants"/> -->
+            <@keyRes.residuesSummary subject=_subject docSubType="MetabolismPlants"/>
+            <sect3>
+                <title role="HEAD-4">Primary crops</title>
+                <@keyAppendixE.appendixEstudies _subject "MetabolismInCrops" residuesContext["metabolismPlants"] "metabolism of residues in primary crops" "" true/>
+	        </sect3>
+	
+            <sect3  xml:id="CA6212">
+                <title role="HEAD-4">Rotational crops</title>
+                <@keyAppendixE.appendixEstudies _subject "MetabolismInCrops" residuesContext["metabolismRotationalCrops"] "metabolism of residues in rotational crops" "" true/>
+            </sect3>
         </sect2>
 
-        <#-- NOTE: for all these sections there is just one document, which we could separate by
-             MaterialsAndMethods.TestAnimals.GeneralTestAnimalInformation.Species e.g. IN ("hen") but there is also possibility to write "other"
-             so it would be risky. Probably best is to merge, as follows:
-        -->
         <sect2>
             <title role="HEAD-3">Livestock (poultry, lactating ruminants, pigs, fish)</title>
             <@keyRes.residuesSummary _subject "MetabolismInLivestock" />
@@ -58,9 +63,19 @@
 
     <sect1 xml:id="CA63">
         <title role="HEAD-2">Magnitude of residue trials in plants</title>
-            <@keyRes.residuesSummary subject=_subject docSubType="MagnitudeResiduesPlants" selection="residues in crops"/>
+            <#-- <@keyRes.residuesSummary subject=_subject docSubType="MagnitudeResiduesPlants" selection="residues in crops"/>
             <@com.emptyLine/>
-            <@keyAppendixE.appendixEstudies _subject "ResiduesInRotationalCrops" residuesContext["magnitudePlants"] "magnitude of residues in plants"/>
+            <@keyAppendixE.appendixEstudies _subject "ResiduesInRotationalCrops" residuesContext["magnitudePlants"] "magnitude of residues in plants"/> -->
+            <@keyRes.residuesSummary subject=_subject docSubType="MagnitudeResiduesPlants"/>
+			<sect2>
+	             <title role="HEAD-4">Primary crops</title>
+	             <@keyAppendixE.appendixEstudies _subject "ResiduesInRotationalCrops" residuesContext["magnitudePlants"] "magnitude of residues in primary crops" "" true _studies _waivers/>
+	        </sect2>
+	
+            <sect2  xml:id="CA632">
+                <title role="HEAD-4">Rotational crops</title>
+                <@keyAppendixE.appendixEstudies _subject "ResiduesInRotationalCrops" residuesContext["magnitudeRotationalCrops"] "magnitude of residues in rotational crops" "" true _studies _waivers/>
+            </sect2>
     </sect1>
 
     <?hard-pagebreak?>
@@ -70,7 +85,6 @@
         <#--NOTE: new flexible summary in IUCLID 6.6-->
         <@keyRes.residuesSummary _subject "ResiduesInLivestock" />
 
-        <#-- NOTE: happens the same than with metabolism-->
         <sect2>
             <title role="HEAD-3">Livestock (poultry, ruminants, pigs, fish)</title>
             <@keyAppendixE.appendixEstudies _subject "ResiduesInLivestock" "" "residues in livestock including fish"/>
@@ -94,7 +108,9 @@
             <#-- Summary is repeated: ENDPOINT_SUMMARY.MagnitudeResiduesPlants -->
             <#--            <@keyAppendixE.appendixEstudies _subject "ResiduesInRotationalCrops" residuesContext["magnitudePeelPulp"] "residues in inedible peel and pulp"/>-->
             <#-- NOTE: this context is wrong (it's a repeatable block etc). Check if this is regardless of type of endpoint (crops vs rotational crops); if not then add and remove this condition from general case-->
+           <@com.emptyLine/>
            <para>Studies on the distribution of residues in inedible peel and pulp are provided in <command  linkend="CA63">Section 6.3</command>.</para>
+           <@com.emptyLine/>
 
         </sect2>
 
@@ -111,17 +127,26 @@
 
         <sect2>
             <title role="HEAD-3">Metabolism in rotational crops</title>
+            <@com.emptyLine/>
+           	<para>Summaries and studies on the metabolism of residues in rotational crops are provided in <command  linkend="CA621">Section 6.2.1</command> and <command  linkend="CA6212">Section 6.2.1.2</command>, respectively.</para>
+           	<@com.emptyLine/>
+            <#--  
             <@keyRes.residuesSummary subject=_subject docSubType="MetabolismPlants" selection=["RotationalCrops"]/>
             <@com.emptyLine/>
             <@keyAppendixE.appendixEstudies _subject "MetabolismInCrops" residuesContext["metabolismRotationalCrops"] "metabolism of residues in rotational crops"/>
+            -->
         </sect2>
 
         <sect2>
             <title role="HEAD-3">Magnitude of residues in rotational crops</title>
+            <@com.emptyLine/>
+           	<para>Summaries and studies on the magnitude of residues in rotational crops are provided in <command  linkend="CA63">Section 6.3</command> and <command  linkend="CA632">Section 6.3.2</command>, respectively.</para>
+           	<@com.emptyLine/>
+           	<#-- 
             <@keyRes.residuesSummary subject=_subject docSubType="MagnitudeResiduesPlants" selection="rotational crops"/>
             <@com.emptyLine/>
             <@keyAppendixE.appendixEstudies _subject "ResiduesInRotationalCrops" residuesContext["magnitudeRotationalCrops"]
-                "magnitude of residues in rotational crops"/>
+                "magnitude of residues in rotational crops"/> -->
         </sect2>
     </sect1>
 
@@ -158,9 +183,9 @@
     <sect1>
         <title role="HEAD-2">Estimation of the potential and actual exposure through diet and other sources</title>
         <@keyRes.residuesSummary _subject "ExpectedExposure" />
-<#--        NOTE: out in IUCLID 6.6-->
-<#--        <@com.emptyLine/>-->
-<#--        <@keyAppendixE.appendixEstudies _subject "ExpectedExposureAndProposedAcceptableResidues"/>-->
+		<#--        NOTE: out in IUCLID 6.6-->
+		<#--        <@com.emptyLine/>-->
+		<#--        <@keyAppendixE.appendixEstudies _subject "ExpectedExposureAndProposedAcceptableResidues"/>-->
     </sect1>
 
     <?hard-pagebreak?>
@@ -175,150 +200,15 @@
             <@keyAppendixE.appendixEstudies _subject "ResiduesProcessedCommodities" "" "residue levels in pollen and bee products"/>
         </sect2>
 
-        <#-- NEW section -->
-        <#assign otherStudies>
-            <@keyRes.residuesSummary _subject "AdditionalInformationOnResiduesInFoodAndFeedingstuffs" />
-            <@com.emptyLine/>
-            <@keyAppendixE.appendixEstudies _subject "AdditionalInfoOnResiduesInFood"/>
-        </#assign>
-        <#if otherStudies?has_content && (!(otherStudies?contains("No relevant individual")) || otherStudies?contains("Summary"))>
+		<#if keyAppendixE.containsDoc(_subject, ["ENDPOINT_SUMMARY.AdditionalInformationOnResiduesInFoodAndFeedingstuffs",
+	        										"ENDPOINT_STUDY_RECORD.AdditionalInfoOnResiduesInFood"])>
             <sect2>
                 <title role="HEAD-3">Additional information on residues in food and feedingstuffs</title>
-                ${otherStudies}
+                <@keyRes.residuesSummary _subject "AdditionalInformationOnResiduesInFoodAndFeedingstuffs" />
+	            <@com.emptyLine/>
+	            <@keyAppendixE.appendixEstudies _subject "AdditionalInfoOnResiduesInFood"/>
             </sect2>
-        </#if>
-
-        <#-- NEW section: does not exist in requirements. Out in IUCLID 6.6-->
-<#--        <#assign migrationResidues>-->
-<#--            <@keyRes.residuesSummary _subject "MigrationOfResiduesIntoAndTheirBehaviourOnFoodOrFeedingstuffs" />-->
-<#--            <@com.emptyLine/>-->
-<#--            <@keyAppendixE.appendixEstudies _subject "MigrationOfResidues" "" "migration of residues"/>-->
-<#--        </#assign>-->
-<#--        <#if migrationResidues?has_content && (!(migrationResidues?contains("No relevant individual")) || migrationResidues?contains("Summary"))>-->
-<#--            <sect2>-->
-<#--                <title role="HEAD-3">Migration of residues into and their behaviour on food or feeding stuffs</title>-->
-<#--                ${migrationResidues}-->
-<#--            </sect2>-->
-<#--        </#if>-->
-    </sect1>
-
-<#elseif workingContext=="MRL">
-
-    <@keyRes.residuesSummary _subject "ResiduesInFoodAndFeedingstuffs" />
-
-    <sect1>
-        <title role="HEAD-2">Storage stability of residues</title>
-        <@keyRes.residuesSummary _subject "StabilityResiduesCommodities" />
-        <@com.emptyLine/>
-        <@keyAppendixE.appendixEstudies _subject "StabilityOfResiduesInStoredCommod" "" "storage stability of residues"/>
-    </sect1>
-
-    <?hard-pagebreak?>
-
-    <sect1>
-        <title role="HEAD-2">Nature and magnitude of residues in plants</title>
-
-        <sect2>
-            <title role="HEAD-3">Primary crops</title>
-
-            <sect3>
-                <title role="HEAD-4">Nature of residues (metabolism studies)</title>
-                <@keyRes.residuesSummary subject=_subject docSubType="MetabolismPlants" selection=["PrimaryCrops"]/>
-                <@com.emptyLine/>
-                <@keyAppendixE.appendixEstudies _subject "MetabolismInCrops" residuesContext["metabolismPlants"] "metabolism of residues in plants"/>
-            </sect3>
-
-            <sect3>
-                <title role="HEAD-4">Magnitude of residues (residue trials)</title>
-                <@keyRes.residuesSummary subject=_subject docSubType="MagnitudeResiduesPlants" selection="residues in crops"/>
-                <@com.emptyLine/>
-                <@keyAppendixE.appendixEstudies _subject "ResiduesInRotationalCrops" residuesContext["magnitudePlants"] "magnitude of residues in plants"/>
-            </sect3>
-        </sect2>
-
-        <sect2>
-            <title role="HEAD-3">Rotational crops</title>
-            <sect3>
-                <title role="HEAD-4">Nature of residues (metabolism studies)</title>
-                <@keyRes.residuesSummary subject=_subject docSubType="MetabolismPlants" selection=["RotationalCrops"]/>
-                <@com.emptyLine/>
-                <@keyAppendixE.appendixEstudies _subject "MetabolismInCrops" residuesContext["metabolismRotationalCrops"] "metabolism of residues in rotational crops"/>
-            </sect3>
-
-            <sect3>
-                <title role="HEAD-4">Magnitude of residues (rotational field trials)</title>
-                <@keyRes.residuesSummary subject=_subject docSubType="MagnitudeResiduesPlants" selection="rotational crops"/>
-                <@com.emptyLine/>
-                <@keyAppendixE.appendixEstudies _subject "ResiduesInRotationalCrops" residuesContext["magnitudeRotationalCrops"]
-                    "magnitude of residues in rotational crops"/>
-            </sect3>
-
-        </sect2>
-    </sect1>
-
-    <?hard-pagebreak?>
-
-    <sect1>
-        <title role="HEAD-2">Nature and magnitude of residues in livestock</title>
-
-        <sect2>
-            <title role="HEAD-3">Nature of residues (metabolism studies)</title>
-            <@keyRes.residuesSummary _subject "MetabolismInLivestock" />
-            <@com.emptyLine/>
-            <@keyAppendixE.appendixEstudies _subject "MetabolismInLivestock" "" "metabolism of residues in livestock including fish"/>
-        </sect2>
-
-        <sect2>
-            <title role="HEAD-2">Feeding studies</title>
-            <@keyRes.residuesSummary _subject "ResiduesInLivestock" />
-            <@com.emptyLine/>
-            <@keyAppendixE.appendixEstudies _subject "ResiduesInLivestock" "" "residues in livestock including fish"/>
-        </sect2>
-
-    </sect1>
-
-    <?hard-pagebreak?>
-
-     <sect1>
-        <title role="HEAD-2">Effects of processing</title>
-        <@keyRes.residuesSummary _subject "NatureMagnitudeResiduesProcessedCommodities" />
-
-        <sect2>
-            <title role="HEAD-3">Nature of residues</title>
-            <@keyAppendixE.appendixEstudies _subject "NatureResiduesInProcessedCommod" "" "nature of the residues"/>
-        </sect2>
-
-        <sect2>
-            <title role="HEAD-3">Magnitude of residues</title>
-            <@keyAppendixE.appendixEstudies _subject "MagnitudeResidInProcessedComm" "" "magnitude of residues in processed commodities"/>
-        </sect2>
-
-    </sect1>
-
-    <?hard-pagebreak?>
-
-    <sect1>
-        <title role="HEAD-2">Other studies</title>
-
-        <sect2>
-            <title role="HEAD-3">Residue level in pollen and bee products</title>
-            <@keyRes.residuesSummary _subject "SupplementaryStudies" />
-            <@com.emptyLine/>
-            <@keyAppendixE.appendixEstudies _subject "ResiduesProcessedCommodities" "" "residue levels in pollen and bee products"/>
-        </sect2>
-
-        <#-- NEW section -->
-        <#assign otherStudies>
-            <@keyRes.residuesSummary _subject "AdditionalInformationOnResiduesInFoodAndFeedingstuffs" />
-            <@com.emptyLine/>
-            <@keyAppendixE.appendixEstudies _subject "AdditionalInfoOnResiduesInFood"/>
-        </#assign>
-        <#if otherStudies?has_content && (!(otherStudies?contains("No relevant individual")) || otherStudies?contains("Summary"))>
-            <sect2>
-                <title role="HEAD-3">Additional information on residues in food and feedingstuffs</title>
-                ${otherStudies}
-            </sect2>
-        </#if>
+         </#if>
     </sect1>
 
 <#elseif workingContext=="MICRO">
@@ -336,14 +226,23 @@
     <sect1>
         <title role="HEAD-2">Further information required</title>
 
-        <sect2  label="1-2">
+        <sect2>
             <title role="HEAD-3">Viable and non-viable residues</title>
-            <#-- NOTE: this section cannot be split as of now between viable and non-viable; could be split between residues and magnitude-->
-            <@keyRes.residuesSummary _subject "MagnitudeResiduesPlants"/>
-            <@keyRes.residuesSummary _subject "NatureMagnitudeResiduesProcessedCommodities"/>
-            <@com.emptyLine/>
-            <@keyAppendixE.appendixEstudies subject=_subject docSubTypes=["ResiduesInRotationalCrops","MagnitudeResidInProcessedComm"]
-                name="viable and non-viable residues in rotational crops and/or processed commodities" />
+            <#-- NOTE: this section cannot be split as of now between viable and non-viable; but can be split between residues and magnitude-->
+            
+            <sect3>
+            	 <title role="HEAD-3">Magnitude of residues in plants</title>
+        		<@keyRes.residuesSummary _subject "MagnitudeResiduesPlants"/>
+	            <@com.emptyLine/>
+	            <@keyAppendixE.appendixEstudies subject=_subject docSubTypes="ResiduesInRotationalCrops" name="magnitude of viable and non-viable residues in plants" />
+            </sect3>
+            
+            <sect3>
+            	 <title role="HEAD-3">Magnitude of residues in processed commodities</title>
+        		<@keyRes.residuesSummary _subject "NatureMagnitudeResiduesProcessedCommodities"/>
+	            <@com.emptyLine/>
+	            <@keyAppendixE.appendixEstudies subject=_subject docSubTypes="MagnitudeResidInProcessedComm" name="magnitude of viable and non-viable residues in processed commodities" />
+            </sect3>
         </sect2>
 
         <#--        <sect2>-->
@@ -354,16 +253,13 @@
         <#--            <title role="HEAD-3">Viable residues</title>-->
         <#--        </sect2>-->
 
-        <#-- NEW section -->
-        <#assign otherStudies>
-            <@keyRes.residuesSummary _subject "AdditionalInformationOnResiduesInFoodAndFeedingstuffs" />
-            <@com.emptyLine/>
-            <@keyAppendixE.appendixEstudies _subject "AdditionalInfoOnResiduesInFood"/>
-        </#assign>
-        <#if otherStudies?has_content && (!(otherStudies?contains("No relevant individual")) || otherStudies?contains("Summary"))>
+		<#if keyAppendixE.containsDoc(_subject, ["ENDPOINT_SUMMARY.AdditionalInformationOnResiduesInFoodAndFeedingstuffs",
+	        										"ENDPOINT_STUDY_RECORD.AdditionalInfoOnResiduesInFood"])>
             <sect2>
                 <title role="HEAD-3">Additional information on residues in food and feedingstuffs</title>
-                ${otherStudies}
+                <@keyRes.residuesSummary _subject "AdditionalInformationOnResiduesInFoodAndFeedingstuffs" />
+	            <@com.emptyLine/>
+	            <@keyAppendixE.appendixEstudies _subject "AdditionalInfoOnResiduesInFood"/>
             </sect2>
         </#if>
 

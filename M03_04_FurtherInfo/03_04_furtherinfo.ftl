@@ -19,23 +19,38 @@
 
         <?hard-pagebreak?>
 
-        <sect1 label="MP 4.2, 4.4-4.6">
+        <sect1 label="MP 4.2, 4.4 - 4.6">
             <title role="HEAD-2">Recommended methods, precautions, emergency measures and procedures for cleaning application equipment and destruction or decontamination of the plant protection product and its packaging</title>
             <@keyAdm.protectionMeasures _subject/>
         </sect1>
 
         <?hard-pagebreak?>
 
-        <sect1>
-            <title role="HEAD-2" label="MMP 4.3">Re-entry periods, necessary waiting periods or other precautions to protect man, livestock and the environment</title>
-            <para>For details on re-entry and waiting periods and other precautions, please refer to Documents D.</para>
+        <sect1 label="MP 4.3">
+            <title role="HEAD-2">Re-entry periods, necessary waiting periods or other precautions to protect man, livestock and the environment</title>
+            <#-- <para>For details on re-entry and waiting periods and other precautions, please refer to Documents D.</para> -->
+            <@keyGap.GAPpart _subject 'safety'/>
         </sect1>
 
 
-    <#elseif workingContext=="CHEM">
+    <#else>
         <sect1>
             <title role="HEAD-2">Safety intervals and other precautions to protect humans, animals and the environment</title>
-            <para>For details on safety intervals and other precautions, please refer to Documents D.</para>
+            <#-- <para>For details on safety intervals and other precautions, please refer to Documents D.</para> -->
+            
+            <#-- 
+            	Where relevant, pre-harvest intervals, re-entry periods or withholding periods necessary to minimise the presence of residues in or on crops, plants and plant products, or in treated areas or spaces, with a view 
+				to protecting humans, animals and the environment, shall be specified, such as:
+				(a) pre-harvest interval (in days) for each relevant crop;-> PestDiseaseTreated.ApplicationDetails.PreharvestInterval
+				(b) re-entry period (in days) for livestock, to areas to be grazed; -> PestDiseaseTreated.ApplicationDetails.ReentryPeriodLivestock
+				(c) re-entry period (in hours or days) for humans to crops, buildings or spaces treated; -> PestDiseaseTreated.ApplicationDetails.ReentryPeriod
+				(d) withholding period (in days) for animal feeding stuffs and for post-harvest uses; -> PestDiseaseTreated.ApplicationDetails.WithholdingPeriod
+				(e) waiting period (in days), between application and handling treated products; -> PestDiseaseTreated.ApplicationDetails.WaitingPeriod
+				(f) waiting period (in days), between last application and sowing or planting succeeding crops. -> PestDiseaseTreated.ApplicationDetails.PlantbackInterval ??
+				Where necessary in the light of the test results, information on any specific agricultural, plant health or environmental conditions under which the plant protection product may or may not be used shall be provided. 
+             	-> PestDiseaseTreated.ApplicationDetails.Restrictions
+             -->
+             <@keyGap.GAPpart _subject 'safety'/>
         </sect1>
 
         <?hard-pagebreak?>
@@ -57,105 +72,77 @@
 <#elseif _subject.documentType=="SUBSTANCE">
 
     <#if workingContext=="MICRO">
-
-        <sect1>
-            <title role="HEAD-2">Function</title>
-            <@keyAppendixE.appendixEstudies subject=_subject docSubTypes="EffectivenessAgainstTargetOrganisms" context=effContext["function"] name="function" includeMetabolites=false/>
+		
+        <sect1 xml:id="MA31">
+            <title role="HEAD-2">Function (incl. target organisms, mode of action and possible resistance)</title>
+            <#-- <@keyAppendixE.appendixEstudies subject=_subject docSubTypes="EffectivenessAgainstTargetOrganisms" context=effContext["function"] name="function" includeMetabolites=false/>-->
+            <#-- NOTE: included here instead of section 2 (to be changed in next ToC) -->
+            <@keyBioPropMicro.effectivenessTargetOrgSummary subject=_subject includeMetabolites=false/>
+            <@com.emptyLine/>
+            <@keyAppendixE.appendixEstudies subject=_subject docSubTypes="EffectivenessAgainstTargetOrganisms" includeMetabolites=false/>
         </sect1>
 
         <?hard-pagebreak?>
 
-        <sect1 label="MA 3.2, 3.3">
-            <title role="HEAD-2">Field of use envisaged, and crops or products protected or treated</title>
-            <para>For details on uses of the active substance, field of use envisaged, and crops or products protected or treated, please refer to Documents D</para>
+        <sect1 label="MA 3.2 - 3.3">
+            <title role="HEAD-2">Field of use envisaged and crops or products protected or treated</title>
+            <para>For details on uses of the active substance, field of use envisaged, and crops or products protected or treated, please refer to <command  linkend="MA31">section 3.1</command> above 
+            and to Documents D.</para>
 
         </sect1>
 
         <?hard-pagebreak?>
 
-        <sect1 label="MA 3.4, 3.6">
-            <title role="HEAD-2">Method of production and quality control, and methods to prevent loss of virulence of seed stock of the microorganism</title>
+        <sect1 label="MA 3.4" xml:id="MA34">
+            <title role="HEAD-2">Method of production and quality control</title>
             <@keyAdm.manufacturer _subject/>
         </sect1>
 
         <?hard-pagebreak?>
 
         <sect1 label="MA 3.5">
-            <title role="HEAD-2">Info on the (possible) occurrence of resistance development and appropriate management strategies</title>
-            <@keyAppendixE.appendixEstudies subject=_subject docSubTypes="EffectivenessAgainstTargetOrganisms" context=effContext["resistance"] name="possible occurrence of resistance development" includeMetabolites=false/>
+            <title role="HEAD-2">Information on the (possible) occurrence of resistance development and appropriate management strategies</title>
+            <para>For information on the occurrence or possible occurence of the development of resistance of the target organism(s) see <command  linkend="MA31">section 3.1</command> above.</para>
+        </sect1>
+        
+        <?hard-pagebreak?>
+
+        <sect1 label="MA 3.6">
+            <title role="HEAD-2">Methods to prevent loss of virulence of seed stock of the microorganism</title>
+            <para>For methods to prevent loss of virulence of seed stock of the microorganism, please see MMA Section 2 (Biological properties of the micro-organism) and <command  linkend="MA34">section 3.4</command> above.</para>
         </sect1>
 
         <?hard-pagebreak?>
 
-        <sect1 label="MA 3.7-3.9">
+        <sect1 label="MA 3.7 - 3.9">
             <title role="HEAD-2">Methods and precautions for handling, storage, transport or fire, procedures for destruction or decontamination, and emergency measures</title>
             <@keyAdm.protectionMeasures _subject/>
         </sect1>
 
-    <#elseif workingContext=="CHEM">
-
+    <#else>
+		<#-- This summary should probably be under 3.2 -->
         <@keyBioPropMicro.effectivenessTargetOrgSummary subject=_subject includeMetabolites=false/>
 
         <?hard-pagebreak?>
-
-        <sect1 label="${docNameCode} 3.1, 3.4, 3.5">
-            <title role="HEAD-2">Use of the active substance, harmful organisms controlled and products treated</title>
-            <para>For details on uses of the active substance, field of use envisaged and harmful organisms controlled and crops or products protected or treated, please refer to Documents D</para>
-
-        </sect1>
-
-        <?hard-pagebreak?>
-
-        <sect1>
-            <title role="HEAD-2">Function</title>
-            <@keyAppendixE.appendixEstudies subject=_subject docSubTypes="EffectivenessAgainstTargetOrganisms" context=effContext["function"] name="function" includeMetabolites=false/>
-        </sect1>
-
-        <?hard-pagebreak?>
-
-        <sect1>
-            <title role="HEAD-2">Effects on harmful organisms</title>
-            <@keyAppendixE.appendixEstudies subject=_subject docSubTypes="EffectivenessAgainstTargetOrganisms" context=effContext["effects"] name="effects on harmful organisms" includeMetabolites=false/>
+  
+        <sect1 label="${docNameCode} 3.1">
+            <title role="HEAD-2">Use of the active substance</title>
+            <para>For details on uses of the active substance, please refer to MCP Section 3 (Application) and Documents D (GAP)</para>
 
         </sect1>
-
-        <?hard-pagebreak?>
-
-        <sect1 label="${docNameCode} 3.6">
-            <title role="HEAD-2">Mode of action</title>
-            <@keyAppendixE.appendixEstudies subject=_subject docSubTypes="EffectivenessAgainstTargetOrganisms"
-                context=effContext["moa"] name="mode of action" includeMetabolites=false/>
-        </sect1>
-
-        <?hard-pagebreak?>
-
-        <sect1 label="${docNameCode} 3.7">
-            <title role="HEAD-2">Info on the (possible) occurrence of resistance development and appropriate management strategies</title>
-            <@keyAppendixE.appendixEstudies subject=_subject docSubTypes="EffectivenessAgainstTargetOrganisms" context=effContext["resistance"] name="possible occurrence of resistance development" includeMetabolites=false/>
-        </sect1>
-
-        <?hard-pagebreak?>
-
-        <sect1 label="${docNameCode} 3.8, 3.9">
-            <title role="HEAD-2">Methods and precautions for handling, storage, transport or fire, procedures for destruction or decontamination, and emergency measures</title>
-            <@keyAdm.protectionMeasures _subject/>
-        </sect1>
-
-    <#elseif workingContext=="MRL">
-
-        <@keyBioPropMicro.effectivenessTargetOrgSummary subject=_subject includeMetabolites=false/>
-
-        <sect1>
-            <title role="HEAD-2">Use of the active substance (GAP)</title>
-            <para>For details on uses of the active substance please refer to the GAP table - Documents D (GAP).</para>
-        </sect1>
-
-        <?hard-pagebreak?>
-
-        <sect1>
+		
+		<?hard-pagebreak?>
+		
+        <sect1 label="${docNameCode} 3.2 - 3.7">
             <title role="HEAD-2">Effects on harmful organisms, function, mode of action and possible resistance</title>
-            <@keyAppendixE.appendixEstudies subject=_subject docSubTypes="EffectivenessAgainstTargetOrganisms"
-              name="effects on harmful organisms, function, mode of action and possible resistance" includeMetabolites=false/>
+            <@keyAppendixE.appendixEstudies subject=_subject docSubTypes="EffectivenessAgainstTargetOrganisms" name="effects on harmful organisms, function, mode of action and possible resistance" includeMetabolites=false/>
+        </sect1>
+
+        <?hard-pagebreak?>
+
+        <sect1 label="${docNameCode} 3.8 - 3.9">
+            <title role="HEAD-2">Methods and precautions for handling, storage, transport or fire, procedures for destruction or decontamination, and emergency measures</title>
+            <@keyAdm.protectionMeasures _subject/>
         </sect1>
 
     </#if>

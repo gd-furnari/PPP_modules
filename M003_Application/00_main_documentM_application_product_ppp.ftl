@@ -7,6 +7,7 @@
 <#import "macros_common_studies_and_summaries.ftl" as studyandsummaryCom>
 <#import "common_module_biological_properties_microorganism.ftl" as keyBioPropMicro/>
 <#import "appendixE.ftl" as keyAppendixE>
+<#import "macros_gap.ftl" as keyGap>
 
 <#assign locale = "en" />
 <#assign sysDateTime = .now>

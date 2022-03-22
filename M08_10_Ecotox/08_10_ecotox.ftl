@@ -59,7 +59,7 @@
                             "ToxicityToTerrestrialArthropods_cageBees" : [{"path": "AdministrativeData.Endpoint", "val" : ["cage and tunnel"],
                                                                         "qual" : "lk", "type" : "picklist"}],
 
-                            "ToxicityToTerrestrialArthropods_fieldBees" : [{"path": "AdministrativeData.Endpoint", "val" : ["field tests"],
+                            "ToxicityToTerrestrialArthropods_fieldBees" : [{"path": "AdministrativeData.Endpoint", "val" : ["toxicity to bees: field tests"],
                                                                         "qual" : "lk", "type" : "picklist"}],
 
                             "ToxicityToTerrestrialArthropods_sublethalBees" : [{"path": "AdministrativeData.Endpoint", "val" : ["bees: sublethal"],
@@ -112,8 +112,8 @@
                                                                                         "val" : ["Folsomia candida", "Hypoaspis aculeifer"], "qual" : "nl", "type" : "picklist"}],
                             <#--NOTE: could be also in study type-->
 
-                            "ToxicityToTerrestrialArthropods_otherField" : [{"path": "AdministrativeData.Endpoint", "val" : ["field"], "qual" : "lk", "type" : "picklist"},
-                                                                            {"path": "AdministrativeData.Endpoint", "val" : ["semi-field"], "qual" : "nl", "type" : "picklist"},
+                            "ToxicityToTerrestrialArthropods_otherField" : [{"path": "AdministrativeData.Endpoint", "val" : ["field studies"], "qual" : "lk", "type" : "picklist"},
+                                                                            {"path": "AdministrativeData.Endpoint", "val" : ["semi-field studies"], "qual" : "nl", "type" : "picklist"},
                                                                             {"path": "MaterialsAndMethods.TestOrganisms.AnimalGroup", "val" : ["soil-dwelling"], "qual" : "nl", "type" : "picklist"},
                                                                             {"path": "MaterialsAndMethods.TestOrganisms.TestOrganismsSpecies",
                                                                                 "val" : ["Folsomia candida", "Hypoaspis aculeifer"], "qual" : "nl", "type" : "picklist"}],
@@ -172,8 +172,6 @@
 <#if workingContext=="CHEM">
 
     <#if _subject.documentType=="SUBSTANCE">
-<#--removed in new release-->
-<#--        <@keyEcotox.ecotoxRiskAssessmentPPP/>-->
 
         <sect1>
             <title role="HEAD-2">Effects on birds and other terrestrial vertebrates</title>
@@ -194,15 +192,11 @@
                     <title role="HEAD-4">Sub-chronic and reproductive toxicity to birds</title>
                     <@keyAppendixE.appendixEstudies _subject "ToxicityToBirds" ecotoxContext["ToxicityToBirds_long"] "sub-chronic and reproductive toxicity to birds"/>
                 </sect3>
-
-                <#--NEW SECTION: -->
-                <#assign otherBirds>
-                    <@keyAppendixE.appendixEstudies _subject "ToxicityToBirds" ecotoxContext["ToxicityToBirds_other"] "other toxicity to birds"/>
-                </#assign>
-                <#if otherBirds?has_content && !(otherBirds?contains("No relevant individual"))>
+                
+                <#if keyAppendixE.containsDoc(_subject, "ENDPOINT_STUDY_RECORD.ToxicityToBirds", ecotoxContext["ToxicityToBirds_other"])>	
                     <sect3>
                         <title role="HEAD-4">Other toxicity to birds</title>
-                        ${otherBirds}
+                        <@keyAppendixE.appendixEstudies _subject "ToxicityToBirds" ecotoxContext["ToxicityToBirds_other"] "other toxicity to birds"/>
                     </sect3>
                 </#if>
 
@@ -329,7 +323,6 @@
                     <title role="HEAD-4">Sediment dwelling organisms</title>
                     <@keyEcotox.ecotoxPPPsummary _subject "SedimentToxicity_EU_PPP"/>
                     <@com.emptyLine/>
-                    <#--NOTE: maybe merge with the long term-->
                     <@keyAppendixE.appendixEstudies _subject "SedimentToxicity" "" "toxicity to sediment dwelling organisms"/>
                 </sect3>
 
@@ -349,7 +342,6 @@
                     <title role="HEAD-4">Effects on growth of an additional algal species</title>
                     <@keyAppendixE.appendixEstudies _subject "ToxicityToAquaticAlgae" ecotoxContext["ToxicityToAquaticAlgae_additional"]
                     "toxicity to other algae species"/>
-                    <#--NOTE: here included general toxicity - to double check-->
                 </sect3>
             </sect2>
 
@@ -421,16 +413,11 @@
                     <@keyAppendixE.appendixEstudies _subject "ToxicityToTerrestrialArthropods" ecotoxContext["ToxicityToTerrestrialArthropods_typhlodromusPyr"]
                     "toxicity to Typhlodromus pyri"/>
                 </sect3>
-
-                <#--NEW section-->
-                <#assign otherArthropods>
-                    <@keyAppendixE.appendixEstudies _subject "ToxicityToTerrestrialArthropods" ecotoxContext["ToxicityToTerrestrialArthropods_other"]
-                    "toxicity to other arthropods"/>
-                </#assign>
-                <#if otherArthropods?has_content && !(otherArthropods?contains("No relevant individual"))>
+                
+                <#if keyAppendixE.containsDoc(_subject, "ENDPOINT_STUDY_RECORD.ToxicityToTerrestrialArthropods", ecotoxContext["ToxicityToTerrestrialArthropods_other"])>
                     <sect3>
                         <title role="HEAD-4">Effects on other non-target arthropods</title>
-                        ${otherArthropods}
+                        <@keyAppendixE.appendixEstudies _subject "ToxicityToTerrestrialArthropods" ecotoxContext["ToxicityToTerrestrialArthropods_other"] "toxicity to other arthropods"/>
                     </sect3>
                 </#if>
             </sect2>
@@ -455,49 +442,28 @@
 
                 <sect3>
                     <title role="HEAD-4">Species level testing</title>
-                    <#-- It should be for Folsomia candida and Hypoaspis aculeifer -->
+                    <#-- For Folsomia candida and Hypoaspis aculeifer -->
                     <@keyAppendixE.appendixEstudies _subject "ToxicityToTerrestrialArthropods" ecotoxContext["ToxicityToTerrestrialArthropods_folsomiaAndHypoaspis"]
                     "toxicity to Folsomia candida and Hypoaspis aculeifer species"/>
                 </sect3>
-
-                <#--NEW SECTIONS -->
-                <#assign otherSoilDwelling>
-                    <@keyAppendixE.appendixEstudies _subject "ToxicityToTerrestrialArthropods"
-                        ecotoxContext["ToxicityToTerrestrialArthropods_soilMesofauna"] "toxicity to other soil-dwelling arthropods"/>
-                </#assign>
-                <#if otherSoilDwelling?has_content && !(otherSoilDwelling?contains("No relevant individual"))>
+                
+                <#if keyAppendixE.containsDoc(_subject, "ENDPOINT_STUDY_RECORD.ToxicityToTerrestrialArthropods", ecotoxContext["ToxicityToTerrestrialArthropods_soilMesofauna"])>
                     <sect3>
                         <title role="HEAD-4">Other soil-dwelling arthropods</title>
-                        ${otherSoilDwelling}
+                        <@keyAppendixE.appendixEstudies _subject "ToxicityToTerrestrialArthropods"
+                        ecotoxContext["ToxicityToTerrestrialArthropods_soilMesofauna"] "toxicity to other soil-dwelling arthropods"/>
                     </sect3>
                 </#if>
-
-                <#assign otherSoilMesofauna>
-                    <@keyAppendixE.appendixEstudies _subject "ToxicityToSoilMacroorganismsExceptArthropods"
-                        ecotoxContext["ToxicityToSoilMacroorganismsExceptArthropods_noEarthworm"] "toxicity to other soil meso- and macrofauna"/>
-                </#assign>
-                <#if otherSoilMesofauna?has_content && !(otherSoilMesofauna?contains("No relevant individual"))>
+                
+                <#if keyAppendixE.containsDoc(_subject, "ENDPOINT_STUDY_RECORD.ToxicityToSoilMacroorganismsExceptArthropods", ecotoxContext["ToxicityToSoilMacroorganismsExceptArthropods_noEarthworm"])>
                     <sect3>
                         <title role="HEAD-4">Other soil meso- and macrofauna </title>
-                        ${otherSoilMesofauna}
+                        <@keyAppendixE.appendixEstudies _subject "ToxicityToSoilMacroorganismsExceptArthropods"
+                        ecotoxContext["ToxicityToSoilMacroorganismsExceptArthropods_noEarthworm"] "toxicity to other soil meso- and macrofauna"/>
                     </sect3>
                 </#if>
 
             </sect2>
-
-<#--            &lt;#&ndash;NEW (not sure right approach: Where does bioaccumulation go?)&ndash;&gt;-->
-<#--            <#assign bioconcTerrestrial>-->
-<#--                <@keyEcotox.ecotoxPPPsummary _subject "BioaccumulationTerrestrial"/>-->
-<#--                <@com.emptyLine/>-->
-<#--                <@keyAppendixE.appendixEstudies _subject "BioaccumulationTerrestrial"/>-->
-<#--            </#assign>-->
-<#--            <#if bioconcTerrestrial?has_content &&-->
-<#--                (!(bioconcTerrestrial?contains("No relevant individual")) || bioconcTerrestrial?contains("Summar"))>-->
-<#--                <sect2>-->
-<#--                    <title role="HEAD-3">Bioconcentration in terrestrial animals</title>-->
-<#--                    ${bioconcTerrestrial}-->
-<#--                </sect2>-->
-<#--            </#if>-->
 
         </sect1>
 
@@ -515,7 +481,7 @@
         <sect1>
             <title role="HEAD-2">Effects on terrestrial non-target higher plants</title>
             <@keyEcotox.ecotoxPPPsummary _subject "ToxicityToTerrestrialPlants_EU_PPP"/>
-            <#--NOTE: there are two subsections, but unclear what they are...-->
+            <#--NOTE: there are two subsections in legislation...-->
             <#--        Summary of screening data-->
             <#--        Testing on non-target plants-->
             <sect2 xml:id="CA861">
@@ -574,15 +540,11 @@
                     <title role="HEAD-4">Higher tier data on birds</title>
                     <@keyAppendixE.appendixEstudies _subject "ToxicityToBirds" ecotoxContext["ToxicityToBirds_field"] "effects in field conditions"/>
                 </sect3>
-
-                <#--NEW SECTION: -->
-                <#assign other2Birds>
-                    <@keyAppendixE.appendixEstudies _subject "ToxicityToBirds" ecotoxContext["ToxicityToBirds_other2"] "other toxicity to birds"/>
-                </#assign>
-                <#if other2Birds?has_content && !(other2Birds?contains("No relevant individual"))>
+                
+                <#if keyAppendixE.containsDoc(_subject, "ENDPOINT_STUDY_RECORD.ToxicityToBirds", ecotoxContext["ToxicityToBirds_other2"])>
                     <sect3>
                         <title role="HEAD-4">Other toxicity to birds</title>
-                        ${other2Birds}
+                       <@keyAppendixE.appendixEstudies _subject "ToxicityToBirds" ecotoxContext["ToxicityToBirds_other2"] "other toxicity to birds"/>
                     </sect3>
                 </#if>
 
@@ -590,8 +552,6 @@
 
             <sect2 xml:id="CP1012">
                 <title role="HEAD-3">Effects on terrestrial vertebrates other than birds</title>
-                <#--NOTE: this first summary will be removed in next release-->
-<#--                <@keyEcotox.ecotoxPPPsummary _subject "TerrestrialToxicity"/>-->
                 <@keyEcotox.ecotoxPPPsummary _subject "ToxicityToOtherAboveGroundOrganisms_EU_PPP"/>
 
                 <sect3>
@@ -602,17 +562,12 @@
                 <sect3 xml:id="CP10122">
                     <title role="HEAD-4">Higher tier data on mammals</title>
                     <para>Higher tier data on mammals are included in <command  linkend="CP107">Section 10.7</command>.</para>
-
                 </sect3>
-
-                <#--NEW SECTION: -->
-                <#assign otherTerrestrialVert>
-                    <@keyAppendixE.appendixEstudies _subject "ToxicityToOtherAboveGroundOrganisms"/>
-                </#assign>
-                <#if otherTerrestrialVert?has_content && !(otherTerrestrialVert?contains("No relevant individual"))>
+                
+                <#if keyAppendixE.containsDoc(_subject, "ENDPOINT_STUDY_RECORD.ToxicityToOtherAboveGroundOrganisms")>
                     <sect3>
                         <title role="HEAD-4">Other toxicity to terrestrial vertebrates</title>
-                        ${otherTerrestrialVert}
+                        <@keyAppendixE.appendixEstudies _subject "ToxicityToOtherAboveGroundOrganisms"/>
                     </sect3>
                 </#if>
 
@@ -632,7 +587,7 @@
 
             <sect2>
                 <title role="HEAD-3">Acute toxicity to fish, aquatic invertebrates, or effects on aquatic algae and macrophytes</title>
-<#--                NOTE: it could be split into the different sections-->
+				<#-- NOTE: it could be split into the different sections-->
                 <@keyEcotox.ecotoxPPPsummary subject=_subject
                     docSubTypes=["Short-termToxicityToFish_EU_PPP","ShortTermToxicityAquaInvert_EU_PPP", "ToxicityToAquaticAlgae_EU_PPP", "ToxicityPlants_EU_PPP"]
                     merge=true/>
@@ -648,7 +603,6 @@
                     docSubTypes=["LongTermToxicityToFish_EU_PPP","LongTermToxicityToAquaticInvertebrates_EU_PPP", "SedimentToxicity_EU_PPP"]
                     merge=true/>
                 <@com.emptyLine/>
-                <#-- NOTE: missing sediment dwelling orgs? In next release-->
                 <@keyAppendixE.appendixEstudies subject=_subject docSubTypes=["LongTermToxToFish","LongTermToxicityToAquaInv", "SedimentToxicity"]
                     name="long term and chronic toxicity to aquatic organisms"/>
             </sect2>
@@ -660,7 +614,7 @@
                 <@keyAppendixE.appendixEstudies _subject "BioaccumulationAquaticSediment" "" "bioconcentration in fish"/>
             </sect2>
         </sect1>
-
+  
         <?page-hardbreak?>
 
         <sect1>
@@ -728,7 +682,6 @@
                 </sect3>
 
                 <sect3>
-                    <#--NOTE: this section requires two types of documents, so sub-sections are created-->
                     <title role="HEAD-4">Extended laboratory testing, aged residue studies with non-target arthropods</title>
                     <sect4>
                         <title role="HEAD-4">Extended laboratory testing</title>
@@ -759,11 +712,10 @@
                 <sect3>
                     <#-- NOTE: this sections contains everything left from the ones above-->
                     <title role="HEAD-4">Other routes of exposure for non-target arthropods</title>
-                    <@keyAppendixE.appendixEstudies _subject "ToxicityToTerrestrialArthropods" ecotoxContext["ToxicityToTerrestrialArthropods_otherOther"]
+                      <@keyAppendixE.appendixEstudies _subject "ToxicityToTerrestrialArthropods" ecotoxContext["ToxicityToTerrestrialArthropods_otherOther"]
                         "other toxicity for non-target arthropods"/>
-                    <#--<para>Any additional studies for other routes of exposure are provided in the corresponding sections above.</para>-->
-
                 </sect3>
+
             </sect2>
 
         </sect1>
@@ -803,33 +755,27 @@
 
                     <sect3>
                         <title role="HEAD-4">Higher tier testing</title>
-                        <#--   NOTE: anything not earthworm, since guidelines include microcosm studies. Not sure of this approach.-->
-
-                        <#--NEW SECTIONS -->
-                        <#assign otherSoilMesofauna>
-                            <@keyAppendixE.appendixEstudies _subject "ToxicityToSoilMacroorganismsExceptArthropods"
-                            ecotoxContext["ToxicityToSoilMacroorganismsExceptArthropods_noEarthworm"] "toxicity to other soil meso- and macrofauna"/>
-                        </#assign>
-                        <#if otherSoilMesofauna?has_content && !(otherSoilMesofauna?contains("No relevant individual"))>
+                         <#--   NOTE: anything not earthworm, since guidelines include microcosm studies.-->
+  
+                        <#if keyAppendixE.containsDoc(_subject, "ENDPOINT_STUDY_RECORD.ToxicityToSoilMacroorganismsExceptArthropods", ecotoxContext["ToxicityToSoilMacroorganismsExceptArthropods_noEarthworm"])>
                             <sect4>
                                 <title role="HEAD-5">Other soil meso- and macrofauna </title>
-                                ${otherSoilMesofauna}
+                                <@keyAppendixE.appendixEstudies _subject "ToxicityToSoilMacroorganismsExceptArthropods"
+                            		ecotoxContext["ToxicityToSoilMacroorganismsExceptArthropods_noEarthworm"] "toxicity to other soil meso- and macrofauna"/>
                             </sect4>
                         </#if>
 
-                        <#assign otherSoilDwelling>
-                            <@keyAppendixE.appendixEstudies _subject "ToxicityToTerrestrialArthropods"
-                            ecotoxContext["ToxicityToTerrestrialArthropods_soilMesofauna"] "toxicity to other soil-dwelling arthropods"/>
-                        </#assign>
-                        <#if otherSoilDwelling?has_content && !(otherSoilDwelling?contains("No relevant individual"))>
+                        <#if keyAppendixE.containsDoc(_subject, "ENDPOINT_STUDY_RECORD.ToxicityToTerrestrialArthropods", ecotoxContext["ToxicityToTerrestrialArthropods_soilMesofauna"])>
                             <sect4>
                                 <title role="HEAD-5">Other soil-dwelling arthropods</title>
-                                ${otherSoilDwelling}
+                                <@keyAppendixE.appendixEstudies _subject "ToxicityToTerrestrialArthropods"
+                            		ecotoxContext["ToxicityToTerrestrialArthropods_soilMesofauna"] "toxicity to other soil-dwelling arthropods"/>
                             </sect4>
                         </#if>
 
-                        <#if otherSoilDwelling?contains("No relevant individual") && otherSoilMesofauna?contains("No relevant individual")>
-                            <para>No relevant individual studies for higher tier testing are available</para>
+                        <#if !(keyAppendixE.containsDoc(_subject, "ENDPOINT_STUDY_RECORD.ToxicityToTerrestrialArthropods", ecotoxContext["ToxicityToTerrestrialArthropods_soilMesofauna"])) &&
+                        		!(keyAppendixE.containsDoc(_subject, "ENDPOINT_STUDY_RECORD.ToxicityToSoilMacroorganismsExceptArthropods", ecotoxContext["ToxicityToSoilMacroorganismsExceptArthropods_noEarthworm"]))>
+                            <para>No individual studies available for higher tier testing</para>
                         </#if>
                     </sect3>
 
@@ -886,15 +832,13 @@
             <@keyEcotox.ecotoxPPPsummary _subject "BiologicalEffectsMonitoring"/>
             <@com.emptyLine/>
             <@keyAppendixE.appendixEstudies _subject "BiologicalEffectsMonitoring"/>
-        </sect1>
+        </sect1>  -->
     </#if>
 
 <#elseif workingContext=="MICRO">
 
     <#--    NOTE: substance and mixture have the same content, except for the first summary (and the additional studies)-->
 
-<#--    <#if _subject.documentType=="SUBSTANCE">-->
-<#--        <@keyEcotox.ecotoxRiskAssessmentPPP/>-->
     <#if _subject.documentType=="MIXTURE">
         <@keyEcotox.ecotoxicologicalInformationSummary/>
     </#if>
@@ -971,7 +915,7 @@
     <sect1>
         <title role="HEAD-2">Effects on earthworms</title>
             <@keyEcotox.ecotoxPPPsummary _subject "ToxicitySoilMacroorganisms_EU_PPP"/>
-<#--                NOTE: covers more than just earthworms-->
+			<#-- NOTE: covers more than just earthworms-->
             <@com.emptyLine/>
             <@keyAppendixE.appendixEstudies _subject "ToxicityToSoilMacroorganismsExceptArthropods" "" "toxicity to earthworms and other macroorganisms"/>
     </sect1>

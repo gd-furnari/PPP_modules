@@ -23,17 +23,13 @@
                                                             "qual" : "eq",
                                                             "type" : "picklist"}],
 
-                        <#--NOTE: maybe it would be better to just EXCLUDE the chronic endpoints-->
-                        "RepeatedDoseToxicity_nochronic" : [{"path": "AdministrativeData.Endpoint",
-                                                            "val" : ["repeated dose toxicity: oral, other",
-                                                                        "short-term repeated dose toxicity: inhalation", "sub-chronic toxicity: inhalation", "repeated dose toxicity: inhalation, other",
-                                                                        "short-term repeated dose toxicity: dermal", "sub-chronic toxicity: dermal", "repeated dose toxicity: dermal, other",
-                                                                        "short-term repeated dose toxicity: other route", "sub-chronic toxicity: other route", "repeated dose toxicity: other route"],
+                        "RepeatedDoseToxicity_other" : [{"path": "AdministrativeData.Endpoint",
+                                                            "val" : ["repeated dose toxicity: oral, other", "chronic toxicity: oral",
+                                                                        "short-term repeated dose toxicity: inhalation", "sub-chronic toxicity: inhalation", "repeated dose toxicity: inhalation, other", "chronic toxicity: inhalation",
+                                                                        "short-term repeated dose toxicity: dermal", "sub-chronic toxicity: dermal", "repeated dose toxicity: dermal, other", "chronic toxicity: dermal"
+                                                                        "short-term repeated dose toxicity: other route", "sub-chronic toxicity: other route", "repeated dose toxicity: other route", "chronic toxicity: other route"],
                                                             "qual" : "eq",
                                                             "type" : "picklist"}],
-
-                        "RepeatedDoseToxicity_chronic-Carcinogenicity" : [{"path": "AdministrativeData.Endpoint", "val" : ["chronic toxicity", "carcinogenicity"], "qual" : "lk", "type" : "picklist"},
-                                                                            {"path": "AdministrativeData.Endpoint", "val" : ["sub-chronic"], "qual" : "nl", "type" : "picklist"}],
 
                         "ToxicityToReproduction_generational" : [{"path" : "AdministrativeData.Endpoint", "val" : ["generation"], "qual" : "lk", "type" : "picklist"}],
 
@@ -64,7 +60,7 @@
 
         <sect1>
             <title role="HEAD-2">Basic acute toxicity studies</title>
-            <@keyTox.summaryAll subject=_subject docSubTypes="AcuteToxicity" resultFormat="table"/>
+            <@keyTox.toxPPPsummary subject=_subject docSubTypes="AcuteToxicity" merge=true/>
 
             <sect2>
                 <title role="HEAD-3">Acute oral toxicity</title>
@@ -86,7 +82,7 @@
 
         <sect1>
             <title role="HEAD-2">Additional acute toxicity studies</title>
-            <@keyTox.summaryAll subject=_subject docSubTypes=["IrritationCorrosion", "Sensitisation"] resultFormat="table"/>
+            <@keyTox.toxPPPsummary subject=_subject docSubTypes=["IrritationCorrosion", "Sensitisation"] merge=true/>
 
             <sect2>
                 <title role="HEAD-3">Skin irritation</title>
@@ -108,7 +104,7 @@
 
         <sect1>
             <title role="HEAD-2">Data on exposure</title>
-            <@keyTox.summarySingle _subject "NonDietaryExpo"/>
+            <@keyTox.toxPPPsummary _subject "NonDietaryExpo"/>
         </sect1>
 
         <?hard-pagebreak?>
@@ -129,14 +125,14 @@
 
         <sect1>
             <title role="HEAD-2">Summary and evaluation of health effects</title>
-            <@keyTox.summarySingle _subject "AdditionalToxicologicalInformation" "none"/>
+            <@keyTox.toxPPPsummary _subject "AdditionalToxicologicalInformation"/>
         </sect1>
 
     <#elseif workingContext=="CHEM">
 
         <sect1>
             <title role="HEAD-2">Acute toxicity</title>
-            <@keyTox.summaryAll subject=_subject docSubTypes=["AcuteToxicity", "IrritationCorrosion", "Sensitisation", "Phototoxicity"] resultFormat="table"/>
+            <@keyTox.toxPPPsummary subject=_subject docSubTypes=["AcuteToxicity", "IrritationCorrosion", "Sensitisation", "Phototoxicity"] merge=true/>
 
             <sect2>
                 <title role="HEAD-3">Oral toxicity</title>
@@ -169,18 +165,19 @@
             <sect2>
                 <title role="HEAD-3">Supplementary studies for combinations of plant protection products</title>
                 <para>Any available study summaries for combinations of plant protection products are provided in <command  linkend="CP717">Section 7.1.7</command>.</para>
+            	<@com.emptyLine/>
             </sect2>
         </sect1>
 
         <sect1>
             <title role="HEAD-2">Data on exposure</title>
-            <@keyTox.summarySingle _subject "NonDietaryExpo"/>
+            <@keyTox.toxPPPsummary _subject "NonDietaryExpo"/>
             <@keyAppendixE.appendixEstudies _subject "ExposureRelatedObservationsOther" "" "exposure"/>
         </sect1>
 
         <sect1>
             <title role="HEAD-2">Dermal absorption</title>
-            <@keyTox.summarySingle _subject "DermalAbsorption"/>
+            <@keyTox.toxPPPsummary _subject "DermalAbsorption"/>
             <@keyAppendixE.appendixEstudies _subject "DermalAbsorption"/>
         </sect1>
 
@@ -195,13 +192,13 @@
 
     <#if workingContext=="MICRO">
 
-        <@keyTox.summaryAll _subject "ToxRefValues"/>
+       <@keyTox.toxPPPsummary subject=_subject docSubTypes=["ToxRefValues"] merge=true/>
 
         <?hard-pagebreak?>
 
         <sect1>
             <title role="HEAD-2">Basic information</title>
-            <@keyTox.summarySingle _subject "ExposureRelatedObservationsHumans" "none"/>
+            <@keyTox.toxPPPsummary _subject "ExposureRelatedObservationsHumans"/>
 
             <sect2 xml:id="MA511">
                 <title role="HEAD-3">Medical data</title>
@@ -227,18 +224,17 @@
 
         <sect1>
             <title role="HEAD-2">Basic studies</title>
-            <#--        <@keyTox.summaryAll _subject=dataset docSubTypes=["Sensitisation", "AcuteToxicity", "SpecificInvestigationsOtherStudies"] resultFormat="table"/>-->
 
             <sect2>
                 <title role="HEAD-3">Sensitisation</title>
-                <@keyTox.summarySingle _subject "Sensitisation" "table"/>
+                <@keyTox.toxPPPsummary _subject "Sensitisation"/>
                 <@com.emptyLine/>
                 <@keyAppendixE.appendixEstudies _subject "SkinSensitisation"/>
             </sect2>
 
             <sect2>
                 <title role="HEAD-3">Acute toxicity, pathogenicity and infectiveness</title>
-                <@keyTox.summaryAll subject=_subject docSubTypes=["AcuteToxicity", "SpecificInvestigationsOtherStudies"] resultFormat="table"/>
+                <@keyTox.toxPPPsummary subject=_subject docSubTypes=["AcuteToxicity", "SpecificInvestigationsOtherStudies"] merge=true/>
 
                 <sect3>
                     <title role="HEAD-4">Acute oral toxicity, pathogenicity and infectiveness</title>
@@ -253,7 +249,6 @@
                 <sect3>
                     <title role="HEAD-4">Intraperitoneal/subcutaneous single dose</title>
                     <#-- Repeated if also included above-->
-                    <#-- <@keyTox.summaryAll _subject=dataset docSubTypes=["SpecificInvestigationsOtherStudies"] resultFormat="none"/>-->
                     <@keyAppendixE.appendixEstudies subject=_subject docSubTypes="SpecificInvestigations"
                         context=toxContext['SpecificInvestigations_intraperitoneal'] name="intraperitoneal subcutaneous single dose and other toxicity"/>
                 </sect3>
@@ -261,7 +256,7 @@
 
             <sect2>
                 <title role="HEAD-3">Genotoxicity testing</title>
-                <@keyTox.summaryAll _subject "GeneticToxicity" "table"/>
+                <@keyTox.toxPPPsummary subject=_subject docSubTypes=["GeneticToxicity"] merge=true/>
 
                 <sect3 xml:id="MA5231">
                     <title role="HEAD-4">In vitro studies</title>
@@ -277,7 +272,7 @@
 
             <sect2>
                 <title>Information on short-term toxicity and pathogenicity</title>
-                <@keyTox.summaryAll _subject "RepeatedDoseToxicity" "table"/>
+                <@keyTox.toxPPPsummary subject=_subject docSubTypes=["RepeatedDoseToxicity"] merge=true/>
 
                 <sect3>
                     <title role="HEAD-4">Health effects after repeated inhalatory exposure</title>
@@ -316,7 +311,7 @@
         <?hard-pagebreak?>
 
         <sect1>
-            <title role="HEAD-2">Genotoxicity — In vivo studies in germ cells</title>
+            <title role="HEAD-2">Genotoxicity - In vivo studies in germ cells</title>
             <para>In vivo genotoxicity studies in germ cells are provided in <command  linkend="MA54">Section 5.4</command> above.</para>
         </sect1>
 
@@ -324,17 +319,19 @@
 
         <sect1>
             <title role="HEAD-2">Summary of mammalian toxicity, pathogenicity and infectiveness and overall evaluation</title>
-            <@keyTox.summaryAll _subject "AdditionalToxicologicalInformation" "table"/>
+            <@keyTox.toxPPPsummary subject=_subject docSubTypes=["AdditionalToxicologicalInformation"] merge=true/>
             <@keyAppendixE.appendixEstudies _subject "AdditionalToxicologicalInformation"/>
         </sect1>
 
     <#else>
-        <@keyTox.summaryAll _subject "ToxRefValues" "flat" false/>
 
+        <@keyTox.toxPPPsummary _subject "ToxRefValues" false false/>
+		
         <sect1>
             <title role="HEAD-2">Studies on absorption, distribution, metabolism and excretion in mammals</title>
-            <@keyTox.summarySingle _subject  "Toxicokinetics" "flat" false />
+			<@keyTox.toxPPPsummary _subject "Toxicokinetics" false false/>
 
+            
             <sect2>
                 <title role="HEAD-3">Absorption, distribution, metabolism and excretion by oral route</title>
                 <@keyAppendixE.appendixEstudies subject=_subject docSubTypes="BasicToxicokinetics" context=toxContext["BasicToxicokinetics_oral"]
@@ -346,13 +343,14 @@
                 <@keyAppendixE.appendixEstudies _subject "BasicToxicokinetics" toxContext["BasicToxicokinetics_other"]
                     "ADME by other routes" "" false/>
             </sect2>
+            
         </sect1>
-
+		    
         <?hard-pagebreak?>
 
         <sect1>
             <title role="HEAD-2">Acute toxicity</title>
-            <@keyTox.summaryAll subject=_subject docSubTypes=["AcuteToxicity", "IrritationCorrosion", "Sensitisation", "Phototoxicity"] resultFormat="table" includeMetabolites=false/>
+            <@keyTox.toxPPPsummary subject=_subject docSubTypes=["AcuteToxicity", "IrritationCorrosion", "Sensitisation", "Phototoxicity"] includeMetabolites=false merge=true/>
 
             <sect2 xml:id="CA521">
                 <title role="HEAD-3">Oral (includes acute oral toxicity to mammals)</title>
@@ -389,49 +387,45 @@
                 <@keyAppendixE.appendixEstudies _subject "PhototoxicityVitro" "" "phototoxicity" "" false/>
             </sect2>
 
-            <#-- NOTE: THIS SECTION DOESN'T EXIST IN KCA:-->
-            <sect2>
-                <title role="HEAD-3">Acute toxicity: other routes</title>
-                <@keyAppendixE.appendixEstudies _subject "AcuteToxicityOtherRoutes" "" "acute toxicity via other routes" "" false/>
-            </sect2>
-
-        </sect1>
-
-        <?hard-pagebreak?>
-
-        <sect1>
-            <title role="HEAD-2">Short-term toxicity</title>
-            <@keyTox.summaryAll _subject "RepeatedDoseToxicity" "table" false/>
-
-            <#if workingContext=="CHEM">
-                <sect2>
-                    <title role="HEAD-3">Oral 28-day study (short-term repeated)</title>
-                    <@keyAppendixE.appendixEstudies _subject "RepeatedDoseToxicityOral" toxContext["RepeatedDoseToxicityOral_28"] "short-term oral toxicity" "" false/>
-                </sect2>
-
-                <sect2>
-                    <title role="HEAD-3">Oral 90-day study (sub-chronic)</title>
-                    <@keyAppendixE.appendixEstudies _subject "RepeatedDoseToxicityOral" toxContext["RepeatedDoseToxicityOral_90"] "sub-chronic oral toxicity" "" false/>
-                </sect2>
-
-                <sect2>
-                    <title role="HEAD-3">Other routes</title>
-                    <#--merge all the subsections + remainder of dosetoxicityoral; could also be split into several -->
-                    <@keyAppendixE.appendixEstudies subject=_subject docSubTypes=["RepeatedDoseToxicityOral", "RepeatedDoseToxicityInhalation", "RepeatedDoseToxicityDermal", "RepeatedDoseToxicityOther"]
-                        context=toxContext["RepeatedDoseToxicity_nochronic"] name="other routes" includeMetabolites=false/>
-                </sect2>
-            <#else>
-                <#--merge all the subsections-->
-                <@keyAppendixE.appendixEstudies subject=_subject docSubTypes=["RepeatedDoseToxicityOral", "RepeatedDoseToxicityInhalation", "RepeatedDoseToxicityDermal", "RepeatedDoseToxicityOther"]
-                    name="short-term toxicity" includeMetabolites=false/>
+			<#if keyAppendixE.containsDoc(_subject, 'ENDPOINT_STUDY_RECORD.AcuteToxicityOtherRoutes', "", false)>
+	            <sect2>
+	                <title role="HEAD-3">Acute toxicity: other routes</title>
+	                <@keyAppendixE.appendixEstudies _subject "AcuteToxicityOtherRoutes" "" "acute toxicity via other routes" "" false/>
+	            </sect2>
             </#if>
         </sect1>
-
+		
         <?hard-pagebreak?>
+		
+		
+        <sect1>
+            <title role="HEAD-2">Short-term toxicity</title>
+            <@keyTox.toxPPPsummary _subject "RepeatedDoseToxicity" false true/>
 
+            
+            <sect2>
+                <title role="HEAD-3">Oral 28-day study (short-term)</title>
+                <@keyAppendixE.appendixEstudies _subject "RepeatedDoseToxicityOral" toxContext["RepeatedDoseToxicityOral_28"] "short-term oral toxicity" "" false/>
+            </sect2>
+
+            <sect2>
+                <title role="HEAD-3">Oral 90-day study (sub-chronic)</title>
+                <@keyAppendixE.appendixEstudies _subject "RepeatedDoseToxicityOral" toxContext["RepeatedDoseToxicityOral_90"] "sub-chronic oral toxicity" "" false/>
+            </sect2>
+
+            <sect2>
+                <title role="HEAD-3">Other routes</title>
+                <#--merge all the subsections + remainder of dosetoxicityoral; could also be split into several -->   
+                <@keyAppendixE.appendixEstudies subject=_subject docSubTypes=["RepeatedDoseToxicityOral", "RepeatedDoseToxicityInhalation", "RepeatedDoseToxicityDermal", "RepeatedDoseToxicityOther"]
+                    context=toxContext["RepeatedDoseToxicity_other"] name="other routes" includeMetabolites=false/>
+            </sect2>
+        </sect1>
+       
+        <?hard-pagebreak?>
+		  
         <sect1>
             <title role="HEAD-2">Genotoxicity testing</title>
-            <@keyTox.summaryAll _subject "GeneticToxicity" "table" false/>
+            <@keyTox.toxPPPsummary _subject "GeneticToxicity" false true/>
 
             <sect2>
                 <title role="HEAD-3">In vitro studies</title>
@@ -449,17 +443,19 @@
         <sect1 xml:id="CA55">
             <title role="HEAD-2">Long-term toxicity and carcinogenicity</title>
             <#-- NOTE: long-term toxicity is also included under repeated dose toxicity, although it should not be reported there. Here such cases are consider just in case applicants use such endpoints.-->
-            <@keyTox.summaryAll _subject "Carcinogenicity_EU_PPP" "table" false/>
+              
+            <@keyTox.toxPPPsummary _subject "Carcinogenicity_EU_PPP" false true/>
             <@com.emptyLine/>
-            <@keyAppendixE.appendixEstudies subject=_subject docSubTypes=["RepeatedDoseToxicityOral","RepeatedDoseToxicityInhalation","RepeatedDoseToxicityDermal","RepeatedDoseToxicityOther", "Carcinogenicity"]
-                    context=toxContext["RepeatedDoseToxicity_chronic-Carcinogenicity"] name="long-term toxicity and carcinogenicity" includeMetabolites=false/>
+			<@keyAppendixE.appendixEstudies subject=_subject docSubTypes="Carcinogenicity" name="long-term toxicity and carcinogenicity" includeMetabolites=false/>
+            <#-- <@keyAppendixE.appendixEstudies subject=_subject docSubTypes=["RepeatedDoseToxicityOral","RepeatedDoseToxicityInhalation","RepeatedDoseToxicityDermal","RepeatedDoseToxicityOther", "Carcinogenicity"]
+                    context=toxContext["RepeatedDoseToxicity_chronic-Carcinogenicity"] name="long-term toxicity and carcinogenicity" includeMetabolites=false/> -->
         </sect1>
 
         <?hard-pagebreak?>
 
         <sect1  xml:id="CA56">
             <title role="HEAD-2">Reproductive toxicity</title>
-            <@keyTox.summaryAll _subject "ToxicityToReproduction_EU_PPP" "table" false/>
+            <@keyTox.toxPPPsummary _subject "ToxicityToReproduction_EU_PPP" false true/>
 
             <sect2>
                 <title role="HEAD-3">Generational studies</title>
@@ -471,19 +467,22 @@
                 <@keyAppendixE.appendixEstudies subject=_subject docSubTypes=["ToxicityReproduction","DevelopmentalToxicityTeratogenicity"] context=toxContext["ToxicityToReproduction_developmental"]
                     name="developmental toxicity" includeMetabolites=false/>
             </sect2>
-
-            <sect2>
-                <title role="HEAD-3">Other studies on reproductive toxicity</title>
-                <@keyAppendixE.appendixEstudies subject=_subject docSubTypes=["ToxicityReproduction", "ToxicityReproductionOther"] context=toxContext["ToxicityToReproduction_other"]
+            
+            <#if keyAppendixE.containsDoc(_subject, ["ENDPOINT_STUDY_RECORD.ToxicityReproduction", "ENDPOINT_STUDY_RECORD.ToxicityReproductionOther"], 
+            								toxContext["ToxicityToReproduction_other"], false)>
+	            <sect2>
+                    <title role="HEAD-3">Other studies on reproductive toxicity</title>
+	                <@keyAppendixE.appendixEstudies subject=_subject docSubTypes=["ToxicityReproduction", "ToxicityReproductionOther"] context=toxContext["ToxicityToReproduction_other"]
                     name="reproductive toxicity" includeMetabolites=false/>
-            </sect2>
+	            </sect2>
+            </#if>
         </sect1>
-
+  
         <?hard-pagebreak?>
 
         <sect1>
             <title role="HEAD-2">Neurotoxicity studies</title>
-            <@keyTox.summaryAll _subject "Neurotoxicity" "table" false/>
+            <@keyTox.toxPPPsummary _subject "Neurotoxicity" false true/>
             <@com.emptyLine/>
             <@keyAppendixE.appendixEstudies _subject "Neurotoxicity" "" "" "" false/>
         </sect1>
@@ -517,9 +516,9 @@
                             ,"Neurotoxicity", "AdditionalToxicologicalInformation", "Immunotoxicity", "ToxicEffectsLivestockPets"
                             ,"ExposureRelatedObservationsHumans", "DermalAbsorption", "SpecificInvestigationsOtherStudies"
                             ,"ToxRefValues", "NonDietaryExpo"]
-<#--                        "EndocrineDisruptingPropertiesAssessmentPest"-->
+<#--                        "EndocrineDisruptingPropertiesAssessmentPest"-->  
 
-                        summaryMacroCall="keyTox.summarySingle"
+                        summaryMacroCall="keyTox.toxPPPsummary"
                     />
                 <#else>
                     <para>No toxicity studies of metabolites are available. </para>
@@ -532,33 +531,32 @@
 
                 <sect3>
                     <title role="HEAD-3">Immunotoxicity</title>
-                    <@keyTox.summaryAll _subject "Immunotoxicity" "table" false/>
+                    <@keyTox.toxPPPsummary _subject "Immunotoxicity" false true/>
                     <@keyAppendixE.appendixEstudies _subject "Immunotoxicity" "" "" "" false/>
                 </sect3>
 
                 <sect3>
                     <title role="HEAD-3">Toxic effects on livestock</title>
-                    <@keyTox.summaryAll _subject "ToxicEffectsLivestockPets" "table" false/>
+                    <@keyTox.toxPPPsummary _subject "ToxicEffectsLivestockPets" false true/>
                     <@keyAppendixE.appendixEstudies subject=_subject docSubTypes="ToxicEffectsLivestock" name="toxic effects on livestock" includeMetabolites=false/>
                 </sect3>
 
                 <sect3>
                     <title role="HEAD-3">Intermediate effects - mechanistic information</title>
-                    <#-- <@keyTox.intermediateEffectsStudies _subject/>-->
                     <@keyAppendixE.appendixEstudies _subject "IntermediateEffects" "" "" "" false/>
                 </sect3>
 
                 <sect3>
                     <title role="HEAD-3">Additional toxicological information</title>
-                    <@keyTox.summaryAll _subject "AdditionalToxicologicalInformation" "table" false/>
+                    <@keyTox.toxPPPsummary _subject "AdditionalToxicologicalInformation" false true/>
                     <@keyAppendixE.appendixEstudies _subject "AdditionalToxicologicalInformation" "" "" "" false/>
                 </sect3>
 
             </sect2>
 
             <sect2 xml:id="CA583">
-                <title role="HEAD-3">Endocrine disrupting properties</title>
-<#--                <@keyTox.summaryAll _subject "EndocrineDisruptingPropertiesAssessmentPest" "table" false/>-->
+                <title role="HEAD-3">Endocrine disrupting properties</title>-->
+<#--                <@keyTox.toxPPPsummary _subject "EndocrineDisruptingPropertiesAssessmentPest"/>-->  
                 <@keyAppendixE.appendixEstudies _subject "EndocrineDisrupterMammalianScreening" "" "endocrine disrupting properties" "" false/>
             </sect2>
 
@@ -568,7 +566,8 @@
 
         <sect1>
             <title role="HEAD-2">Medical data</title>
-            <@keyTox.summarySingle _subject "ExposureRelatedObservationsHumans" "none" false/>
+            <@keyTox.toxPPPsummary _subject "ExposureRelatedObservationsHumans" false false/>
+            
             <sect2>
                 <title role="HEAD-3">Medical surveillance on manufacturing plant personnel and monitoring studies</title>
                 <@keyAppendixE.appendixEstudies _subject "HealthSurveillanceData" "" "" "" false/>
@@ -586,20 +585,21 @@
                 <@keyAppendixE.appendixEstudies _subject "EpidemiologicalData" "" "" "" false/>
             </sect2>
 
-            <#if workingContext=="CHEM">
-                <sect2>
-                    <title role="HEAD-3">Diagnosis of poisoning (determination of active substance, metabolites), specific signs of poisoning, clinical tests</title>
-                    <para>Information on diagnosis and specific signs of poisoning, and clinical tests are provided in <command  linkend="CA593">Section 5.9.3</command> above.</para>
-                </sect2>
-                <sect2>
-                    <title role="HEAD-3">Proposed treatment: first aid measures, antidotes, medical treatment</title>
-                    <para>Information on proposed treatments is provided in <command  linkend="CA593">Section 5.9.3</command> above.</para>
-                </sect2>
-                <sect2>
-                    <title role="HEAD-3">Expected effects of poisoning</title>
-                    <para>Expected effects of poisoning are described in <command  linkend="CA593">Section 5.9.3</command> above.</para>
-                </sect2>
-            </#if>
+            <sect2>
+                <title role="HEAD-3">Diagnosis of poisoning (determination of active substance, metabolites), specific signs of poisoning, clinical tests</title>
+                <para>Information on diagnosis and specific signs of poisoning, and clinical tests are provided in <command  linkend="CA593">Section 5.9.3</command> above.</para>
+            </sect2>
+            
+            <sect2>
+                <title role="HEAD-3">Proposed treatment: first aid measures, antidotes, medical treatment</title>
+                <para>Information on proposed treatments is provided in <command  linkend="CA593">Section 5.9.3</command> above.</para>
+            </sect2>
+            
+            <sect2>
+                <title role="HEAD-3">Expected effects of poisoning</title>
+                <para>Expected effects of poisoning are described in <command  linkend="CA593">Section 5.9.3</command> above.</para>
+            </sect2>
+            
         </sect1>
 
     </#if>

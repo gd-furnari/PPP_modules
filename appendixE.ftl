@@ -1,7 +1,7 @@
-﻿<!-- Macros and functions for EU PPP reports, including appendix E format -->
+�<!-- Macros and functions for EU PPP reports, including appendix E format -->
 
 <!-- Appendix E structure -->
-<#macro appendixEstudies subject docSubTypes context="" name="" section="" includeMetabolites=true>
+<#macro appendixEstudies subject docSubTypes context="" name="" section="" includeMetabolites=true includeStudies=true includeWaivers=true>
 	<#compress>
 
 		<#-- Convert elements to lists-->
@@ -23,7 +23,6 @@
 
 		<#--Add metabolites to the list of entities to loop for studies, if required -->
 		<#if includeMetabolites && _metabolites?? && _metabolites?has_content>
-<#--			_subject.documentType=="SUBSTANCE" &&-->
 			<#local entities = entities + _metabolites/>
 		</#if>
 
@@ -31,25 +30,26 @@
 		<#local studyHash = createStudyHash(entities, docSubTypes, context, section)/>
 
 		<#-- Data waiving-->
-		<#if studyHash['dw']?has_content>
-			<#--			NOTE: need to output name-->
+		<#if includeWaivers && studyHash['dw']?has_content>
+
 			<@com.emptyLine/>
+
 			<para><emphasis role="HEAD-WoutNo">Data waiving</emphasis></para>
-<#--			<#list studyHash['dw'] as entityName, dataWaivingData>-->
-		<#--			NOTE: looping hashes by key, value only from Freemarker 2.3.25-->
-			<#list studyHash['dw']?keys as entityName>
-				<#local dataWaivingData=studyHash['dw'][entityName]/>
+
+			<#list studyHash['dw'] as entityName, dataWaivingData>
 
 				<#local dataWaivingStudyList=dataWaivingData['records']/>
 				<#if (entityName!=subjectName)>
-					<@com.emptyLine/>- for ${entityName}:<?linebreak?>
+					<#-- <@com.emptyLine/>- for ${entityName}:<?linebreak?> -->
+					<para><emphasis role="underline">----- Metabolite <emphasis role="bold">${entityName}</emphasis> -----</emphasis></para>
 				</#if>
-				<@studyandsummaryCom.dataWaiving dataWaivingStudyList name false/>
+				<#-- <@studyandsummaryCom.dataWaiving dataWaivingStudyList name false/>-->
+				<@dataWaiver dataWaivingStudyList name/>
 			</#list>
 		</#if>
 
 		<#-- Testing proposal
-        NOTE: Removed for the moment-->
+        NOTE: Removed-->
 		<#--		<#if testingProposalStudyList?has_content>-->
 		<#--			<para><@com.emptyLine/><emphasis role="HEAD-WoutNo">Testing proposal</emphasis></para>-->
 		<#--			<@studyandsummaryCom.testingProposal testingProposalStudyList name false/>-->
@@ -58,84 +58,84 @@
 
 
 		<#-- Study results-->
-		<#if !(studyHash['dw']?has_content) || studyHash['st']?has_content >
-			<@com.emptyLine/>
-			<para><emphasis role="HEAD-WoutNo">Studies</emphasis></para>
-		</#if>
-		<#--<@com.emptyLine/>-->
+		<#if includeStudies>
 
-		<#if !studyHash['st']?has_content>
-			<#if !studyHash['dw']?has_content><para>No relevant individual studies for ${name} available.</para></#if>
+			<#if !(studyHash['dw']?has_content) || studyHash['st']?has_content >
+				<@com.emptyLine/>
+				<para><emphasis role="HEAD-WoutNo">Studies</emphasis></para>
+			</#if>
 
-		<#else>
+			<#if !studyHash['st']?has_content>
+				<#if !studyHash['dw']?has_content><@com.emptyLine/><para>No individual studies available for ${name}.</para><@com.emptyLine/></#if>
 
-			<para><@resultStudyHashSummaryText studyHash['st'] subjectName name/></para>
-			<@com.emptyLine/>
+			<#else>
 
-			<#local studyIndex=0/>
-<#--			<#list studyHash['st'] as entityName, resultData>-->
-			<#list studyHash['st']?keys as entityName>
-				<#local resultData=studyHash['st'][entityName]/>
-			<#--			NOTE: looping hashes by key, value only from Freemarker 2.3.25-->
+				<para><@resultStudyHashSummaryText studyHash['st'] subjectName name/></para>
+				<@com.emptyLine/>
 
-				<#local resultStudyList=resultData['records']/>
-				<#local entity=resultData['entity']/>
+				<#local studyIndex=0/>
+				<#list studyHash['st'] as entityName, resultData>
+				<#--<#list studyHash['st']?keys as entityName>
+					<#local resultData=studyHash['st'][entityName]/>
+							NOTE: looping hashes by key, value only from Freemarker 2.3.25-->
 
-				<#if entityName!=subjectName>
-					<para><emphasis role="underline">----- Metabolite <emphasis role="bold">${entityName}</emphasis> -----</emphasis></para>
-				</#if>
+					<#local resultStudyList=resultData['records']/>
+					<#local entity=resultData['entity']/>
 
-				<#list resultStudyList as study>
+					<#if entityName!=subjectName>
+						<para><emphasis role="underline">----- Metabolite <emphasis role="bold">${entityName}</emphasis> -----</emphasis></para>
+					</#if>
 
-					<#local studyIndex=studyIndex+1/>
+					<#list resultStudyList as study>
+						<#local studyIndex=studyIndex+1/>
 
-<#--					<sect4 xml:id="${study.documentKey.uuid!}" label="/${study_index+1}" role="NotInToc">-->
-					<sect4 xml:id="${study.documentKey.uuid!}" label="/${studyIndex}" role="NotInToc">
+						<sect4 xml:id="${study.documentKey.uuid!}" label="/${studyIndex}" role="NotInToc">
 
-						<title  role="HEAD-5"><@com.text study.name/></title>
+							<#local docUrl=iuclid.webUrl.documentView(study.documentKey) />
 
-						<#--appendixE header-->
-						<para><emphasis role="HEAD-WoutNo">1. Information on the study</emphasis></para>
-						<@appendixEheader study entity/>
+							<title  role="HEAD-5"><ulink url="${docUrl}"><@com.text study.name/></ulink></title>
 
+							<#--appendixE header-->
+							<para><emphasis role="HEAD-WoutNo">1. Information on the study</emphasis></para>
+							<@appendixEheader study entity/>
+
+							<@com.emptyLine/>
+
+							<#--appendixE m&m and results-->
+							<para><emphasis role="HEAD-WoutNo"> 2. Full summary of the study according to OECD format </emphasis></para>
+
+							<#if study.hasElement("MaterialsAndMethods")>
+								<@appendixEmethods study true/>
+							<#elseif study.hasElement("GeneralInformation") && study.documentSubType=="EffectivenessAgainstTargetOrganisms">
+								<@keyBioPropMicro.generalInfo_effectivenessTargetOrg study/>
+							<#elseif study.hasElement("Background") && study.documentSubType=="EfficacyData">
+								<@keyEfficacy.basicInfo study/>
+							<#elseif study.hasElement("Background") && study.Background.BackgroundInformation?has_content>
+								<para><emphasis role="bold">Background information:</emphasis></para>
+								<para role="indent"><@com.text study.Background.BackgroundInformation/></para>
+							</#if>
+							<#--for intermediate effects-->
+							<#if study.hasElement("EffectIdentification")>
+								<@keyTox.intermediateEffectIdentification study/>
+							</#if>
+
+							<@com.emptyLine/>
+
+							<@appendixEresults study true/>
+
+							<@com.emptyLine/>
+
+							<#--appendixE Assessment and Conclusion-->
+							<@appendixEconclusion study/>
+
+						</sect4>
 						<@com.emptyLine/>
 
-						<#--appendixE m&m and results-->
-						<para><emphasis role="HEAD-WoutNo"> 2. Full summary of the study according to OECD format </emphasis></para>
-
-						<#if study.hasElement("MaterialsAndMethods")>
-							<@appendixEmethods study/>
-						<#elseif study.hasElement("GeneralInformation") && study.documentSubType=="EffectivenessAgainstTargetOrganisms">
-							<@keyBioPropMicro.generalInfo_effectivenessTargetOrg study/>
-						<#elseif study.hasElement("Background") && study.documentSubType=="EfficacyData">
-							<@keyEfficacy.basicInfo study/>
-						<#elseif study.hasElement("Background") && study.Background.BackgroundInformation?has_content>
-							<para><emphasis role="bold">Background information:</emphasis></para>
-							<para role="indent"><@com.text study.Background.BackgroundInformation/></para>
-						</#if>
-						<#--for intermediate effects-->
-						<#if study.hasElement("EffectIdentification")>
-							<@keyTox.intermediateEffectIdentification study/>
-						</#if>
-
-						<#--<@com.emptyLine/>-->
-
-						<@appendixEresults study/>
-
-						<@com.emptyLine/>
-
-						<#--appendixE Assessment and Conclusion-->
-						<@appendixEconclusion study/>
-
-					</sect4>
-
-					<@com.emptyLine/>
-
+					</#list>
 				</#list>
-			</#list>
+			</#if>
+			<@com.emptyLine/>
 		</#if>
-		<@com.emptyLine/>
-
 	</#compress>
 </#macro>
 
@@ -143,12 +143,12 @@
 	<#compress>
 		<#local text=''/>
 		<#local size=0/>
-<#--		<#list studyHash as entityName, resultData> -->
-			<#--			NOTE: looping hashes by key, value only from Freemarker 2.3.25-->
-		<#list studyHash?keys as entityName>
-
+		<#list studyHash as entityName, resultData>
+						
+		<#--<#list studyHash?keys as entityName>
 			<#local resultData=studyHash[entityName]/>
-
+			NOTE: looping hashes by key, value only from Freemarker 2.3.25-->
+			
 			<#local resultStudyList=resultData['records']/>
 
 			<#local size = size + resultStudyList?size/>
@@ -172,20 +172,16 @@
 <#macro appendixEheader study entity>
 	<#compress>
 
-		<#--Get first study report literature reference, if references exist (if more than one reference, sort and take first study report);
-        	else create an empty reference hash (another option is to make an if statement in each section)-->
+		<#--Get first study report literature reference, if references exist (if more than one reference, sort and take first study report)-->
 		<#local reference=getStudyReference(study)/>
-<#--		<#if !reference?has_content>-->
-<#--			<#local reference = {'GeneralInfo': {'Author':"", 'ReferenceYear':"", 'Name':"", 'ReportNo':"", 'StudyIdentifiers':""}}/>-->
-<#--		</#if>-->
 
 		<table border="1">
 			<title> </title>
-			<col width="35%" />
-			<col width="65%" />
+			<col width="30%" />
+			<col width="70%" />
 			<tbody valign="middle">
 			<tr>
-				<th><?dbfo bgcolor="#d3d3d3" ?><emphasis role="bold">Data point:</emphasis></th>
+				<th><?dbfo bgcolor="#d3d3d3" ?><emphasis role="bold">Data point</emphasis></th>
 				<td>
 					<#if study.documentSubType=="IntermediateEffects">
 						intermediate effects: <@com.picklist study.AdministrativeData.StudyResultType/>
@@ -195,69 +191,64 @@
 				</td>
 			</tr>
 			<tr>
-				<th><?dbfo bgcolor="#d3d3d3" ?><emphasis role="bold">Report type: </emphasis></th>
+				<th><?dbfo bgcolor="#d3d3d3" ?><emphasis role="bold">Report type</emphasis></th>
 				<td>
 					${getReferenceElement(reference, "GeneralInfo.LiteratureType", "picklist")}
 				</td>
 			</tr>
 			<tr>
-				<th><?dbfo bgcolor="#d3d3d3" ?><emphasis role="bold">Report author: </emphasis></th>
+				<th><?dbfo bgcolor="#d3d3d3" ?><emphasis role="bold">Report author</emphasis></th>
 				<td>
 					${getReferenceElement(reference, "GeneralInfo.Author")}
-<#--					<@com.text reference.GeneralInfo.Author/>-->
 				</td>
 			</tr>
 			<tr>
-				<th><?dbfo bgcolor="#d3d3d3" ?><emphasis role="bold">Report year: </emphasis></th>
+				<th><?dbfo bgcolor="#d3d3d3" ?><emphasis role="bold">Report year</emphasis></th>
 				<td>
 					${getReferenceElement(reference, "GeneralInfo.ReferenceYear")}
-<#--					<@com.number reference.GeneralInfo.ReferenceYear/>-->
 				</td>
 			</tr>
 			<tr>
-				<th><?dbfo bgcolor="#d3d3d3" ?><emphasis role="bold">Report title: </emphasis></th>
+				<th><?dbfo bgcolor="#d3d3d3" ?><emphasis role="bold">Report title</emphasis></th>
 				<td>
-					${getReferenceElement(reference, "GeneralInfo.Name")}
-<#--					<@com.text reference.GeneralInfo.Name/>-->
+					${getReferenceElement(reference, "GeneralInfo.Name", "text", true)}
 				</td>
 			</tr>
 			<tr>
-				<th><?dbfo bgcolor="#d3d3d3" ?><emphasis role="bold">Report No: </emphasis></th>
+				<th><?dbfo bgcolor="#d3d3d3" ?><emphasis role="bold">Report No</emphasis></th>
 				<td>
 					${getReferenceElement(reference, "GeneralInfo.ReportNo")}
-<#--					<@com.text reference.GeneralInfo.ReportNo/>-->
 				</td>
 			</tr>
 			<tr>
-				<th><?dbfo bgcolor="#d3d3d3" ?><emphasis role="bold">NoS Id: </emphasis></th>
+				<th><?dbfo bgcolor="#d3d3d3" ?><emphasis role="bold">Document No</emphasis></th>
+				<td>
+					${getReferenceElement(reference, "GeneralInfo.CompanyOwnerStudyNo")}
+				</td>
+			</tr>
+			<tr>
+				<th><?dbfo bgcolor="#d3d3d3" ?><emphasis role="bold">NoS Id</emphasis></th>
 				<td>
 					<#local NoSId=getNoSid(reference)/>
 					${NoSId}
 				</td>
 			</tr>
 			<tr>
-				<th><?dbfo bgcolor="#d3d3d3" ?><emphasis role="bold">Document No: </emphasis></th>
-				<td>
-					<#local docUrl=iuclid.webUrl.documentView(study.documentKey) />
-					<ulink url="${docUrl}"><@com.text study.documentKey.uuid/></ulink>
-				</td>
-			</tr>
-			<tr>
-				<th><?dbfo bgcolor="#d3d3d3" ?><emphasis role="bold">Guidelines followed in study: </emphasis></th>
+				<th><?dbfo bgcolor="#d3d3d3" ?><emphasis role="bold">Guidelines followed in study</emphasis></th>
 				<td>
 					<#if study.hasElement("MaterialsAndMethods") && study.documentSubType!="IntermediateEffects">
 						<@studyandsummaryCom.guidelineList study.MaterialsAndMethods.Guideline/>
 						<#if study.MaterialsAndMethods.MethodNoGuideline?has_content>
-							other method: <@com.text study.MaterialsAndMethods.MethodNoGuideline/>
+							<para>other method: <@com.text study.MaterialsAndMethods.MethodNoGuideline/></para>
 						</#if>
 					<#elseif study.documentSubType=="IntermediateEffects">
 						<@com.picklist study.MaterialsAndMethods.MethodUsed.Qualifier/> <@com.picklist study.MaterialsAndMethods.MethodUsed.MethodUsed/>
-						<?linebreak?><@com.text study.MaterialsAndMethods.MethodUsed.PrincipleOfTheMethod/>
+						<para><@com.text study.MaterialsAndMethods.MethodUsed.PrincipleOfTheMethod/></para>
 					</#if>
 				</td>
 			</tr>
 			<tr>
-				<th><?dbfo bgcolor="#d3d3d3" ?><emphasis role="bold">Deviations from current test guideline: </emphasis></th>
+				<th><?dbfo bgcolor="#d3d3d3" ?><emphasis role="bold">Deviations from current test guideline</emphasis></th>
 				<td>
 					<#--Display guideline deviations only if yes, referring to which guideline it applies (if several)-->
 					<#if study.hasElement("MaterialsAndMethods") && study.documentSubType!="IntermediateEffects">
@@ -277,8 +268,6 @@
 			<tr>
 				<th><?dbfo bgcolor="#d3d3d3" ?><emphasis role="bold">Previous evaluation: </emphasis></th>
 				<td>
-					<#--Check in change log: if uuid found, then "Yes:" and append status (concatenated); else "No"
-                        (NOTE: probably part of this can go to a macro/function elsewhere)-->
 					<#local changeLogStatus=getChangeLogStatus(study, entity)/>
 					${changeLogStatus}
 				</td>
@@ -309,10 +298,8 @@
 			</tr>
 			<tr>
 				<th><?dbfo bgcolor="#d3d3d3" ?><emphasis role="bold">Acceptability/Reliability: </emphasis></th>
-				<td><@com.picklist study.AdministrativeData.Reliability/>
-					<#if study.AdministrativeData.RationalReliability?has_content>
-						: <@com.picklist study.AdministrativeData.RationalReliability/>
-					</#if>
+				<td>
+					<@com.picklist study.AdministrativeData.Reliability/><#if study.AdministrativeData.RationalReliability?has_content>: <@com.picklist study.AdministrativeData.RationalReliability/></#if>
 				</td>
 			</tr>
 			</tbody>
@@ -357,11 +344,15 @@
 
 		<#--for intermediate effects-->
 		<#if study.hasElement("ApplicantSSummaryAndConclusion.InterpretationOfResultsObservations") && study.ApplicantSSummaryAndConclusion.InterpretationOfResultsObservations?has_content>
+			
 			<para><emphasis role="bold">Interpretation of results:</emphasis></para>
+			
 			<#local int=study.ApplicantSSummaryAndConclusion.InterpretationOfResultsObservations/>
+			
 			<#if int.TypeOfResult?has_content>
 				<para role="indent">Type of result: <@com.picklist int.TypeOfResult/></para>
 			</#if>
+			
 			<#if int.EffectConcentrationChoice?has_content>
 				<para role="indent">Effect concentration: <@com.picklist int.EffectConcentrationChoice/>
 					<#if int.Concentration?has_content>
@@ -369,6 +360,7 @@
 					</#if>
 				</para>
 			</#if>
+			
 			<#if int.Remarks?has_content>
 				<para role="indent">Remarks: <@com.text int.Remarks/></para>
 			</#if>
@@ -379,6 +371,7 @@
 					<@com.text  int.OverallResults/>
 				</para>
 			</#if>
+			
 		</#if>
 
 		<#--		<para><emphasis role="bold">b) Assessment and conclusion by RMS:</emphasis></para>-->
@@ -386,7 +379,7 @@
 	</#compress>
 </#macro>
 
-<#macro appendixEmethods study>
+<#macro appendixEmethods study includeRichTextFields=true>
 
 	<#--	Map type of document to document name, so that it's possible to select which methods macro to use-->
    	<#assign docCategoryMap={"tox_nonhuman":["BasicToxicokinetics", "AcuteToxicityOral", "AcuteToxicityDermal", "AcuteToxicityInhalation","SkinIrritationCorrosion","EyeIrritation","SkinSensitisation","PhototoxicityVitro",
@@ -415,20 +408,29 @@
 
 	<para><emphasis role="bold">a) Materials and methods</emphasis></para>
 
-	<!-- Test material-->
+	<#-- Test material-->
 	<para><emphasis role="bold">Test material:</emphasis></para>
-	<#assign testMat=study.MaterialsAndMethods.TestMaterials/>
+	<#local testMat=study.MaterialsAndMethods.TestMaterials/>
 	<para role="indent"><@studyandsummaryCom.testMaterialInformation testMat.TestMaterialInformation/></para>
 
-	<#if testMat.SpecificDetailsOnTestMaterialUsedForTheStudy?has_content>
+	<#if testMat.AdditionalTestMaterialInformation?has_content>
+		<para role="indent">Additional test material(s):</para>
+		<#list testMat.AdditionalTestMaterialInformation as addTestMat>
+			<para role="indent2"><@studyandsummaryCom.testMaterialInformation addTestMat/></para>
+		</#list>
+	</#if>
+
+	<#if testMat.SpecificDetailsOnTestMaterialUsedForTheStudy?has_content ||
+			testMat.SpecificDetailsOnTestMaterialUsedForTheStudyConfidential?has_content>
 		<para role="indent">Specific details:</para>
-		<para role="indent2"><@com.text study.MaterialsAndMethods.TestMaterials.SpecificDetailsOnTestMaterialUsedForTheStudy/></para>
+		<#if testMat.SpecificDetailsOnTestMaterialUsedForTheStudy?has_content><para role="indent2"><@com.text study.MaterialsAndMethods.TestMaterials.SpecificDetailsOnTestMaterialUsedForTheStudy/></para></#if>
+		<#if testMat.SpecificDetailsOnTestMaterialUsedForTheStudyConfidential?has_content><para role="indent2">[confidential] <@com.text study.MaterialsAndMethods.TestMaterials.SpecificDetailsOnTestMaterialUsedForTheStudyConfidential/></para></#if>
 	</#if>
 
 	<@com.children path=testMat exclude=["TestMaterialInformation", "SpecificDetailsOnTestMaterialUsedForTheStudy",
-											"SpecificDetailsOnTestMaterialUsedForTheStudyConfidential"] role1="indent" role2="indent2"/>
+											"SpecificDetailsOnTestMaterialUsedForTheStudyConfidential", "AdditionalTestMaterialInformation"] role1="indent" role2="indent2"/>
 
-	<!-- Specific methods -->
+	<#-- Specific methods -->
 	<#list docCategoryMap?keys as methodkey>
 		<#list docCategoryMap[methodkey] as methodDocSubType>
 			<#if methodDocSubType==study.documentSubType>
@@ -456,15 +458,17 @@
 		<@keyTox.methods_intermediateEffects study/>
 	</#if>
 
-	<#--Any other information-->
-	<#if study.MaterialsAndMethods.hasElement("AnyOtherInformationOnMaterialsAndMethodsInclTables") && study.MaterialsAndMethods.AnyOtherInformationOnMaterialsAndMethodsInclTables.OtherInformation?has_content>
-		<para><emphasis role="bold">Other information:</emphasis></para>
-		<para role="indent"><@com.richText study.MaterialsAndMethods.AnyOtherInformationOnMaterialsAndMethodsInclTables.OtherInformation/></para>
+	<#if includeRichTextFields>
+		<#--Any other information-->
+		<#if study.MaterialsAndMethods.hasElement("AnyOtherInformationOnMaterialsAndMethodsInclTables") && study.MaterialsAndMethods.AnyOtherInformationOnMaterialsAndMethodsInclTables.OtherInformation?has_content>
+			<para><emphasis role="bold">Other information:</emphasis></para>
+			<para role="indent"><@com.richText study.MaterialsAndMethods.AnyOtherInformationOnMaterialsAndMethodsInclTables.OtherInformation/></para>
+		</#if>
 	</#if>
 
 </#macro>
 
-<#macro appendixEresults study>
+<#macro appendixEresults study includeRichTextFields=true includeImages=true>
 	<#compress>
 		<para><emphasis role="bold">b) Results</emphasis></para>
 
@@ -751,8 +755,11 @@
 			<#elseif study.documentSubType=="AcuteToxicityOral" || study.documentSubType=="AcuteToxicityDermal" ||  study.documentSubType=="AcuteToxicityInhalation" || study.documentSubType=="AcuteToxicityOtherRoutes" >
 				<@keyTox.results_acuteToxicity study/>
 
-			<#elseif study.documentSubType=="SkinIrritationCorrosion" || study.documentSubType=="EyeIrritation">
-				<@keyTox.results_skinEyeIrritation study/>
+			<#elseif study.documentSubType=="EyeIrritation">
+				<@keyTox.results_eyeIrritation study/>
+
+			<#elseif study.documentSubType=="SkinIrritationCorrosion">
+				<@keyTox.results_skinIrritation study/>
 
 			<#elseif study.documentSubType=="SkinSensitisation">
 				<@keyTox.results_skinSensitisation study />
@@ -857,7 +864,7 @@
 			<#--FATE-->
 			<#elseif study.documentSubType=="BiodegradationInSoil">
 				<@keyFate.results_biodegradationInSoil study/>
-<#--				NOTE: maybe could be combined with the other biodegradations-->
+				<#--NOTE: maybe could be combined with the other biodegradations-->
 
 			<#elseif study.documentSubType=="PhotoTransformationInSoil" || study.documentSubType=="Phototransformation" ||
 						study.documentSubType=="PhototransformationInAir">
@@ -883,44 +890,72 @@
 				<@keyEfficacy.results_efficacyData study/>
 			</#if>
 
-<#--			Without specific results: "FieldStudies", "AgedSorption", "OtherDistributionData", "TransportViaAir",
+			<#-- Without specific results: "FieldStudies", "AgedSorption", "OtherDistributionData", "TransportViaAir",
 				"AdditionalInformationOnEnvironmentalFateAndBehaviour"-->
 
-			<#--2. Other information including tables
-			 NOTE: in some cases ("technical characteristics" at least) the path of results is different (probably by error)-->
-			<#if study.hasElement("ResultsAndDiscussion")><#local resultsPath=study.ResultsAndDiscussion/>
-			<#elseif study.hasElement("ResultsAndDiscussions")><#local resultsPath=study.ResultsAndDiscussions/>
-			</#if>
-
-			<#-- OtherInformation is the most common field but there might be others -->
-			<#if resultsPath.hasElement("AnyOtherInformationOnResultsInclTables")>
-				<#assign excludeResultsOtherInfo=["MetabolismInCrops","MetabolismInLivestock"]/>
-				<#if resultsPath.AnyOtherInformationOnResultsInclTables.hasElement("OtherInformation") &&
-						resultsPath.AnyOtherInformationOnResultsInclTables.OtherInformation?has_content &&
-						!(excludeResultsOtherInfo?seq_contains(study.documentSubType))>
-					<para><emphasis role="bold">Other information</emphasis></para>
-					<para role="indent"><@com.richText resultsPath.AnyOtherInformationOnResultsInclTables.OtherInformation/></para>
-				<#--Special case for acute fish toxicity-->
-				<#elseif resultsPath.AnyOtherInformationOnResultsInclTables.hasElement("SublethalObservationsClinicalSigns") &&
-						resultsPath.AnyOtherInformationOnResultsInclTables.SublethalObservationsClinicalSigns?has_content>
-					<para><emphasis role="bold">Other information</emphasis></para>
-					<para role="indent"><@com.richText resultsPath.AnyOtherInformationOnResultsInclTables.SublethalObservationsClinicalSigns/></para>
+			<#if includeRichTextFields>
+				<#--2. Other information including tables-->
+				<#--  NOTE: in some cases ("technical characteristics" at least) the path of results is different (probably by error)-->
+				<#if study.hasElement("ResultsAndDiscussion")><#local resultsPath=study.ResultsAndDiscussion/>
+				<#elseif study.hasElement("ResultsAndDiscussions")><#local resultsPath=study.ResultsAndDiscussions/>
 				</#if>
-			</#if>
 
-			<#-- Iterate over all other HTML fields if any -->
-			<#list resultsPath?children as child>
-				<#if child?node_type?contains("html") && child?node_name!="OtherInformation" && child?has_content>
-					<#assign childName=child?node_name?replace("([A-Z]{1})", " $1", "r")?lower_case?cap_first/>
-					<para>${childName}:</para>
-					<para role="indent"><@com.richText child/></para>
+				<#-- OtherInformation is the most common field but there might be others -->
+				<#if resultsPath.hasElement("AnyOtherInformationOnResultsInclTables")>
+					<#assign excludeResultsOtherInfo=["MetabolismInCrops","MetabolismInLivestock"]/>
+					<#if resultsPath.AnyOtherInformationOnResultsInclTables.hasElement("OtherInformation") &&
+							resultsPath.AnyOtherInformationOnResultsInclTables.OtherInformation?has_content &&
+							!(excludeResultsOtherInfo?seq_contains(study.documentSubType))>
+						<para><emphasis role="bold">Other information</emphasis></para>
+						<para role="indent"><@com.richText resultsPath.AnyOtherInformationOnResultsInclTables.OtherInformation/></para>
+					<#--Special case for acute fish toxicity-->
+					<#elseif resultsPath.AnyOtherInformationOnResultsInclTables.hasElement("SublethalObservationsClinicalSigns") &&
+							resultsPath.AnyOtherInformationOnResultsInclTables.SublethalObservationsClinicalSigns?has_content>
+						<para><emphasis role="bold">Other information</emphasis></para>
+						<para role="indent"><@com.richText resultsPath.AnyOtherInformationOnResultsInclTables.SublethalObservationsClinicalSigns/></para>
+					</#if>
 				</#if>
-			</#list>
 
-			<#--3. Remarks on results-->
-			<#if study.OverallRemarksAttachments.RemarksOnResults?has_content>
-				<para><emphasis role="bold">Overall remarks:</emphasis></para>
-				<para role="indent"><@com.richText study.OverallRemarksAttachments.RemarksOnResults/></para>
+				<#-- Iterate over all other HTML fields if any -->
+				<#list resultsPath?children as child>
+					<#if child?node_type?contains("html") && child?node_name!="OtherInformation" && child?has_content>
+						<#assign childName=child?node_name?replace("([A-Z]{1})", " $1", "r")?lower_case?cap_first/>
+						<para>${childName}:</para>
+						<para role="indent"><@com.richText child/></para>
+					</#if>
+				</#list>
+
+				<#--3. Remarks on results-->
+				<#if study.OverallRemarksAttachments.RemarksOnResults?has_content>
+					<para><emphasis role="bold">Overall remarks:</emphasis></para>
+					<para role="indent"><@com.richText study.OverallRemarksAttachments.RemarksOnResults/></para>
+				</#if>
+
+			</#if>
+			
+			<#--4. Illustrations-->
+			<#if includeImages>
+				<#if study.hasElement("OverallRemarksAttachments.IllustrationPicGraph") && study.OverallRemarksAttachments.IllustrationPicGraph?has_content>
+					<para><emphasis role="bold">Illustrations / pictures / graphs:</emphasis></para>
+	
+					<#local illustration = iuclid.getMetadataForAttachment(study.OverallRemarksAttachments.IllustrationPicGraph) />
+					<#if illustration?has_content && illustration.isImage>
+						<#if illustration.exceedsLimit(10000000)>
+							<para><emphasis>Image size is too big (${illustration.size} bytes) and cannot be displayed!</emphasis></para>
+						<#elseif !iuclid.imageMimeTypeSupported(illustration.mediaType) >
+							<para><emphasis>Image type (${illustration.mediaType}) is not yet supported!</emphasis></para>
+						<#else>
+							<figure>
+								<title><@com.text illustration.filename/></title>
+								<mediaobject>
+									<imageobject>
+										<imagedata width="70%" scalefit="1" fileref="data:${illustration.mediaType};base64,${iuclid.getContentForAttachment(study.OverallRemarksAttachments.IllustrationPicGraph)}" />
+									</imageobject>
+								</mediaobject>
+							</figure>
+						</#if>
+					</#if>
+				</#if>
 			</#if>
 
 	</#compress>
@@ -945,35 +980,28 @@
 				<#local contextPath = "study." + ctxt["path"] />
 				<#local contextVal = contextPath?eval/>
 
-			<#--				<#if contextVal?has_content>-->
-
-
 				<#-- Convert value depending on type -->
 				<#if ctxt["type"]=="picklistMultiple">
 
 					<#local contextVal2>
 						<#compress>
 							<#list contextVal as ctxtVal>
-<#--								<@picklistNoRemarks ctxtVal/><#if ctxt_has_next>;</#if>-->
 								<@com.picklist picklistValue=ctxtVal locale="en" printOtherPhrase=false printDescription=false printRemarks=false /><#if ctxt_has_next>;</#if>
-
 							</#list>
 						</#compress>
-					<#--                            <@com.picklistMultiple contextVal/>-->
 					</#local>
 
 				<#elseif ctxt["type"]=="picklist">
 
 					<#-- get the value of the picklist without remarks!!-->
 					<#local contextVal2>
-<#--						<@picklistNoRemarks contextVal/>-->
 						<@com.picklist picklistValue=contextVal locale="en" printOtherPhrase=false printDescription=false printRemarks=false />
 					</#local>
 				<#elseif ctxt["type"]=="text">
 					<#local contextVal2><@com.text contextVal/></#local>
 				</#if>
 
-			<#-- Evaluate condition and change flag -->
+				<#-- Evaluate condition and change flag -->
 				<#if ctxt["qual"]=="eq">
 					<#if ctxt["val"]?seq_contains(contextVal2)>
 						<#local nbCondMet=nbCondMet+1/>
@@ -1002,17 +1030,15 @@
 					<#if notfound><#local nbCondMet=nbCondMet+1/></#if>
 
 				</#if>
-			<#--				</#if>-->
 			</#list>
 
-		<#--Check if all conditions met and add study-->
+			<#--Check if all conditions met and add study-->
 			<#if nbCondMet==context?size>
 				<#local filtStudyList = filtStudyList + [study] />
 			</#if>
 		</#list>
 		<#return filtStudyList/>
 	<#else>
-<#--		<#local filtStudyList = myStudyList/>-->
 		<#return myStudyList/>
 	</#if>
 </#function>
@@ -1042,7 +1068,6 @@
 			<#if _doc2SectHashMap?keys?seq_contains(study.documentKey.uuid)>
 				<#local doc = _doc2SectHashMap[study.documentKey.uuid]/>
 				<#local docSection = doc["section"]/>
-			<#--				<#if docSection?has_content>-->
 
 				<#local docMainSection = docSection?sort_by("nb")[0]/>
 				<#local docMainSectionNb = docMainSection["nb"]/>
@@ -1066,7 +1091,7 @@
 	</#if>
 </#function>
 
-<#macro metabolitesStudies metabList=[] mixture="" activeSubstance="" studySubTypes=[] studyContext="" studyName="" summarySubTypes=[] summaryMacroCall="keyTox.summarySingle">
+<#macro metabolitesStudies metabList=[] mixture="" activeSubstance="" studySubTypes=[] studyContext="" studyName="" summarySubTypes=[] summaryMacroCall="keyTox.toxPPPsummary" includeStudies=true includeWaivers=true>
 	<#compress>
 
 		<#if (!metabList?has_content) && mixture?has_content>
@@ -1084,7 +1109,7 @@
 				<#if metabList?size gt 1>
 					<#list metabList as metab>
 						<para role="indent">
-							- <command linkend="${metab.documentKey.uuid!}">${metab.ChemicalName}</command>
+							- <command linkend="${metab.documentKey.uuid!}_${includeStudies?c}">${metab.ChemicalName}</command>
 						</para>
 					</#list>
 				<#else>
@@ -1096,38 +1121,44 @@
 
 			<#list metabList as metab>
 
-			<sect3 xml:id="${metab.documentKey.uuid!}" label="-${metab_index+1}">
+			<sect3 xml:id="${metab.documentKey.uuid!}_${includeStudies?c}" label="-${metab_index+1}">
 				<title role="HEAD-3">Metabolite ${metab.ChemicalName}</title>
-<#--				<para xml:id="${metab.documentKey.uuid!}" role="HEAD-5">-->
-<#--					<para><emphasis role="underline">----- Metabolite <emphasis role="bold">${metab.ChemicalName}</emphasis> -----</emphasis></para>-->
-<#--				</para>-->
+				<#--				<para xml:id="${metab.documentKey.uuid!}" role="HEAD-5">-->
+				<#--					<para><emphasis role="underline">----- Metabolite <emphasis role="bold">${metab.ChemicalName}</emphasis> -----</emphasis></para>-->
+				<#--				</para>-->
 
 				<#--Get all summaries-->
 				<#if summaryMacroCall?has_content>
 					<#local summaryFirst=true/>
 					<#list summarySubTypes as summarySubType>
+						<#local endSummary>ENDPOINT_SUMMARY.${summarySubType}</#local>
+						<#local flexSummary>FLEXIBLE_SUMMARY.${summarySubType}</#local>
+						<#if containsDoc(metab, [endSummary, flexSummary], "", false)>
 
-						<#local summaryCallString = "<@" + summaryMacroCall + " metab  summarySubType 'table' false/>"/>
-						<#local summaryCall=summaryCallString?interpret/>
-						<#local summary><@summaryCall/></#local>
-
-						<#if summary?has_content>
-							<#if summaryFirst>
-								<#local summaryFirst=false/>
+							<#local summaryCallString = "<@" + summaryMacroCall + " metab  summarySubType false/>"/>
+							<#local summaryCall=summaryCallString?interpret/>
+							<#local summary><@summaryCall/></#local>
+	
+							<#if summary?has_content>
+								<#if summaryFirst>
+									<#local summaryFirst=false/>
+									<@com.emptyLine/>
+									<para><emphasis role="HEAD-WoutNo">Summaries</emphasis></para>
+									<para>Summaries for studies on metabolite ${metab.ChemicalName} are provided below:</para>
+								</#if>
+								
+								<#local summaryDocFullName=summarySubType?replace("_EU_PPP", "")?replace("([A-Z]{1})", " $1", "r")?lower_case?cap_first/>
+								<#if (summarySubTypes?size > 1)>
+									${summary?replace('<emphasis role="HEAD-WoutNo">Summary</emphasis>',
+													'-- for <emphasis role="HEAD-WoutNo">${summaryDocFullName}</emphasis>:')}
+								<#else>
+									${summary?replace('<para><@com.emptyLine/><emphasis role="HEAD-WoutNo">Summary</emphasis></para>', '')}
+								</#if>
+	
+							</#if>
+							<#if !summaryFirst && summarySubType_index==(summarySubTypes?size-1)>
 								<@com.emptyLine/>
-								<para><emphasis role="HEAD-WoutNo">Summaries</emphasis></para>
-								<para>Summaries for studies on metabolite ${metab.ChemicalName} are provided below:</para>
 							</#if>
-							<#local summaryDocFullName=summarySubType?replace("_EU_PPP", "")?replace("([A-Z]{1})", " $1", "r")?lower_case?cap_first/>
-							<#if (summarySubTypes?size > 1)>
-								${summary?replace('<para><emphasis role="HEAD-WoutNo">Summary</emphasis></para>',
-								'<para>-- for <emphasis role="HEAD-WoutNo">${summaryDocFullName}</emphasis>:</para>')}
-							<#else>
-								${summary?replace('<para><emphasis role="HEAD-WoutNo">Summary</emphasis></para>', '')}
-							</#if>
-						</#if>
-						<#if !summaryFirst && summarySubType_index==(summarySubTypes?size-1)>
-							<@com.emptyLine/>
 						</#if>
 					</#list>
 				</#if>
@@ -1136,7 +1167,7 @@
 				<@com.emptyLine/>
 				<@keyAppendixE.appendixEstudies subject=metab
 					docSubTypes=studySubTypes context=studyContext name="Toxicity studies of metabolite ${metab.ChemicalName}"
-					includeMetabolites=false/>
+					includeMetabolites=false includeStudies=includeStudies includeWaivers=includeWaivers/>
 			</sect3>
 			</#list>
 		</#if>
@@ -1165,13 +1196,11 @@
         </#if>
 		<#local resultStudyList=getResultStudies(studyList)/>
 		<#if resultStudyList?has_content>
-<#--			<#local studyHash_st = studyHash_st + {entityName:resultStudyList}/>-->
 			<#local studyHash_st = studyHash_st + {entityName:{'entity':entity, 'records': resultStudyList}}/>
 		</#if>
 
 		<#local dataWaivingStudyList=getDataWaivings(studyList)/>
 		<#if dataWaivingStudyList?has_content>
-<#--			<#local studyHash_dw = studyHash_dw + {entityName:dataWaivingStudyList}/>-->
 			<#local studyHash_dw = studyHash_dw + {entityName:{'entity':entity, 'records': dataWaivingStudyList}}/>
 		</#if>
 
@@ -1229,9 +1258,10 @@
 
 <#function getStudyReference study>
 
-<#--	<#local reference=""/>-->
 	<#local referenceList=[]/>
+	
 	<#local referenceLinksList=study.DataSource.Reference/>
+	
 	<#if referenceLinksList?has_content>
 		<#list referenceLinksList as referenceLink>
 			<#local referenceEntry = iuclid.getDocumentForKey(referenceLink)/>
@@ -1240,34 +1270,26 @@
 	</#if>
 
 	<#if referenceList?has_content && (referenceList?size > 1)>
-			<#local referenceList = iuclid.sortByField(referenceList,
-				"GeneralInfo.LiteratureType", ["study report", "publication","review article or handbook", "other company data", "other:"]) />
+		<#local referenceList = iuclid.sortByField(referenceList,
+			"GeneralInfo.LiteratureType", ["study report","publication","publication (copyright not owned for reproduction)","review article or handbook", "other company data", "other:"]) />
 	</#if>
-<#--		<#local reference=referenceList[0]/>-->
-<#--	<#if referenceLinksList?has_content>-->
-<#--		<#list referenceLinksList as referenceLink>-->
-<#--			<#local referenceEntry = iuclid.getDocumentForKey(referenceLink)/>-->
-<#--			<#local litType><@com.picklist referenceEntry.GeneralInfo.LiteratureType/></#local>-->
-<#--			<#if litType=="study report">-->
-<#--				<#local reference=referenceEntry/>-->
-<#--				<#break>-->
-<#--			</#if>-->
-<#--		</#list>-->
-<#--	</#if>-->
-
+	
 	<#return referenceList>
 </#function>
 
 <#--Function to extract elements for a reference list-->
-<#function getReferenceElement referenceList element type='text'>
+<#function getReferenceElement referenceList element type='text' hyperlink=false>
 	<#local referenceElement="">
 
 	<#if referenceList?has_content>
 		<#list referenceList as reference>
+			<#local refUrl=iuclid.webUrl.documentView(reference.documentKey) />
 			<#local refElementPath = "reference." + element/>
 			<#local refElement = refElementPath?eval/>
 			<#local refElement><#if (referenceList?size>1)>(${reference_index+1})</#if>
+				<#if hyperlink><ulink url="${refUrl}"></#if>
 				<#if type=="text"><#if element?contains("ReferenceYear")><@com.number refElement/><#else><@com.text refElement/></#if> <#elseif type=="picklist"><@com.picklist refElement/> </#if>
+				<#if hyperlink></ulink></#if>
 			</#local>
 			<#local referenceElement = referenceElement + refElement/>
 		</#list>
@@ -1278,27 +1300,6 @@
 <#function getNoSid referenceList>
 
 	<#local NoSIds=[]/>
-	<#-- Before IUCLID 6.6:-->
-<#--	<#if reference?has_content>-->
-<#--		-->
-<#--		<#if reference?is_sequence>-->
-<#--			<#local reference=reference[0]/>-->
-<#--		</#if>-->
-
-<#--		<#if reference.GeneralInfo.StudyIdentifiers?has_content>-->
-<#--			<#list reference.GeneralInfo.StudyIdentifiers as studyId>-->
-<#--				<#if studyId.Remarks?matches(".*NOTIF.*STUD.*", "i") || studyId.Remarks?matches(".*NOS.*", "i")>-->
-<#--					<#if studyId.StudyID?has_content>-->
-<#--						<#local NoSId = studyId.StudyID/>-->
-<#--					<#else>-->
-<#--						<#local NoSId>NA - justification: <@com.text studyId.Remarks/></#local>-->
-<#--					</#if>-->
-
-<#--					<#return NoSId>-->
-<#--				</#if>-->
-<#--			</#list>-->
-<#--		</#if>-->
-<#--	</#if>-->
 
 	<#if !referenceList?is_sequence>
 		<#local referenceList = [referenceList]/>
@@ -1314,11 +1315,19 @@
 
 				<#if idType=="Notification of Studies (NoS) ID">
 
-					<#local remark><@com.text studyId.Remarks/></#local>
 					<#local NoSId><@com.text studyId.StudyID/></#local>
-<#--					<#if studyId.StudyID?has_content>-->
-					<#if NoSId?has_content>
-<#--						<#local NoSId><@com.text studyId.StudyID/></#local>-->
+					<#if !NoSId?has_content><#local NoSId="n.a."/></#if>
+					
+					<#local remark><@com.text studyId.Remarks/></#local>
+					<#if remark?has_content>
+						<#local NoSId = NoSId + ' (' + remark + ')'/>
+					</#if>
+					
+					<#if !NoSIds?seq_contains(NoSId)>
+						<#local NoSIds = NoSIds + [NoSId]/>
+					</#if>
+						
+					<#-- <#if NoSId?has_content>
 						<#if remark?has_content>
 							<#local NoSId = NoSId + ' (' + remark + ')'/>
 						</#if>
@@ -1327,7 +1336,7 @@
 						</#if>
 					<#elseif remark?has_content>
 						<#local NoSIds = NoSIds + [remark]/>
-					</#if>
+					</#if>-->
 				</#if>
 			</#list>
 		</#if>
@@ -1355,7 +1364,7 @@
 <#function getChangeLogStatus study entity>
 	<#local changeLogFlag="no"/>
 
-	<#local changeLogStatusList=[]/>
+	<#local changeLogEntryList=[]/>
 
 	<#local changeLogs = iuclid.getSectionDocumentsForParentKey(entity.documentKey, "FLEXIBLE_RECORD", "ChangeLog") />
 	<#list changeLogs as changeLog>
@@ -1369,14 +1378,22 @@
 						<#if !(changeLogStatus?starts_with("new"))>
 							<#local changeLogFlag="yes"/>
 						</#if>
-						<#local changeLogStatusList = changeLogStatusList + [changeLogStatus]/>
+						<#local changeLogEntryList = changeLogEntryList + [changeLogEntry]/>
+						<#-- <#local changeLogStatusList = changeLogStatusList + [changeLogStatus]/> -->
 					</#if>
 				</#if>
 			</#if>
 		</#list>
 	</#list>
-
-	<#local changeLogStatusMessage>${changeLogFlag}<#if changeLogStatusList?has_content> (${changeLogStatusList?join(", ")})</#if></#local>
+	
+	<#local changeLogStatusMessage>${changeLogFlag}
+		<#if changeLogEntryList?has_content>
+			<#list changeLogEntryList as clEntry>
+				(<@com.picklist clEntry.Status/>)<#if clEntry.Remark?has_content> - <@com.text clEntry.Remark/></#if>
+				<#if clEntry?has_next>|</#if>
+			</#list>
+		</#if>
+	</#local>
 
 	<#return changeLogStatusMessage>
 </#function>
@@ -1387,9 +1404,7 @@
 	<#local studyHashMap={}/>
 	<#list myStudyList as study>
 		<#local endpoint><@com.picklist study.AdministrativeData.Endpoint/></#local>
-	<#--		<#if studyHashMap?keys?seq_contains(endpoint)>-->
 		<#if studyHashMap[endpoint]??>
-		<#--			endpointsHash[seqEntry["name"]]??-->
 			<#local entry = studyHashMap[endpoint] + [study]/>
 			<#local studyHashMap = studyHashMap + {endpoint : entry}/>
 		<#else>
@@ -1414,11 +1429,11 @@
 	<#assign testingProposalStudyList = [] />
 	<#if studyList?has_content>
 		<#list studyList as study>
-<#--			<#if isTestingProposalStudy(study)>-->
-<#--				<#assign testingProposalStudyList = testingProposalStudyList + [study] />-->
+			<#--			<#if isTestingProposalStudy(study)>-->
+			<#--				<#assign testingProposalStudyList = testingProposalStudyList + [study] />-->
 			<#if isDataWaivingStudy(study)>
 				<#assign dataWaivingStudyList = dataWaivingStudyList + [study] />
-<#--			<#elseif isRelevantAdequacyOfStudy(study)>-->
+			<#--			<#elseif isRelevantAdequacyOfStudy(study)>-->
             <#else>
 				<#assign resultStudyList = resultStudyList + [study] />
 			</#if>
@@ -1430,6 +1445,42 @@
 
 	<#-- sort resultStudyList by Endpoint (is there a function to do this?) -->
 	<#assign resultStudyList = sortByEndpoint(resultStudyList)/>
+</#macro>
+
+<#-- Macro to print data waivers (substitutes original macro in macros_common_studies_and_summaries) -->
+<#macro dataWaiver dwList endpoint="">
+	<#compress>
+		<#if dwList?has_content>
+			<#list dwList as study>
+				<#if study?has_content>
+	
+					<sect4 xml:id="${study.documentKey.uuid!}" label="" role="NotInToc">
+						
+						<para><emphasis role="bold"><@com.text study.name/></emphasis>:</para>
+						
+						<para role="indent"><emphasis role="bold">Information requirement: </emphasis>
+						 	<#if study.AdministrativeData.Endpoint?has_content>
+						 		<@com.picklist study.AdministrativeData.Endpoint/>
+						 	<#else>
+						 		${endpoint!}
+							</#if>
+						</para>
+	
+						<para role="indent">
+							<emphasis role="bold">Reason: </emphasis>
+							<@com.picklist study.AdministrativeData.DataWaiving/>
+						</para>
+				
+						<para role="indent">
+							<emphasis role="bold">Justification:</emphasis>
+							<@com.picklistMultiple study.AdministrativeData.DataWaivingJustification/>
+						</para>
+		
+					</sect4>
+				</#if>
+			</#list>
+		</#if>
+	</#compress>
 </#macro>
 
 <#function getResultStudies studyList>
@@ -1478,4 +1529,39 @@
 		<#return false>
 	</#if>
     <#return !(PurposeFlag?has_content) && com.picklistValueMatchesPhrases(study.AdministrativeData.StudyResultType, ["experimental study planned.*"]) />
+</#function>
+
+<#function containsDoc subject docTypesSubTypes context=[] includeMetabolites=true section="">
+
+	<#if !docTypesSubTypes?is_sequence>
+		<#local docTypesSubTypes=[docTypesSubTypes]/>
+	</#if>
+	
+	<#local entities=[subject]/>
+	<#if includeMetabolites && _metabolites?? && _metabolites?has_content>
+		<#local entities = entities + _metabolites/>
+	</#if>
+	
+	<#list docTypesSubTypes as docTypeSubType>
+		<#local docTypeSubtypeList=docTypeSubType?split(".")/>
+		
+		<#local docList=[]/>
+		<#list entities as entity>
+			<#local docList = docList + iuclid.getSectionDocumentsForParentKey(entity.documentKey, docTypeSubtypeList[0] , docTypeSubtypeList[1])/>
+		</#list>
+		
+		<#if context?has_content>
+			<#local docList=filterStudyListbyContext(docList, context)/>
+		</#if>
+		
+		<#if _doc2SectHashMap?? && section?has_content>
+		    <#local studyList = filterStudyListbySection(docList, section, _doc2SectHashMap)/>
+        </#if>
+		
+		<#if docList?has_content>
+			<#return true>
+		</#if>
+	</#list>
+
+	<#return false>
 </#function>

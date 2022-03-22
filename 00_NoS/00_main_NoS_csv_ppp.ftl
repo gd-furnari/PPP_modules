@@ -25,6 +25,8 @@
 <#assign legalEntityName = ""/>
 <#assign ownerLegalEntity = iuclid.getDocumentForKey(_subject.OwnerLegalEntity) />
 <#if ownerLegalEntity?has_content><#assign legalEntityName=ownerLegalEntity.GeneralInfo.LegalEntityName/><#else><#assign legalEntityName=""></#if>
+<#assign thirdParty = iuclid.getDocumentForKey(_subject.ThirdParty)/>
+<#if thirdParty?has_content><#assign thirdPartyName=thirdParty.GeneralInfo.LegalEntityName/><#else><#assign thirdPartyName=""></#if>
 <#assign submittingLegalEntity = iuclid.getDocumentForKey(dossier.submittingLegalEntityKey) />
 <#if submittingLegalEntity?has_content><#assign submittingLegalEntityName=submittingLegalEntity.GeneralInfo.LegalEntityName/><#else><#assign submittingLegalEntityName=""/></#if>
 <#-- Print the headears for each column -->
@@ -50,7 +52,7 @@ Please run Report Generator from a dossier.
     <@printChildren path=app header=true/>
     Subject,Subject ids,Active Substance(s),Pre-application identification,
     Dossier name,Dossier UUID,Dossier submission remarks,Dossier creation date and time,Submission type,
-    Owner legal entity, Submitting legal entity
+    Owner legal entity,Third party,Submitting legal entity
     </@compress>
 </#macro>
 
@@ -77,6 +79,7 @@ Please run Report Generator from a dossier.
             <@printPreapp nosinfo/>
             <@printDossierInfo dossier/>
             "${legalEntityName}",
+            "${thirdPartyName}",
             "${submittingLegalEntityName}"
             </@compress>
 
@@ -87,14 +90,12 @@ Please run Report Generator from a dossier.
 <#macro printNoS _subject dossier nosinfo app ownerLegalEntity submittingLegalEntityName>
     <#compress>
 
-        <#assign NoSstudyList={}/>
-        <#assign missingNoSstudyList={}/>
-        <@populateNoSstudyLists _subject/>
+        <#assign NoSstudyHash={}/>
+        <#assign missingNoSstudyHash={}/>
+        <@populateNoSstudyHashes _subject/>
 
-        <#assign fullList=NoSstudyList+missingNoSstudyList/>
-<#--        <#list fullList as key,value>-->
-        <#list fullList?keys as key>
-            <#local value = fullList[key]/>
+        <#assign fullList=NoSstudyHash+missingNoSstudyHash/>
+		<#list fullList as key,value>
 
             <#local reference=value['reference']/>
             <#local studies=value['doc']/>
@@ -102,30 +103,15 @@ Please run Report Generator from a dossier.
             <#list studies as study>
 
                 <@compress single_line=true>
-                <#local NoSid=getNoSid(reference)/>
+                <#if NoSstudyHash?keys?seq_contains(reference.documentKey.uuid)><#local NoSid=getNoSid(reference, true)/><#else><#local NoSid=getNoSid(reference, false)/></#if>
                 "${NoSid}",
                 <#local NoSremarks=getNoSidRemarks(reference)/>
-<#--                <#local remarksList=[]>-->
-<#--                <#if !(NoSid?has_content)>-->
-<#--                    <#list reference.GeneralInfo.StudyIdentifiers as studyId>-->
-<#--                        <#if studyId.Remarks?has_content>-->
-<#--                            <#local remark><#compress>-->
-<#--                                <@com.text studyId.Remarks/>-->
-<#--                                <#if studyId.StudyID?has_content>-->
-<#--                                    : <@com.text studyId.StudyID/>-->
-<#--                                </#if>-->
-<#--                            </#compress></#local>-->
-<#--                            <#local remarksList = remarksList + [remark]/>-->
-<#--                        </#if>-->
-<#--                    </#list>-->
-<#--                </#if>-->
-<#--                <#if remarksList?has_content>"${remarksList?join(" | ")}"<#else>""</#if>,-->
                 <#if NoSremarks?has_content>"${NoSremarks}"<#else>""</#if>,
-                <#if NoSid?has_content>"notified study"<#else>"study lacking notification"</#if>,
+                <#if NoSstudyHash?keys?seq_contains(reference.documentKey.uuid)>"notified study"<#else>"study lacking notification"</#if>,
                 <@printChildren path=reference.GeneralInfo header=false exclude=["Attachments_list", "StudyIdentifiers_list"]/>
                 "<@com.text reference.documentKey.uuid/>",
                 "${studies?size}",
-                "<@com.text study.AdministrativeData.StudyPeriod/>",
+                <#if study.hasElement("AdministrativeData.StudyPeriod")>"<@com.text study.AdministrativeData.StudyPeriod/>"<#else>""</#if>,
                  <#local endpoint>
                     <#compress>
                         <#if study.hasElement("AdministrativeData.Endpoint")>
@@ -133,6 +119,10 @@ Please run Report Generator from a dossier.
                         <#else>
                             <#if study.documentSubType=="IntermediateEffects">
                                 intermediate effects: <@com.picklist study.AdministrativeData.StudyResultType/>
+                            <#elseif study.documentSubType=="AnalyticalProfileOfBatches">
+                            	5-batch analysis
+                        	<#elseif study.documentSubType=="BioPropertiesMicro">
+                            	biological properties of the microorganism<#-- It's not very specific at the moment-->
                             </#if>
                         </#if>
                     </#compress>
@@ -179,6 +169,7 @@ Please run Report Generator from a dossier.
                 <@printPreapp nosinfo/>
                 <@printDossierInfo dossier/>
                 "${legalEntityName}",
+                "${thirdPartyName}",
                 "${submittingLegalEntityName}"
                 </@compress>
 
@@ -254,7 +245,7 @@ Please run Report Generator from a dossier.
                     <@com.picklistMultiple node/>
                 <#elseif nodeType=="quantity">
                     <@com.quantity node/>
-                <#elseif nodeType=="decimal">
+                <#elseif nodeType=="decimal" || nodeType=="integer">
                     <@com.number node/>
                 <#elseif nodeType=="multilingual_text_html">
                     <@com.richText node/>

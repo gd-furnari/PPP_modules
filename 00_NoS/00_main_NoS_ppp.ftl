@@ -2,10 +2,9 @@
 
 <#--Report for NoS:
 
-    Description: it iterates over the ToC and fetches all references of type "study report" from ENDPOINT_STUDY_RECORDs and specific FLEXIBLE_RECORDs (i.e. Intermediate Effects),
-    then looks for a NoS id (based on name in remarks in other study identifiers) in the reference, else fetches all remarks.
+    Description: it iterates over the ToC and fetches all references of type "study report" from ENDPOINT_STUDY_RECORDs and specific FLEXIBLE_RECORDs (e.g. Intermediate Effects),
+    then looks for a NoS id in the reference or remarks associated to a NoS id.
     The output are lists of references and their correspodning ENDPOINT_STUDY_RECORDs/FLEXIBLE_RECORDs that have them as data source.
-
 -->
 
 <#-- Import common macros and functions -->
@@ -13,18 +12,9 @@
 <#import "macros_common_studies_and_summaries.ftl" as studyandsummaryCom>
 <#include "macros_NoS.ftl">
 
-<!-- Example template file -->
 <#assign locale = "en" />
 <#assign sysDateTime = .now>
 
-<#--<#if (dossier.header)?has_content>-->
-<#--    <#global "_dossierHeader"=dossier.header + {"Name": dossier.header.name}/>-->
-<#--    <#global "_subject"=dossier.subject.root />-->
-<#if rootDocument.documentType=="DOSSIER">
-    <#global _dossier=rootDocument />
-<#elseif dossier??>
-    <#global _dossier=dossier />
-</#if>
 
 <#-- Initialize the following variables:
 	* _dossierHeader (:DossierHashModel) //The header document of a proper or 'raw' dossier, can be empty
@@ -32,19 +22,24 @@
 	-->
 <@com.initializeMainVariables/>
 
-<#-- Get legal entity-->
-<#assign ownerLegalEntity = iuclid.getDocumentForKey(_subject.OwnerLegalEntity) />
-<#--NOTE: add legal entities of all mixtures-->
+<#-- Check if this is needed -->
+<#if rootDocument.documentType=="DOSSIER">
+    <#global _dossier=rootDocument />
+<#elseif dossier??>
+    <#global _dossier=dossier />
+</#if>
 
-<#--<#assign testMaterialInformations = [] />-->
+<#-- Get owner legal entity and thirdparty of main mixture -->
+<#assign ownerLegalEntity = iuclid.getDocumentForKey(_subject.OwnerLegalEntity) />
+<#assign thirdParty = iuclid.getDocumentForKey(_subject.ThirdParty)/>
 
 <#-- Define paths for application and nos information data depending on the working context-->
 <#if _dossierHeader?has_content>
 
-    <#--populate lists of studies-->
-    <#assign NoSstudyList={}/>
-    <#assign missingNoSstudyList={}/>
-    <@populateNoSstudyLists _subject/>
+    <#--populate hashes of studies-->
+    <#assign NoSstudyHash={}/>
+    <#assign missingNoSstudyHash={}/>
+    <@populateNoSstudyHashes _subject/>
 
     <#assign nosinfo = getNosInfo(_dossierHeader)/>
 
@@ -105,23 +100,45 @@
         </chapter>
 
         <chapter xml:id="justNoSlist">
+
             <title>List of justified studies in the application</title>
+            
+            <para>
+				The following table lists Notification of Studies (NoS) IDs that have been notified in the database but are not included in this dossier. 
+				<?linebreak?>A justification for non inclusion is provided next to each NoS ID.
+				<?linebreak?>This information is retrieved from the <emphasis role='bold'>dossier header</emphasis>.
+			</para>
+
+					
             <@justifiedStudiesTable nosinfo/>
         </chapter>
 
         <chapter xml:id="NoSlist">
+        
             <title>List of notified studies in the application</title>
 
+        	<para>
+				The following table lists all studies for which a NoS ID has been provided in the corresponding <emphasis role='bold'>literature reference</emphasis> 
+				(under <emphasis>Other study identifier(s)</emphasis> of <emphasis>Study Type</emphasis> = "Notification of Studies (NoS) ID").
+			</para>
+
             <para role="small">
-                <@studyTable NoSstudyList/>
+                <@studyTable NoSstudyHash "" "notified"/>
             </para>
         </chapter>
 
         <chapter xml:id="noNoSlist">
             <title>List of studies without notification in the application</title>
+			
+			<para>
+				The following table lists all <emphasis role='bold'>study reports</emphasis> performed <emphasis role='bold'>in or later than 2021</emphasis> for 
+				which a NoS ID <emphasis role='underline'>has not</emphasis> been provided in the corresonding <emphasis role='bold'>literature reference</emphasis> 
+				(under <emphasis>Other study identifier(s)</emphasis> of <emphasis>Study Type</emphasis> = "Notification of Studies (NoS) ID"). 
+				<?linebreak?>The remarks of each study should provide a justification for the lack of notification. 
+			</para>
 
             <para role="small">
-                <@studyTable missingNoSstudyList/>
+                <@studyTable missingNoSstudyHash "" "not notified"/>
             </para>
         </chapter>
 
@@ -138,7 +155,7 @@
     </book>
 </#if>
 
-<#macro studyTable studyList title="">
+<#macro studyTable studyHash title="" type="notified">
     <#compress>
 
     <table border="1">
@@ -167,10 +184,7 @@
             <th><?dbfo bgcolor="#d3d3d3" ?><emphasis role="bold">Adequacy</emphasis></th>
         </tr>
 
-<#--        <#list studyList as key,value>-->
-<#--        NOTE: not for older versions of freemarker-->
-        <#list studyList?keys as key>
-            <#local value=studyList[key]/>
+		<#list studyHash as key,value>
 
             <#local reference=value['reference']/>
             <#local studies=value['doc']/>
@@ -187,30 +201,16 @@
 
                         <#-- NoS ID and remarks-->
                         <td rowspan="${studies?size}">
-                            <#local NoSid=getNoSid(reference)/>
-                            <#if NoSid?has_content>
-                                ${NoSid}
-                            <#else >
-                                NA
-                            </#if>
-
-                            <#--Remarks: print all ids/remarks if empty-->
-<#--                            <#local remarksList=[]>-->
-<#--                            <#if !(NoSid?has_content)>-->
-<#--                                <#list reference.GeneralInfo.StudyIdentifiers as studyId>-->
-<#--                                    <#if studyId.Remarks?has_content>-->
-<#--                                        <#local remark><#compress>-->
-<#--                                            <@com.text studyId.Remarks/>-->
-<#--                                            <#if studyId.StudyID?has_content>-->
-<#--                                                : <@com.text studyId.StudyID/>-->
-<#--                                            </#if>-->
-<#--                                        </#compress></#local>-->
-<#--                                        <#local remarksList = remarksList + [remark]/>-->
-<#--                                    </#if>-->
-<#--                                </#list>-->
-<#--                            </#if>-->
-                            <#local NosRemarks=getNoSidRemarks(reference)/>
-                            <#if NosRemarks?has_content>(${NosRemarks})</#if>
+                            
+							<#local NosRemarks=getNoSidRemarks(reference)/>
+                        	<#if type=="notified">
+                        		<#local NoSid=getNoSid(reference, true)/>
+                        		${NoSid}<#if NosRemarks?has_content><?linebreak?>(${NosRemarks})</#if>
+                        	<#elseif type=="not notified">
+                        		<#local NoSid=getNoSid(reference, false)/>
+                        		<#if NoSid?has_content>${NoSid}: </#if>${NosRemarks}
+                           	</#if>
+                           	
                         </td>
 
                         <#-- Study name / reference (author, year, No) -->
@@ -229,12 +229,7 @@
                     </#if>
 
                     <#-- Period -->
-                    <td><@com.text study.AdministrativeData.StudyPeriod/></td>
-
-                    <#-- Test material -->
-                    <#-- <td>-->
-                    <#--    <#if study.hasElement("MaterialsAndMethods")><@testMatInfo study.MaterialsAndMethods.TestMaterials.TestMaterialInformation/></#if>-->
-                    <#-- </td>-->
+                    <td><#if study.hasElement("AdministrativeData.StudyPeriod")><@com.text study.AdministrativeData.StudyPeriod/></#if></td>
 
                     <#-- IUCLID endpoint study record name -->
                     <#-- <td><@com.text study.documentKey.name/></td>-->
@@ -248,6 +243,11 @@
                             <#else>
                                 <#if study.documentSubType=="IntermediateEffects">
                                     intermediate effects: <@com.picklist study.AdministrativeData.StudyResultType/>
+                                <#elseif study.documentSubType=="AnalyticalProfileOfBatches">
+                                	5-batch analysis
+                                <#elseif study.documentSubType=="BioPropertiesMicro">
+                                	biological properties of the microorganism
+                                	<#-- It's not very specific at the moment-->
                                 <#else>
                                     ----
                                 </#if>
@@ -344,7 +344,7 @@
             <para role="indent">
                 <itemizedlist>
                     <listitem>Dossier name: <@com.text dossier.name /></listitem>
-                    <listitem>Dossier UUID: <@com.text dossier.subjectKey /></listitem>
+                    <listitem>Dossier UUID: ${sanitizeUUID(dossier.subjectKey)}</listitem>
                     <listitem>Dossier submission remarks: <@com.text dossier.remarks /></listitem>
                     <listitem>Dossier creation date and time: <@com.text dossier.creationDate /></listitem>
                     <listitem>Submission type: <@com.text dossier.submissionType /></listitem>
@@ -356,6 +356,9 @@
                     </listitem>
                     <#if ownerLegalEntity?has_content>
                         <listitem>Owner legal entity: <@com.text ownerLegalEntity.GeneralInfo.LegalEntityName/></listitem>
+                    </#if>
+                    <#if thirdParty?has_content>
+                    	<listitem>Third party: <@com.text thirdParty.GeneralInfo.LegalEntityName/></listitem>
                     </#if>
                 </itemizedlist>
             </para>
@@ -512,12 +515,12 @@
 
         <#-- NoS ids-->
         <para>
-            <command linkend="NoSlist"><emphasis role="bold">Studies with NoS identification:</emphasis></command> ${NoSstudyList?keys?size}
+            <command linkend="NoSlist"><emphasis role="bold">Studies with NoS identification:</emphasis></command> ${NoSstudyHash?keys?size}
         </para>
 
         <#-- missing NoS ids-->
         <para>
-            <command linkend="noNoSlist"><emphasis role="bold">Studies lacking NoS identification:</emphasis></command> ${missingNoSstudyList?keys?size}
+            <command linkend="noNoSlist"><emphasis role="bold">Studies lacking NoS identification:</emphasis></command> ${missingNoSstudyHash?keys?size}
         </para>
 
     </#if>
@@ -567,7 +570,7 @@
 <#macro mixtureIdentity mixture>
     <#compress>
 
-        ${mixture.MixtureName}
+        <@com.text mixture.MixtureName/>
 
         <#if mixture.PublicName?has_content>(<@com.text mixture.PublicName/>)</#if>
         <#if mixture.OtherNames?has_content>
@@ -615,7 +618,7 @@
 <#macro substanceIdentity substance>
     <#compress>
 
-        ${substance.ChemicalName}
+        <@com.text substance.ChemicalName/>
 
         <#if substance.PublicName?has_content>(<@com.text substance.PublicName/>)</#if>
         <#--        <#if substance.TypeOfSubstance.Composition?has_content || substance.TypeOfSubstance.Origin?has_content>-->

@@ -16,11 +16,11 @@
                                             "flowability / pourability / dustability", "adherence to seeds", "distribution to seeds"], "qual" : "ne", "type" : "picklist"}],
                             "physcomp" : [{"path": "DataSource.TypeOfCompatibility.TypeOfCompatibilityLabel", "val" : ["Physical compatibility"], "qual" : "eq", "type" : "picklist"}],
                             "chemcomp" : [{"path": "DataSource.TypeOfCompatibility.TypeOfCompatibilityLabel", "val" : ["Chemical compatibility"], "qual" : "eq", "type" : "picklist"}],
-                            "biocomp" : [{"path": "DataSource.TypeOfCompatibility.TypeOfCompatibilityLabel", "val" : ["Biological compatibility", ""], "qual" : "eq", "type" : "picklist"}],
+                            "biocomp" : [{"path": "DataSource.TypeOfCompatibility.TypeOfCompatibilityLabel", "val" : ["Biological compatibility", ""], "qual" : "eq", "type" : "picklist"}]
 
-                            <#--for micro-->
-                            "effectiveness_harmful" : [{"path": "AdministrativeData.Endpoint", "val" : ["effects on harmful organisms"], "qual" : "eq", "type" : "picklist"}],
-                            "effectiveness_modeofaction" : [{"path": "AdministrativeData.Endpoint", "val" : ["mode of action"], "qual" : "eq", "type" : "picklist"}]
+                            <#--for micro only-->
+   <#--                           "effectiveness_harmful" : [{"path": "AdministrativeData.Endpoint", "val" : ["effects on harmful organisms"], "qual" : "eq", "type" : "picklist"}],
+                            "effectiveness_modeofaction" : [{"path": "AdministrativeData.Endpoint", "val" : ["mode of action"], "qual" : "eq", "type" : "picklist"}]-->
 }/>
 
 <#assign subjectId=_subject.documentKey.uuid/>
@@ -166,7 +166,7 @@
             <@keyPhysChemSummary.physicalChemicalPropertiesTable _subject/>
         </sect1>
 
-    <#elseif workingContext=="CHEM">
+    <#else>
 
         <@keyPhysChemSummary.physicalChemicalPropertiesSummary _subject/>
         <@com.emptyLine/>
@@ -250,20 +250,10 @@
 
             <sect2>
                 <title role="HEAD-2">Particle size distribution, dust content, attrition and mechanical stability</title>
-                <sect3 label="1-2.8.3">
+                <sect3 label="1 - 2.8.5.3">
                     <title role="HEAD-2">Particle size distribution, dust content and attrition</title>
                     <@keyAppendixE.appendixEstudies subject=_subject docSubTypes="TechnicalCharacteristics" context=physchemContext["sizedustattrition"] name="size distribution, dust content and/or attrition"/>
                 </sect3>
-
-<#--                <sect3>-->
-<#--                    <title role="HEAD-2">Dust content</title>-->
-<#--                    <para>Study summaries for dust content are provided in <command  linkend="CP2851-${subjectId}">Section 2.8.5.1</command>.</para>-->
-<#--                </sect3>-->
-
-<#--                <sect3>-->
-<#--                    <title role="HEAD-2">Attrition</title>-->
-<#--                    <para>Study summaries for attrition are provided in <command  linkend="CP2851-${subjectId}">Section 2.8.5.1</command>.</para>-->
-<#--                </sect3>-->
 
                 <sect3 label="4">
                     <title role="HEAD-2">Hardness and integrity</title>
@@ -345,9 +335,15 @@
 
         <sect1>
             <title role="HEAD-2">Information on target organism(s)</title>
+            <para>For information on target organism, please refer to MMA Section 3 (Further information on the microorganism), sub-section 3.1.</para>
+            
+            <#-- 
             <@keyBioPropMicro.effectivenessTargetOrgSummary subject=_subject includeMetabolites=false/>
-
-            <sect2>
+            <@com.emptyLine/>
+			<@keyAppendixE.appendixEstudies subject=_subject docSubTypes="EffectivenessAgainstTargetOrganisms"includeMetabolites=false/>
+             -->
+             
+            <#-- <sect2>
                 <title role="HEAD-2">Description of the target organism(s)</title>
                 <@keyAppendixE.appendixEstudies subject=_subject docSubTypes="EffectivenessAgainstTargetOrganisms" context=physchemContext["effectiveness_harmful"]
                 name="effects on harmful organisms" includeMetabolites=false/>
@@ -358,6 +354,7 @@
                 <@keyAppendixE.appendixEstudies subject=_subject docSubTypes="EffectivenessAgainstTargetOrganisms" context=physchemContext["effectiveness_modeofaction"] name="mode of action"
                 includeMetabolites=false/>
             </sect2>
+             -->
         </sect1>
 
         <?hard-pagebreak?>
@@ -376,6 +373,8 @@
             <para><@keyBioPropMicro.BioPropMicroSection  "BiologicalPropertiesOfTheMicroorganism.DevelopmentStagesLifeCycleOfTheMicroorganism.field6313"/></para>
 
         </sect1>
+        
+        <?hard-pagebreak?>
 
         <sect1>
             <title role="HEAD-2">Infectiveness, dispersal and colonisation ability</title>
@@ -386,64 +385,75 @@
             <para><emphasis role="bold">Robustness to environmental factors</emphasis></para>
             <para><@keyBioPropMicro.BioPropMicroSection  "BiologicalPropertiesOfTheMicroorganism.RobustnessToEnvironmentalFactors.field9770"/></para>
 
-             <#-- NOTE: this section should be under method of manufacture-->
+             <#-- NOTE: this section should be under method of manufacture?-->
              <para><emphasis role="bold">Methods to prevent loss of virulence of seed stock of the microorganism</emphasis></para>
              <para><@keyBioPropMicro.BioPropMicroSection  "EffectivenessAgainstTargetOrganisms.MethodsToPreventLossOfVirulenceOfSeedStockOfTheMicroorganism.field8887"/></para>
 
         </sect1>
+        
+        <?hard-pagebreak?>
 
         <sect1>
             <title role="HEAD-2">Relationships to known plant or animal or human pathogens</title>
             <@keyBioPropMicro.BioPropMicroSection  "BiologicalPropertiesOfTheMicroorganism.RelationshipsToKnownPlantOrAnimalOrHumanPathogens.field7482"/>
 
         </sect1>
+        
+        <?hard-pagebreak?>
 
         <sect1>
             <title role="HEAD-2">Genetic stability and factors affecting it</title>
             <@keyBioPropMicro.BioPropMicroSection  "BiologicalPropertiesOfTheMicroorganism.GeneticStabilityAndFactorsAffectingIt.field3673"/>
         </sect1>
+        
+        <?hard-pagebreak?>
 
         <sect1>
             <title role="HEAD-2">Information on the production of metabolites (especially toxins)</title>
             <@keyBioPropMicro.BioPropMicroSection  "BiologicalPropertiesOfTheMicroorganism.InformationOnTheProductionOfMetabolitesEspeciallyToxins.field1601"/>
         </sect1>
+        
+        <?hard-pagebreak?>
 
         <sect1>
             <title role="HEAD-2">Antibiotics and other anti-microbial agents</title>
             <@keyBioPropMicro.BioPropMicroSection  "BiologicalPropertiesOfTheMicroorganism.ProductionAndResistanceToAntibioticsAndOtherAntimicrobialAgents.field5725"/>
         </sect1>
+         
+        <#if sectionExists("MeasuresNecessaryToProtectHumansAnimalsAndTheEnvironment.MonitoringPlan.field1483") ||
+        		sectionExists("ClassificationLabellingOfTheMicroorganism.RelevantRiskGroupSpecifiedInArticle2OfDirective200054EC.field1556") ||
+        		sectionExists("BiologicalPropertiesOfTheMicroorganismInTheBiocidalProduct.field6878") ||
+        		sectionExists("BiologicalPropertiesOfTheMicroorganism.FurtherInformationOnTheMicroorganism.field5857")>
+	        
+	        <?hard-pagebreak?>
+	
+	        <sect1>
+	            <title role="HEAD-2">Further information on the microorganism</title>
+	            <@keyBioPropMicro.BioPropMicroSection  "BiologicalPropertiesOfTheMicroorganism.FurtherInformationOnTheMicroorganism.field5857"/>
+	            
+	            <#if sectionExists("MeasuresNecessaryToProtectHumansAnimalsAndTheEnvironment.MonitoringPlan.field1483")>
+	            	<para><emphasis role="bold">Monitoring plan to be used for the active microorganism including handling, storage, transport and use</emphasis></para>
+	            	<@keyBioPropMicro.BioPropMicroSection  "MeasuresNecessaryToProtectHumansAnimalsAndTheEnvironment.MonitoringPlan.field1483"/>
+	            </#if>
+	            
+	            <#if sectionExists("ClassificationLabellingOfTheMicroorganism.RelevantRiskGroupSpecifiedInArticle2OfDirective200054EC.field1556")>
+		            <para><emphasis role="bold">Relevant risk group specified in Article 2 of Directive 2000/54/EC:</emphasis></para> 
+		            <@keyBioPropMicro.BioPropMicroSection  "ClassificationLabellingOfTheMicroorganism.RelevantRiskGroupSpecifiedInArticle2OfDirective200054EC.field1556"/>
+		        </#if>
+		        
+		        <#if sectionExists("BiologicalPropertiesOfTheMicroorganismInTheBiocidalProduct.field6878")>
+					<para><emphasis role="bold">Biological properties of the microorganism in the biocidal product</emphasis></para>
+	            	<@keyBioPropMicro.BioPropMicroSection  "BiologicalPropertiesOfTheMicroorganismInTheBiocidalProduct.field6878"/>
+	           	</#if>
+	        </sect1>
+        </#if>
 
-        <#--        NOTES: sections not used from biopropmicro-->
-        <#--        FLEXIBLE_RECORD.BioPropertiesMicro.BiologicalPropertiesOfTheMicroorganism.FurtherInformationOnTheMicroorganism.field5857-->
-        <#--        FLEXIBLE_RECORD.BioPropertiesMicro.MeasuresNecessaryToProtectHumansAnimalsAndTheEnvironment.MonitoringPlanToBeUsedForTheActiveMicroorganismIncludingHandlingStorageTransportAndUse.field1483-->
-        <#--        FLEXIBLE_RECORD.BioPropertiesMicro.ClassificationLabellingOfTheMicroorganism.RelevantRiskGroupSpecifiedInArticle2OfDirective200054EC.field1556-->
-        <#--        FLEXIBLE_RECORD.BioPropertiesMicro.BiologicalPropertiesOfTheMicroorganismInTheBiocidalProduct.field6878-->
-
-    <#elseif workingContext=="MRL">
+    <#else>
 
         <@keyPhysChemSummary.physicalChemicalPropertiesSummary _subject/>
         <@com.emptyLine/>
         <@keyPhysChemSummary.physicalChemicalPropertiesTable _subject/>
-        <?hard-pagebreak?>
 
-        <sect1>
-            <title role="HEAD-2">Solubility in water</title>
-            <@keyAppendixE.appendixEstudies _subject "WaterSolubility"/>
-        </sect1>
-
-        <?hard-pagebreak?>
-
-        <sect1>
-            <title role="HEAD-2">Partition coefficient n-octanol/water</title>
-            <@keyAppendixE.appendixEstudies _subject "Partition" "" "partition coefficient"/>
-            <#-- NOTE: summary "PartitionCoefficient"-->
-        </sect1>
-
-    <#elseif workingContext=="CHEM">
-
-        <@keyPhysChemSummary.physicalChemicalPropertiesSummary _subject/>
-        <@com.emptyLine/>
-        <@keyPhysChemSummary.physicalChemicalPropertiesTable _subject/>
         <?hard-pagebreak?>
 
         <sect1>
@@ -573,3 +583,19 @@
 
     </#if>
 </#if>
+ 
+<#function sectionExists path>
+	 
+	<#local docs=iuclid.getSectionDocumentsForParentKey(_subject.documentKey, "FLEXIBLE_RECORD", "BioPropertiesMicro")/>
+
+	<#list docs as doc>
+		<#local docpath="doc."+path/>
+		<#local docpathev=docpath?eval/>
+		
+		<#if docpathev?has_content>
+			<#return true/>
+		</#if> 
+	</#list>
+	
+	<#return false/>
+</#function>

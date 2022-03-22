@@ -134,16 +134,12 @@
             <title role="HEAD-2">Methods to determine and quantify residues</title>
             <@keyAppendixE.appendixEstudies _subject "AnalyticalMethods" anmethContext["residues"] "methods to determine and quantify residues"/>
         </sect1>
-
-         <#--NEW section-->
-         <#assign otherMicrMixAnMeth>
-            <@keyAppendixE.appendixEstudies _subject "AnalyticalMethods" anmethContext["other_micro_mix"] "other analytical methods"/>
-         </#assign>
-         <#if otherMicrMixAnMeth?has_content && !(otherMicrMixAnMeth?contains("No relevant individual"))>
+        
+        <#if keyAppendixE.containsDoc(_subject, 'ENDPOINT_STUDY_RECORD.AnalyticalMethods', anmethContext["other_micro_mix"])>
             <?hard-pagebreak?>
 
             <sect1><title role="HEAD-2">Other analytical methods</title>
-                ${otherMicrMixAnMeth}
+            	<@keyAppendixE.appendixEstudies _subject "AnalyticalMethods" anmethContext["other_micro_mix"] "other analytical methods"/>
             </sect1>
         </#if>
 
@@ -211,17 +207,14 @@
                     <@keyAppendixE.appendixEstudies _subject "AnalyticalMethods" anmethContext["residues"]
                     "methods for the determination of residues in support of ecotoxicology studies" "10"/>
                 </sect3>
-
-                <#assign otherResUnclassifiedAnMeth>
-                    <@keyAppendixE.appendixEstudies subject=_subject docSubTypes="AnalyticalMethods" context=anmethContext["residues"]
-                     name="other methods for the determination of residues" section=["1.", "3", "4", "11", "12", "13", "NA"]/>
-                 </#assign>
-                 <#if otherResUnclassifiedAnMeth?has_content && !(otherResUnclassifiedAnMeth?contains("No relevant individual"))>
+                
+                <#if keyAppendixE.containsDoc(_subject, 'ENDPOINT_STUDY_RECORD.AnalyticalMethods', anmethContext["residues"], true, ["1.", "3", "4", "11", "12", "13", "NA"])>
                     <sect3><title role="HEAD-4">In other studies (unclassified)</title>
-                        ${otherResUnclassifiedAnMeth}
+                        <@keyAppendixE.appendixEstudies subject=_subject docSubTypes="AnalyticalMethods" context=anmethContext["residues"]
+                     		name="other methods for the determination of residues" section=["1.", "3", "4", "11", "12", "13", "NA"]/>
                     </sect3>
                 </#if>
-        </sect2>
+        	</sect2>
         </sect1>
 
         <?hard-pagebreak?>
@@ -262,27 +255,20 @@
                 <@keyAppendixE.appendixEstudies _subject "AnalyticalMethods" anmethContext["monitoring_air"]
                     "methods for post-approval and monitoring in air"/>
             </sect2>
-
-            <#assign otherPostAppAnMeth>
-                 <@keyAppendixE.appendixEstudies _subject "AnalyticalMethods" anmethContext["monitoring_other"]
-                "methods for post-approval and monitoring in other matrices not listed above"/>
-            </#assign>
-             <#if otherPostAppAnMeth?has_content && !(otherPostAppAnMeth?contains("No relevant individual"))>
+            
+            <#if keyAppendixE.containsDoc(_subject, 'ENDPOINT_STUDY_RECORD.AnalyticalMethods', anmethContext["monitoring_other"])>
                 <sect2><title role="HEAD-3">In any other matrices</title>
-                    ${otherPostAppAnMeth}
+                    <@keyAppendixE.appendixEstudies _subject "AnalyticalMethods" anmethContext["monitoring_other"]
+                		"methods for post-approval and monitoring in other matrices not listed above"/>
                 </sect2>
             </#if>
         </sect1>
 
-         <#--NEW section-->
-         <#assign otherSubMixAnMeth>
-             <@keyAppendixE.appendixEstudies _subject "AnalyticalMethods" anmethContext["other_sub_mix"] "other analytical methods"/>
-         </#assign>
-         <#if otherSubMixAnMeth?has_content && !(otherSubMixAnMeth?contains("No relevant individual"))>
+        <#if keyAppendixE.containsDoc(_subject, 'ENDPOINT_STUDY_RECORD.AnalyticalMethods', anmethContext["other_sub_mix"])>
             <?hard-pagebreak?>
 
             <sect1><title role="HEAD-2">Other analytical methods</title>
-                ${otherSubMixAnMeth}
+            	<@keyAppendixE.appendixEstudies _subject "AnalyticalMethods" anmethContext["other_sub_mix"] "other analytical methods"/>
             </sect1>
         </#if>
     </#if>
@@ -351,16 +337,12 @@
             <#-- — the active micro-organism(s),-->
             <#-- — relevant metabolites (especially toxins),-->
         </sect1>
-
-         <#--NEW section-->
-         <#assign otherMicroAnMeth>
-            <@keyAppendixE.appendixEstudies _subject "AnalyticalMethods" anmethContext["other_micro"] "other analytical methods"/>
-         </#assign>
-         <#if otherMicroAnMeth?has_content && !(otherMicroAnMeth?contains("No relevant individual"))>
+        
+        <#if keyAppendixE.containsDoc(_subject, 'ENDPOINT_STUDY_RECORD.AnalyticalMethods', anmethContext["other_micro"])>
             <?hard-pagebreak?>
 
             <sect1><title role="HEAD-2">Other analytical methods</title>
-                ${otherMicroAnMeth}
+            	<@keyAppendixE.appendixEstudies _subject "AnalyticalMethods" anmethContext["other_micro"] "other analytical methods"/>
             </sect1>
         </#if>
 
@@ -424,14 +406,11 @@
                     <@keyAppendixE.appendixEstudies _subject "AnalyticalMethods" anmethContext["risk"]
                     "methods for risk assessment in support of ecotoxicology studies" "8"/>
                 </sect3>
-
-                <#assign otherRiskUnclassifiedAnMeth>
-                    <@keyAppendixE.appendixEstudies subject=_subject docSubTypes="AnalyticalMethods" context=anmethContext["risk"]
-                     name="other methods for risk assessment" section=["1", "3", "9", "10", "11", "NA"]/>
-                 </#assign>
-                 <#if otherRiskUnclassifiedAnMeth?has_content && !(otherRiskUnclassifiedAnMeth?contains("No relevant individual"))>
+                
+                <#if keyAppendixE.containsDoc(_subject, 'ENDPOINT_STUDY_RECORD.AnalyticalMethods', anmethContext["risk"], true, ["1", "3", "9", "10", "11", "NA"])>
                     <sect3><title role="HEAD-4">In other studies (unclassified)</title>
-                        ${otherRiskUnclassifiedAnMeth}
+                        <@keyAppendixE.appendixEstudies subject=_subject docSubTypes="AnalyticalMethods" context=anmethContext["risk"]
+                     		name="other methods for risk assessment" section=["1", "3", "9", "10", "11", "NA"]/>
                     </sect3>
                 </#if>
 
@@ -471,34 +450,24 @@
                     <@keyAppendixE.appendixEstudies _subject "AnalyticalMethods" anmethContext["monitoring_air"]
                         "methods for post-approval and monitoring in air"/>
                 </sect2>
-
-                <#assign otherMonitoringMatrixAnMeth>
-                    <@keyAppendixE.appendixEstudies _subject "AnalyticalMethods" anmethContext["monitoring_other"]
-                        "methods for post-approval and monitoring in other matrices not listed above"/>
-                 </#assign>
-                 <#if otherMonitoringMatrixAnMeth?has_content && !(otherMonitoringMatrixAnMeth?contains("No relevant individual"))>
+                
+                <#if keyAppendixE.containsDoc(_subject, 'ENDPOINT_STUDY_RECORD.AnalyticalMethods', anmethContext["monitoring_other"])>
                      <sect2>
                         <title role="HEAD-3">In any other matrices</title>
-                        ${otherMonitoringMatrixAnMeth}
+                        <@keyAppendixE.appendixEstudies _subject "AnalyticalMethods" anmethContext["monitoring_other"]
+                        "methods for post-approval and monitoring in other matrices not listed above"/>
                     </sect2>
                 </#if>
         </sect1>
-
-        <#--New section in case any remaining docs-->
-         <#assign otherSubAnMeth>
-            <@keyAppendixE.appendixEstudies _subject "AnalyticalMethods" anmethContext["other_sub"] "other analytical methods"/>
-         </#assign>
-         <#if otherSubAnMeth?has_content && !(otherSubAnMeth?contains("No relevant individual"))>
+        
+        <#if keyAppendixE.containsDoc(_subject, 'ENDPOINT_STUDY_RECORD.AnalyticalMethods', anmethContext["other_sub"])>
             <?hard-pagebreak?>
             <sect1>
                 <title role="HEAD-2">Other analytical methods</title>
-                 ${otherSubAnMeth}
+                <@keyAppendixE.appendixEstudies _subject "AnalyticalMethods" anmethContext["other_sub"] "other analytical methods"/>
             </sect1>
-         </#if>
-
-    <#elseif workingContext=="MRL">
-        <@keyAppendixE.appendixEstudies _subject "AnalyticalMethods" "" "analytical methods"/>
-    </#if>
+        </#if>
+	</#if>
 </#if>
 
 <#--Macros for iterating over IUCLID to find analytical methods-->
