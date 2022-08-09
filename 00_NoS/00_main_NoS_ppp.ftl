@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<#--Report for NoS:
+<#--Report for Notification of Studies:
 
     Description: it iterates over the ToC and fetches all references of type "study report" from ENDPOINT_STUDY_RECORDs and specific FLEXIBLE_RECORDs (e.g. Intermediate Effects),
     then looks for a NoS id in the reference or remarks associated to a NoS id.
