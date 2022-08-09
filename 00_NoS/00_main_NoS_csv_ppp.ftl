@@ -1,4 +1,4 @@
-<#-- Import common macros and functions -->
+<#-- Import common macros and functions. -->
 <#import "macros_common_general.ftl" as com>
 <#import "macros_common_studies_and_summaries.ftl" as studyandsummaryCom>
 <#include "macros_NoS.ftl">
