@@ -203,13 +203,13 @@
 
             <#if idValue?has_content>
             	<#if exactMatch>
-	            	<#if idValue?matches(".*EFSA-[0-9]{4}-[0-9]{8}.*", "r") ||
+	            	<#if idValue?matches(".*EFSA-[0-9]{4}-[0-9]{8}.*", "s") || <#-- needs the 's' flag in order to also cope with multi-line!-->
 	            	
 		            	(	((!litYear?has_content) || (litYear >= 2021)) && 
 							
 							(idType=="Notification of Studies (NoS) ID" || remark?matches(".*NOTIF.*STUD.*", "i") || remark?matches(".*NOS.*ID", "i")) &&
 							
-							idValue?matches(".*[0-9]{8}.*", "r")
+							idValue?matches(".*[0-9]{8}.*", "s")
 						)>
 						
 	                    <#if !NoSIds?seq_contains(idValue)>

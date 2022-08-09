@@ -192,7 +192,7 @@
             <#if idValue?has_content>
 				<#if idType=="Notification of Studies (NoS) ID">
 					<#if exactMatch>
-						<#if idValue?matches(".*EFSA-[0-9]{4}-[0-9]{8}.*", "r")>
+						<#if idValue?matches(".*EFSA-[0-9]{4}-[0-9]{8}.*", "s")>
 		                    <#if !NoSIds?seq_contains(idValue)>
 		                        <#local NoSIds = NoSIds + [idValue]/>
 		                    </#if>

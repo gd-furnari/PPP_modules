@@ -583,11 +583,11 @@
 
         <sect1>
             <title role="HEAD-2">Effects on aquatic organisms</title>
-            <@keyEcotox.ecotoxPPPsummary _subject "AquaticToxicityRacReporting"/>
+            <@keyEcotox.ecotoxPPPsummary _subject "AquaticToxicityRacReporting"/>  
 
             <sect2>
                 <title role="HEAD-3">Acute toxicity to fish, aquatic invertebrates, or effects on aquatic algae and macrophytes</title>
-				<#-- NOTE: it could be split into the different sections-->
+				
                 <@keyEcotox.ecotoxPPPsummary subject=_subject
                     docSubTypes=["Short-termToxicityToFish_EU_PPP","ShortTermToxicityAquaInvert_EU_PPP", "ToxicityToAquaticAlgae_EU_PPP", "ToxicityPlants_EU_PPP"]
                     merge=true/>
@@ -599,9 +599,7 @@
 
             <sect2>
                 <title role="HEAD-3">Add. long-term and chronic tox. studies on fish, aquatic invert., sediment dwelling org.</title>
-                <@keyEcotox.ecotoxPPPsummary subject=_subject
-                    docSubTypes=["LongTermToxicityToFish_EU_PPP","LongTermToxicityToAquaticInvertebrates_EU_PPP", "SedimentToxicity_EU_PPP"]
-                    merge=true/>
+                <@keyEcotox.ecotoxPPPsummary subject=_subject docSubTypes=["LongTermToxicityToFish_EU_PPP","LongTermToxicityToAquaticInvertebrates_EU_PPP", "SedimentToxicity_EU_PPP"] merge=true/>
                 <@com.emptyLine/>
                 <@keyAppendixE.appendixEstudies subject=_subject docSubTypes=["LongTermToxToFish","LongTermToxicityToAquaInv", "SedimentToxicity"]
                     name="long term and chronic toxicity to aquatic organisms"/>
@@ -612,7 +610,7 @@
                 <@keyEcotox.ecotoxPPPsummary _subject "BioaccumulationAquaticSediment_EU_PPP"/>
                 <@com.emptyLine/>
                 <@keyAppendixE.appendixEstudies _subject "BioaccumulationAquaticSediment" "" "bioconcentration in fish"/>
-            </sect2>
+            </sect2>  
         </sect1>
   
         <?page-hardbreak?>
@@ -710,7 +708,7 @@
                 </sect3>
 
                 <sect3>
-                    <#-- NOTE: this sections contains everything left from the ones above-->
+                    
                     <title role="HEAD-4">Other routes of exposure for non-target arthropods</title>
                       <@keyAppendixE.appendixEstudies _subject "ToxicityToTerrestrialArthropods" ecotoxContext["ToxicityToTerrestrialArthropods_otherOther"]
                         "other toxicity for non-target arthropods"/>
@@ -720,7 +718,7 @@
 
         </sect1>
 
-        <?hard-pagebreak?>
+        <?hard-pagebreak?>  
 
         <sect1>
             <title role="HEAD-2">Effects on non-target soil meso- and macrofauna</title>
@@ -755,7 +753,7 @@
 
                     <sect3>
                         <title role="HEAD-4">Higher tier testing</title>
-                         <#--   NOTE: anything not earthworm, since guidelines include microcosm studies.-->
+                         
   
                         <#if keyAppendixE.containsDoc(_subject, "ENDPOINT_STUDY_RECORD.ToxicityToSoilMacroorganismsExceptArthropods", ecotoxContext["ToxicityToSoilMacroorganismsExceptArthropods_noEarthworm"])>
                             <sect4>
@@ -832,8 +830,8 @@
             <@keyEcotox.ecotoxPPPsummary _subject "BiologicalEffectsMonitoring"/>
             <@com.emptyLine/>
             <@keyAppendixE.appendixEstudies _subject "BiologicalEffectsMonitoring"/>
-        </sect1>  -->
-    </#if>
+        </sect1>
+    </#if>  
 
 <#elseif workingContext=="MICRO">
 

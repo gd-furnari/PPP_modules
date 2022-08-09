@@ -30,10 +30,10 @@
     
     <#-- 3.3. Details of intended use
 		Details of the intended use shall be provided including, where relevant, the following information:
-		— effects achieved for example sprout suppression, retardation of ripening, reduction in stem length, 
+		ï¿½ effects achieved for example sprout suppression, retardation of ripening, reduction in stem length, 
 		enhanced fertilisation,
-		— types of harmful organisms controlled,
-		— plants or plant products to be protected-->
+		ï¿½ types of harmful organisms controlled,
+		ï¿½ plants or plant products to be protected-->
 		
     <@keyGap.GAPpart _subject "intended use"/>
 </sect1>
@@ -42,21 +42,20 @@
 
 <#if workingContext=="MICRO"><sect1 label="MP 3.4 - 3.5"><#else><sect1></#if>
 	<title role="HEAD-2" ><#if workingContext=="MICRO">Application rate and content of micro-organism<#else>Application rate and concentration of the active substance</#if></title>
-    <title role="HEAD-2">Application rate and concentration of the active substance</title>
     
     <#-- 3.4. Application rate and concentration of the active substance
 		For each method of application and each use, the rate of application per unit (ha, m2, m3) treated, for plant 
 		protection product in g, kg, mL or L and active substance in g or kg shall be provided.
 		Application rates shall be expressed, as appropriate, in one of the following units:
-		— g, kg, mL or L per ha,
-		— kg or L per m3,
-		— g, kg, mL or L per tonne.
+		ï¿½ g, kg, mL or L per ha,
+		ï¿½ kg or L per m3,
+		ï¿½ g, kg, mL or L per tonne.
 		For protected crops and home gardening use rates shall be expressed in:
-		— g, kg, mL or L per 100 m2, or
-		— g, kg, mL or L per m3.
+		ï¿½ g, kg, mL or L per 100 m2, or
+		ï¿½ g, kg, mL or L per m3.
 		The content of active substance shall be expressed, as appropriate, in:
-		— g or mL per L, or
-		— g or mL per kg.-->
+		ï¿½ g or mL per L, or
+		ï¿½ g or mL per kg.-->
 		
     <@keyGap.GAPpart _subject "application rate"/>
     

@@ -119,7 +119,7 @@
 
         	<para>
 				The following table lists all studies for which a NoS ID has been provided in the corresponding <emphasis role='bold'>literature reference</emphasis> 
-				(under <emphasis>Other study identifier(s)</emphasis> of <emphasis>Study Type</emphasis> = "Notification of Studies (NoS) ID").
+				(under <emphasis>Other study identifier(s)</emphasis> of <emphasis>Study ID Type</emphasis> = "Notification of Studies (NoS) ID").
 			</para>
 
             <para role="small">
@@ -132,8 +132,8 @@
 			
 			<para>
 				The following table lists all <emphasis role='bold'>study reports</emphasis> performed <emphasis role='bold'>in or later than 2021</emphasis> for 
-				which a NoS ID <emphasis role='underline'>has not</emphasis> been provided in the corresonding <emphasis role='bold'>literature reference</emphasis> 
-				(under <emphasis>Other study identifier(s)</emphasis> of <emphasis>Study Type</emphasis> = "Notification of Studies (NoS) ID"). 
+				which a NoS ID <emphasis role='underline'>has not</emphasis> been provided in the corresponding <emphasis role='bold'>literature reference</emphasis> 
+				(under <emphasis>Other study identifier(s)</emphasis> of <emphasis>Study ID Type</emphasis> = "Notification of Studies (NoS) ID"). 
 				<?linebreak?>The remarks of each study should provide a justification for the lack of notification. 
 			</para>
 
@@ -475,8 +475,13 @@
         <#-- Subject-->
         <para><emphasis role="bold">Subject of the application:</emphasis>
             <#if _subject.documentType=="MIXTURE">
-                <@com.emptyLine/>
-                <para role="indent"><emphasis role="underline">Product/Mixture:</emphasis> <@mixtureIdentity _subject/></para>
+                <#assign otherProd = com.getOtherRepresentativeProducts(_subject)/>
+                <#assign products = [_subject] + otherProd />
+
+                <#list products as prod>
+                    <@com.emptyLine/>
+                    <para role="indent"><emphasis role="underline">Representative Product<#if (products?size>1)> #${prod?index + 1}</#if>:</emphasis>  <@mixtureIdentity prod/></para>
+                </#list>
                 <@com.emptyLine/>
                 <#local actSubs=com.getComponents(_subject, "active substance", false)/>
                 <#if actSubs?has_content>
@@ -486,6 +491,7 @@
                     </para>
                     <@com.emptyLine/>
                 </#if>
+
             <#elseif _subject.documentType=="SUBSTANCE">
                 <para role="indent"><@substanceIdentity actSub/></para>
             </#if>

@@ -224,7 +224,7 @@
 	            <@keyComp.substanceComposition _subject false/>
 	        </sect2>
 	
-	        <#if keyAppendixE.containsDoc(_subject, "FLEXIBLE_SUMMARY.Metabolites" , "", false)>
+	        <#if keyAppendixE.containsDoc(_subjectMixture, "FLEXIBLE_SUMMARY.Metabolites" , "", false)>
 		        <sect2>
 		            <title role="HEAD-2">Information on metabolites</title>
 		            <@keyComp.metabolitesInformation _subjectMixture/>
@@ -291,7 +291,6 @@
 	<chapter label="Appendix A" xml:id="appA">
 		<title>Good Agricultural Practices (GAP) supported in the MRL application</title>
 		<para>Please, use the standalone report for Good Agricultural Practices (GAP) available in Report Generator.</para>
-		<#--  <@keyGAP.GAPsummary _subjectMixture/> -->
 	</chapter>
 
 
@@ -500,7 +499,6 @@
 
 <#macro mrlTable subject>
 	<#compress>
-	
 		<#local mrlHash=getMRLhash(subject)/>
  
  		<#local mrlTypeList=["existing", "proposed"]/>

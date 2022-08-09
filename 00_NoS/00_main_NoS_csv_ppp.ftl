@@ -210,7 +210,16 @@ Please run Report Generator from a dossier.
                 </#list>
             </#if>
         </#local>
-        "<@com.text _subject.MixtureName/>","<@mixtureIds _subject/>","${actSubIds}",
+
+        <#local otherProd = com.getOtherRepresentativeProducts(_subject)/>
+        <#local products = [_subject] + otherProd />
+        <#local prodsNames><#compress>
+            <#list products as prod>
+                <@com.text prod.MixtureName/>
+                <#if prod?has_next>; </#if>
+            </#list>
+        </#compress></#local>
+        "${prodsNames}","<@mixtureIds products/>","${actSubIds}",
     <#elseif _subject.documentType=="SUBSTANCE">
         "<@substanceIds _subject/>"
     </#if>
@@ -266,40 +275,44 @@ Please run Report Generator from a dossier.
     </#compress>
 </#macro>
 
-<#macro mixtureIds mixture>
+<#macro mixtureIds mixtures>
     <#compress>
         <@compress single_line=true>
-        <#if mixture.PublicName?has_content>public name: <@com.text mixture.PublicName/><#if mixture.OtherNames?has_content>;</#if></#if>
-        <#if mixture.OtherNames?has_content>
-            <#list mixture.OtherNames as nameEntry>
-                <#--Substitute : by - in name type and in name-->
-                <#local nameType><@com.picklist nameEntry.NameType/></#local>
-                <#local nameType=nameType?replace(":", "-")/>
+        <#list mixtures as mixture>
+            <#if mixture.PublicName?has_content>public name: <@com.text mixture.PublicName/><#if mixture.OtherNames?has_content>;</#if></#if>
+            <#if mixture.OtherNames?has_content>
+                <#list mixture.OtherNames as nameEntry>
+                    <#--Substitute : by - in name type and in name-->
+                    <#local nameType><@com.picklist nameEntry.NameType/></#local>
+                    <#local nameType=nameType?replace(":", "-")/>
 
-                <#local name><@com.text nameEntry.Name/></#local>
-                <#local name=name?replace(":", "-")/>
+                    <#local name><@com.text nameEntry.Name/></#local>
+                    <#local name=name?replace(":", "-")/>
 
-<#--                <@com.picklist name.NameType/>: <@com.text name.Name/>-->
-                <#if name?has_content>${nameType}: ${name}</#if>
-<#--                    <#if nameEntry.Country?has_content>-->
-<#--                        in <@com.picklistMultiple nameEntry.Country/>-->
-<#--                    </#if>-->
-<#--                <#if nameEntry.hasElement("Remarks") && nameEntry.Remarks?has_content>(<@com.text nameEntry.Remarks/>)</#if>-->
-                <#if nameEntry_has_next>; </#if>
-            </#list>
-        </#if>
-        <#local compositions = iuclid.getSectionDocumentsForParentKey(mixture.documentKey, "FLEXIBLE_RECORD", "MixtureComposition")/>
-        <#if compositions?has_content>
-            <#list compositions as composition>
-                ; composition: <@com.text composition.GeneralInformation.Name/>
-                <#list composition.GeneralInformation.TradeNames as tradeName>
-                    ; <@com.text tradeName.TradeName/>
-                <#--                    <#if tradeName.Country?has_content>-->
-                <#--                        (<@com.picklistMultiple tradeName.Country/>)-->
-                <#--                    </#if>-->
+    <#--                <@com.picklist name.NameType/>: <@com.text name.Name/>-->
+                    <#if name?has_content>${nameType}: ${name}</#if>
+    <#--                    <#if nameEntry.Country?has_content>-->
+    <#--                        in <@com.picklistMultiple nameEntry.Country/>-->
+    <#--                    </#if>-->
+    <#--                <#if nameEntry.hasElement("Remarks") && nameEntry.Remarks?has_content>(<@com.text nameEntry.Remarks/>)</#if>-->
+                    <#if nameEntry_has_next>; </#if>
                 </#list>
-            </#list>
-        </#if>
+            </#if>
+            <#local compositions = iuclid.getSectionDocumentsForParentKey(mixture.documentKey, "FLEXIBLE_RECORD", "MixtureComposition")/>
+            <#if compositions?has_content>
+                <#list compositions as composition>
+                    ; composition: <@com.text composition.GeneralInformation.Name/>
+                    <#list composition.GeneralInformation.TradeNames as tradeName>
+                        ; <@com.text tradeName.TradeName/>
+                    <#--                    <#if tradeName.Country?has_content>-->
+                    <#--                        (<@com.picklistMultiple tradeName.Country/>)-->
+                    <#--                    </#if>-->
+                    </#list>
+                </#list>
+            </#if>
+
+            <#if mixture?has_next>; </#if>
+        </#list>
         </@compress>
 
     </#compress>
@@ -309,7 +322,7 @@ Please run Report Generator from a dossier.
     <#compress>
         <@compress single_line=true>
         Name: <@com.text substance.ChemicalName/>;
-        <#local mixIds><@mixtureIds substance/></#local>
+        <#local mixIds><@mixtureIds [substance]/></#local>
         <#if mixIds?has_content>${mixIds};</#if>
 
         <#local referenceSubstance = iuclid.getDocumentForKey(substance.ReferenceSubstance.ReferenceSubstance) />
