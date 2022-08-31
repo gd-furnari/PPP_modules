@@ -62,20 +62,14 @@
     and id matches or contains the format for EFSA NoS id.
     Inputs:
     - reference: LITERATURE entity
-    - exactMatch: if true, it requires an exact match of EFSA's NoS id format, otherwise it only requires that the format
-    is contained within the string.
+    - exactMatch: if true, it requires EFSA's NoS id format contained in the text, otherwise it retrieves the content
+    of the field Study ID as it is.
     Outputs:
     - a STRING containing unique NoS IDs separated by "; "
 -->
-<#function getNoSid reference exactMatch=false>
+<#function getNoSid reference exactMatch=true>
 
     <#local NoSIds=[]/>
-
-    <#if exactMatch>
-        <#local stringToMatch="EFSA-[0-9]{4}-[0-9]{8}"/>
-    <#else>
-        <#local stringToMatch=".*EFSA-[0-9]{4}-[0-9]{8}.*"/>
-    </#if>
 
     <#if reference.GeneralInfo.StudyIdentifiers?has_content>
         <#list reference.GeneralInfo.StudyIdentifiers as studyId>
@@ -84,10 +78,12 @@
 
             <#if idValue?has_content>
 				<#if idType=="Notification of Studies (NoS) ID">
-				    <#if idValue?matches(stringToMatch, "s")>
-                        <#-- NOTE: needs the 's' flag in order to also cope with multi-line!-->
-                        <#if !NoSIds?seq_contains(idValue)>
-                            <#local NoSIds = NoSIds + [idValue]/>
+				    <#if exactMatch>
+                        <#if idValue?matches(".*EFSA-[0-9]{4}-[0-9]{8}.*", "s")>
+                            <#-- NOTE: needs the 's' flag in order to also cope with multi-line!-->
+                            <#if !NoSIds?seq_contains(idValue)>
+                                <#local NoSIds = NoSIds + [idValue]/>
+                            </#if>
                         </#if>
 	                <#else>
 	                	<#if !NoSIds?seq_contains(idValue)>
