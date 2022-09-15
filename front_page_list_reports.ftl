@@ -5,9 +5,14 @@
         <#local lf = .now?string["dd/MM/yyyy"] + " - IUCLID 6 " + iuclid6Version!/>
     </#if>
 
-    <#-- Make central header the name -->
+    <#-- Make central footer the name of root (could be name of dossier instead) -->
+    <#if cf=="">
+        <#local cf = com.getReportSubject(rootDocument).name?html />
+    </#if>
+
+    <#-- Make central header equal to title -->
     <#if ch=="">
-        <#local ch = com.getReportSubject(rootDocument).name?html />
+        <#local ch = title/>
     </#if>
 
     <info>

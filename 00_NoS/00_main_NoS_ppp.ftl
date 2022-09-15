@@ -164,9 +164,9 @@
         <col width="3%"/>
         <col width="15%"/>
         <col width="18%" />
-        <col width="11%" />
-        <col width="11%" />
-        <col width="11%" />
+        <col width="10%" />
+        <col width="8%" />
+        <col width="15%" />
         <col width="15%" />
         <col width="8%" />
         <col width="8%" />
@@ -178,7 +178,7 @@
             <th><?dbfo bgcolor="#d3d3d3" ?><emphasis role="bold">Study name</emphasis></th>
             <th><?dbfo bgcolor="#d3d3d3" ?><emphasis role="bold">Testing facility</emphasis></th>
             <th><?dbfo bgcolor="#d3d3d3" ?><emphasis role="bold">Study period</emphasis></th>
-            <th><?dbfo bgcolor="#d3d3d3" ?><emphasis role="bold">Endpoint</emphasis></th>
+            <th><?dbfo bgcolor="#d3d3d3" ?><emphasis role="bold">Section and endpoint</emphasis></th>
             <th><?dbfo bgcolor="#d3d3d3" ?><emphasis role="bold">Guideline</emphasis></th>
             <th><?dbfo bgcolor="#d3d3d3" ?><emphasis role="bold">GLP</emphasis></th>
             <th><?dbfo bgcolor="#d3d3d3" ?><emphasis role="bold">Adequacy</emphasis></th>
@@ -188,7 +188,8 @@
 
             <#local reference=value['reference']/>
             <#local studies=value['doc']/>
-
+            <#local sections=value['section']/> 
+            
             <#local usespan = true />
 
             <#list studies as study>
@@ -235,6 +236,8 @@
                     <#-- <td><@com.text study.documentKey.name/></td>-->
 
                     <#-- Endpoint -->
+                    <#local section = sections[study?index]/>
+
                     <#local stUrl=getDocUrl(study)/>
                     <#local endpoint>
                         <#compress>
@@ -254,8 +257,12 @@
                             </#if>
                         </#compress>
                     </#local>
-                    <#if !endpoint?has_content><#local endpoint="NA"/></#if>
-                    <td><ulink url="${stUrl}">${endpoint}</ulink></td>
+                    <#--  <#if !endpoint?has_content><#local endpoint="NA"/></#if>  -->
+                    <td>
+                            <ulink url="${stUrl}">
+                                <@com.text section/><#if endpoint?has_content>:<?linebreak?>${endpoint}</#if>
+                            </ulink>
+                    </td>
 
                     <#-- Guideline -->
                     <td><#if study.hasElement("MaterialsAndMethods.Guideline")>

@@ -302,6 +302,15 @@
 
     <#local contents=(.node.content)!/>
 
+    <#-- get section -->
+    <#local sect = "" />
+    <#if .node?has_content>
+        <#if .node.number?has_content>
+            <#local sect = .node.number + " ">
+        </#if>
+        <#local sect = sect + .node.title>
+    </#if>
+
     <#if contents?has_content>
         <#list contents as doc>
             <#local docTypeSubtype>${doc.documentType}.${doc.documentSubType}</#local>
@@ -341,7 +350,7 @@
 
 							<#-- if NoS ID exists, append to list  -->
 	                        <#if NoSid?has_content>
-	                            <#assign NoSstudyHash=addNosStudyAsUnique(ref, doc, "" NoSstudyHash)/>
+	                            <#assign NoSstudyHash=addNosStudyAsUnique(ref, doc, sect, NoSstudyHash)/>
 	                        <#-- if it does not exist, then append the study to the list without NoS ID if:
 	                        - type is study report
 	                        - year >= 2021 (or empty)
@@ -351,7 +360,7 @@
 	                            <#local refYear=getRefYear(ref)/>
 
 	                            <#if refType=="study report" && ((!refYear?has_content) || refYear>=2021)>
-	                                <#assign missingNoSstudyHash=addNosStudyAsUnique(ref, doc, "" missingNoSstudyHash)/>
+	                                <#assign missingNoSstudyHash=addNosStudyAsUnique(ref, doc, sect, missingNoSstudyHash)/>
 	                            </#if>
 	                        </#if>
 	                    </#list>

@@ -48,7 +48,7 @@ Please run Report Generator from a dossier.
     NoS ID,Remarks/Justification,Study NoS classification,
     Reference Type,Title,Author,Year,Bibliographic source,Testing facility,Report date, Report no.,Study sponsor,Study no.,Remarks,Reference uuid,
     No records,
-    Study period,Endpoint,Guideline,GLP,Adequacy,Study uuid,
+    Study period,Section,Endpoint,Guideline,GLP,Adequacy,Study uuid,
     <@printChildren path=app header=true/>
     Subject,Subject ids,Active Substance(s),Pre-application identification,
     Dossier name,Dossier UUID,Dossier submission remarks,Dossier creation date and time,Submission type,
@@ -73,7 +73,7 @@ Please run Report Generator from a dossier.
             "<@com.text nos.Justification/>",
             "justified study",
             "","","","","","","","","","","","",
-            "","","","","","","",
+            "","","","","","","","",
             <@printChildren path=app header=false/>
             <@printSubject _subject/>
             <@printPreapp nosinfo/>
@@ -99,6 +99,7 @@ Please run Report Generator from a dossier.
 
             <#local reference=value['reference']/>
             <#local studies=value['doc']/>
+            <#local sections=value['section']/>
 
             <#list studies as study>
 
@@ -112,7 +113,9 @@ Please run Report Generator from a dossier.
                 "<@com.text reference.documentKey.uuid/>",
                 "${studies?size}",
                 <#if study.hasElement("AdministrativeData.StudyPeriod")>"<@com.text study.AdministrativeData.StudyPeriod/>"<#else>""</#if>,
-                 <#local endpoint>
+                <#local section = sections[study?index]/>
+                "${section}",
+                <#local endpoint>
                     <#compress>
                         <#if study.hasElement("AdministrativeData.Endpoint")>
                             <@com.picklist study.AdministrativeData.Endpoint/>
