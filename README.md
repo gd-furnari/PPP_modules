@@ -17,5 +17,5 @@ It is always a good idea to check the status of the repository: ```git status```
 
 4. Push your changes to GitHub (use the option --set-upstream if the branch does NOT exist remotely): ```git push --set-upstream origin my_working_branch```
 
-5. Open a pull request in GitHub so that the administrator reviews and merges changes to main. The Reviewer may comment on your commits, and request or make changes. When the pull request is approved, the changes will be merged to the main branch.
+5. Open a pull request in GitHub so that the administrator reviews and merges changes to main. The Reviewer may comment on your commits, and request to make changes. When the pull request is approved, the changes will be merged to the main branch.
 
