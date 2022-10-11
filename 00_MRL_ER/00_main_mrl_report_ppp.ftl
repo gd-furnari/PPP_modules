@@ -42,10 +42,10 @@
 
         <#global _subject=activeSubstance/>
     </#if>
-
 <#elseif _subject.documentType=="SUBSTANCE">
     <#assign activeSubstance=_subject/>
 </#if>
+
 <#assign workingContext="MRL"/>
 <#assign docNameCode=""/>
 
@@ -61,7 +61,6 @@
 
 <#if !(errorMessage??)>
 <book version="5.0" xmlns="http://docbook.org/ns/docbook" xmlns:xi="http://www.w3.org/2001/XInclude">
-
     <#assign left_header_text = ''/>
     <#assign central_header_text = com.getReportSubject(rootDocument).name?html />
     <#assign right_header_text = ''/>
@@ -72,22 +71,25 @@
 
     <info>
         <title>MRL APPLICATION REPORT</title>
+
         <cover>
             <@com.emptyLine/>
             <para>
                 <para>
                     <emphasis role="bold">Substance Name:</emphasis> <@com.substanceName _subject/>
                 </para>
+
                 <para>
                     <emphasis role="bold">Applicant's Identity: </emphasis><#if ownerLegalEntityMain?has_content><@com.text ownerLegalEntityMain.GeneralInfo.LegalEntityName/></#if>
                 </para>
             </para>
         </cover>
+
         <@com.metadataBlock left_header_text central_header_text right_header_text left_footer_text central_footer_text right_footer_text />
     </info>
-    
  
-	<chapter label="I"><title>Background</title>
+	<chapter label="I">
+		<title>Background</title>
 	
 		<#assign app=_dossierHeader.MRLApplication.DossierSpecificInformation/>
         <#assign nosinfo=_dossierHeader.NotificationOfStudies/>
@@ -109,6 +111,7 @@
                 <@com.text thirdPartyLegalEntityMain.GeneralInfo.LegalEntityName/>
             </#if>
 		</#assign>
+
 		<#--  
 		<#assign extraLegalEntityNames=[]/>
 		<#if submittingLegalEntityName!=ownerLegalEntityName && ownerLegalEntityName?has_content>
@@ -118,6 +121,7 @@
     		<#assign extraLegalEntityNames=extraLegalEntityNames + ["third party: ${thirdPartyName}"]/> 
 		</#if>
 		-->
+
 		<@com.emptyLine/>
 		
 		<para>
@@ -133,18 +137,18 @@
     			<listitem>Dossier UUID: ${sanitizeUUID(_dossierHeader.subjectKey)}</listitem>
     			<#-- <listitem>Dossier creation date and time: <@com.text _dossierHeader.creationDate /></listitem>-->
     		</itemizedlist>
-    		
     	</para>	 
     	
     	<@com.emptyLine/>
     	
     	<#if _dossierHeader.remarks?has_content>
     		<para>The applicant made the following remarks: <@com.text _dossierHeader.remarks /></para>
+
     		<@com.emptyLine/>
 		</#if>
-
 		
-    	<#assign purposeSize = (app.Purpose?size>1) />
+    	<#assign purposeSize = (app.Purpose?size>1)/>
+
     	<para>
     		The following purpose<#if purposeSize>s were<#else> was</#if> indicated by the applicant: 
 			<#if !purposeSize>
@@ -160,7 +164,8 @@
 			
 		<@com.emptyLine/>
 			
-		<#assign applicantSize = (app.Applicant?size>1) />
+		<#assign applicantSize = (app.Applicant?size>1)/>
+
     	<para>
     		The applicant<#if applicantSize>s are<#else> is</#if>: 
 			<#if !applicantSize>
@@ -188,18 +193,16 @@
 		
 		<#assign allPurposes><@com.picklistMultiple app.Purpose/></#assign>
 		<#assign isImportTolerance=false/>
+
 		<#if allPurposes?contains("set import tolerance")>
 			<@importTolerance _subject "registration"/>
 			<@importTolerance _subject "legislation"/>
 			<#assign isImportTolerance=true/>
 		</#if>
 		
-		<para>
-		
+		<para  role='small'>
 			<@mrlTable _subject/>
-		
 		</para>
-		
 	</chapter>
      
     <chapter label="II">
@@ -212,7 +215,6 @@
 	            <title role="HEAD-2">Names, identifiers and molecular information of the active substance</title>
 	            <@keySub.substanceIdentity  _subject/>
 	        </sect2>
-	
 	
 	        <sect2>
 	            <title role="HEAD-2">Method of manufacture (synthesis pathway) of the active substance</title>
@@ -236,6 +238,7 @@
  
         <sect1 label="2">
             <title role="HEAD-1">Assessments on the active substance</title>
+			
             <@keyAdm.assessmentOtherAuthorities _subject false/> 
         </sect1>
         
@@ -243,6 +246,7 @@
 
         <sect1 label="3">
             <title role="HEAD-2">Use of the active substance (GAP)</title>
+
             <para>For details on uses of the active substance please refer to the <command  linkend="appA">Appendix A</command>.</para>
         </sect1>
         
@@ -250,6 +254,7 @@
 
         <sect1 label="4">
             <title role="HEAD-2">Effects on harmful organisms, function, mode of action and possible resistance</title>
+
              <@keyBioPropMicro.effectivenessTargetOrgSummary subject=_subject includeMetabolites=false/>
         	 <@com.emptyLine/>
         	 <@keyAppendixE.appendixEstudies subject=_subject docSubTypes="EffectivenessAgainstTargetOrganisms"
@@ -269,11 +274,11 @@
 	</chapter>
  
 	<chapter label="IV">
-
         <title>Conclusions and recommendations</title>
         
         <sect1 label="1">
             <title role="HEAD-2">Proposed residue definitions</title>
+
             <@keyRes.residuesSummary _subject "ResidueFood" />
         </sect1>
 
@@ -281,49 +286,52 @@
 
         <sect1 label="2">
             <title role="HEAD-2">Proposed maximum residue levels (MRLs)</title>
+
             <@keyRes.residuesSummary _subject "MRLProposal" />
         </sect1>
-        
     </chapter>
- 
 
 	<#-- NOTE: using <appendix> automatically adds "Appendix" as title but doesn't show in ToC -->
 	<chapter label="Appendix A" xml:id="appA">
 		<title>Good Agricultural Practices (GAP) supported in the MRL application</title>
+
 		<para>Please, use the standalone report for Good Agricultural Practices (GAP) available in Report Generator.</para>
 	</chapter>
 
-
 	<chapter label="Appendix B">
 		<title>Pesticide Residues Intake Model (PRIMo)</title>
+
 		<para>Not available.</para>
 	</chapter>
 
 	<chapter label="Appendix C">
 		<title>Detailed evaluation of the additional studies relied on</title>
+
 		<#global _summaries=false/>
         <#global _studies=true/>
         <#global _waivers=true/>
 		<#global _prefix="C."/>
-		          
 
 		<#include "mrl_assessment.ftl"/>
-		</chapter>
+	</chapter>
 		
  
 	<chapter label="Appendix D">
 		<title>Import tolerances</title>
+
 		<@keyAdm.importTolerances _subject/> 
 	</chapter>
 
 	
     <chapter label="Annex 1">
         <title>Information on Test Materials</title>
+
         <#include "Annex2_test_materials.ftl" encoding="UTF-8" />
     </chapter> 
 	
 	<chapter label="Annex 2">
         <title>Information on Reference Substances</title>
+
         <#list keyComp.referenceSubstancesInformation as refSub>
             <sect4 role="NotInToc" xml:id="${refSub.documentKey.uuid!}">
                 <#assign refSubName><@com.text refSub.ReferenceSubstanceName/></#assign>
@@ -336,16 +344,14 @@
             </sect4>
 
             <@com.emptyLine/>
-
         </#list>
      </chapter>
      
      <chapter label="References">
      	<title>Additional studies relied on</title>
+
 		<para>Please, use the standalone report for List of Literature References available in Report Generator.</para>
 	</chapter>
-
-
 </book>
 
 <#else>
@@ -353,6 +359,7 @@
         <info>
             <title>${errorMessage}</title>
         </info>
+
         <part></part>
     </book>
 
@@ -362,7 +369,6 @@
 <#--  -----------------------------MACROS------------------------- -->
 <#macro importTolerance subject selection="registration">
 	<#compress>
-	
 		<#if selection=="registration">
 			<#local tolerancePath="RegistrationInExportingCountry"/>
 			<#local remarkPath="RegistrationInExportingCountryRemark"/>
@@ -374,8 +380,8 @@
 		</#if>
 		
 		<#local studyList = iuclid.getSectionDocumentsForParentKey(subject.documentKey, "FLEXIBLE_RECORD", "AssessmentOtherAuthorities") />
-
 		<#local tolerances=[]/>
+
 		<#if studyList?has_content>
 			<#list studyList as study>
 				<#if study.AdditionalInformation[tolerancePath]>
@@ -385,11 +391,9 @@
 		</#if>
 
 		<#if tolerances?has_content>
-					
 			<para>
 				${sentence}:
 				<#list tolerances as tolerance>
-	
 					<#if (tolerances?size>1) >
 						<para role="indent">(#${tolerance_index+1}) <@com.text tolerance/></para>
 					<#else>
@@ -397,35 +401,32 @@
 					</#if>
 				</#list>
 			</para>
+			
 			<@com.emptyLine/>
 		</#if>
-
 	</#compress>
 </#macro>
 
+
 <#function getMRLhash subject>
-	
 	<#local mrlHash={}/>
 	
 	<#-- Parse MRL Proposal document -->
 	<#local summaryList = iuclid.getSectionDocumentsForParentKey(subject.documentKey, "FLEXIBLE_SUMMARY", "MRLProposal") />
 
 	<#list summaryList as summary>
-	
 		<#-- proposed MRls -->
 		<#if summary.KeyInformation.MaximumResidueLevel?has_content>
 	        <#list summary.KeyInformation.MaximumResidueLevel as item>
 	        	<#local mrlHash = add2MrlHash(mrlHash,item, "proposed")/>
 	       	</#list>
 	    </#if>
-	    
 	</#list>
 	
 	<#-- Parse Assessment document -->
 	<#local summaryList = iuclid.getSectionDocumentsForParentKey(subject.documentKey, "FLEXIBLE_RECORD", "AssessmentOtherAuthorities") />
 	
 	<#list summaryList as summary>
-	
 		<#-- existing MRLs in the EU -->
 		<#if summary.AssessmentsEurope.ExistingMrl.EuMrl?has_content>      
 	        <#list summary.AssessmentsEurope.ExistingMrl.EuMrl as item>
@@ -439,21 +440,19 @@
 	        	<#local mrlHash = add2MrlHash(mrlHash,item, "exporting")/>
 	       	</#list>
 	    </#if>
-	    
 	</#list>
 	
 	<#return mrlHash/>
-	
 </#function>
 
-<#function add2MrlHash mrlHash item name>
 
+<#function add2MrlHash mrlHash item name>
 	<#local MRL>
 		<#compress>
 			<#if item.hasElement("MrlProposal")>
-				<@com.quantity item.MrlProposal/>
+				<@com.number item.MrlProposal.value!/>
 			<#elseif item.hasElement("MrlValue")>
-				<@com.quantity item.MrlValue/>
+				<@com.number item.MrlValue.value!/>
 			</#if>
 		</#compress>
 	</#local>
@@ -471,7 +470,6 @@
 	<#local LOQ><#if item.hasElement("MrlLoq")>${item.MrlLoq?c}</#if></#local>
 	
 	<#local Country><#if item.hasElement("Country")><@com.picklistMultiple item.Country "en" false false false/></#if></#local>
-
 	
 	<#list item.Commodity as comm>
 		<#local commValue><@com.picklist comm/></#local>
@@ -483,10 +481,8 @@
 				<#local entryList = mrlHash[commValue][name] + entryList/>
 			</#if>
 			
-			<#local commHash = mrlHash[commValue] + {name: entryList}>
-				
+			<#local commHash = mrlHash[commValue] + {name: entryList}>	
 		<#else>
-		
 			<#local commHash = {name: entryList}/>
 		</#if>
 		
@@ -507,61 +503,94 @@
         </#if>
 	                    
 		<#if mrlHash?has_content>
-			
-	
 	        <table border="1">
 				<title>Summary of existing MRLs and proposed MRLs</title>
+				
+				<#if isImportTolerance>
+					<col width="25%"/>
+					<col width="10%"/>
+					<col width="15%"/>
+					<col width="10%"/>
+					<col width="15%"/>
+					<col width="10%"/>
+					<col width="15%"/>
+				<#else>
+					<col width="40%"/>
+					<col width="10%"/>
+					<col width="20%"/>
+					<col width="10%"/>
+					<col width="20%"/>
+				</#if>
+				
 	            <thead align="center" valign="middle">
-	            <tr>
-	                <th><?dbfo bgcolor="#FBDDA6" ?><emphasis role="bold">Commodity</emphasis></th>
-	                <th><?dbfo bgcolor="#FBDDA6" ?><emphasis role="bold">Existing EU MRL (RD)</emphasis></th>
-	                <th><?dbfo bgcolor="#FBDDA6" ?><emphasis role="bold">Proposed MRL (RD)</emphasis></th>
-	                <#if isImportTolerance>
-	                	<th><?dbfo bgcolor="#FBDDA6" ?><emphasis role="bold">For import tolerance:<?linebreak?>MRL in exporting country (RD)</emphasis></th>
-	                </#if>
-	            </tr>
+					<tr>
+						<th rowspan="2"><?dbfo bgcolor="#FBDDA6" ?><emphasis role="bold">Commodity</emphasis></th>
+						<th colspan="2"><?dbfo bgcolor="#FBDDA6" ?><emphasis role="bold">Existing EU MRL</emphasis></th>
+						<th colspan="2"><?dbfo bgcolor="#FBDDA6" ?><emphasis role="bold">Proposed MRL</emphasis></th>
+						<#if isImportTolerance>
+							<th colspan="2"><?dbfo bgcolor="#FBDDA6" ?><emphasis role="bold">For import tolerance:<?linebreak?>MRL in exporting country</emphasis></th>
+						</#if>
+					</tr>
+					<tr>
+						<th><?dbfo bgcolor="#FBDDA6" ?><emphasis role="bold">Value (mg/kg)</emphasis></th>
+						<th><?dbfo bgcolor="#FBDDA6" ?><emphasis role="bold">Residue definition for monitoring</emphasis></th>
+						<th><?dbfo bgcolor="#FBDDA6" ?><emphasis role="bold">Value (mg/kg)</emphasis></th>
+						<th><?dbfo bgcolor="#FBDDA6" ?><emphasis role="bold">Residue definition for monitoring</emphasis></th>
+						<#if isImportTolerance>
+							<th><?dbfo bgcolor="#FBDDA6" ?><emphasis role="bold">Value (mg/kg)</emphasis></th>
+							<th><?dbfo bgcolor="#FBDDA6" ?><emphasis role="bold">Residue definition for monitoring</emphasis></th>
+						</#if>
+					</tr>
 	            </thead>
 	
 	            <tbody valign="middle">
-				
-	            <#list mrlHash as key,value>
-	            	
-	                <tr>
-	                    <td>${key}</td>
-	                    
-	                    
-	                    
-	                    <#list mrlTypeList as mrlType>
-	                    	<td>
-		                    	<#if value?keys?seq_contains(mrlType)>
-		                   
-			                    	<#local entryList=value[mrlType]/>
-		                    		<#list entryList as entry>
-			                    		${entry.MRL}<#if entry.LOQ=="true">*</#if>
-			                    		<#if entry.RD?has_content>(${entry.RD})</#if>
-			                    		<#if entry.Country?has_content>[${entry.Country}]</#if>
-			                    		<#if entry?has_next>;<?linebreak?></#if>
-			                    	</#list>
-			                    </#if>
-			                </td>
-			            </#list>    
-			           </tr>
-	            </#list>
+					<#list mrlHash as key, value>
+						<tr>
+							<td>${key}</td>
+							
+							<#list mrlTypeList as mrlType>
+								<#if value?keys?seq_contains(mrlType)>
+									<#local entryList=value[mrlType]/>
 
+									<#list entryList as entry>
+										<td>
+											${entry.MRL}<#if entry.LOQ=="true">*<#if !mrlLOQ??><#local mrlLOQ=true></#if></#if>
+										</td>
+
+										<td>
+											<#if entry.RD?has_content>${entry.RD}</#if>
+											<#if entry.Country?has_content>[${entry.Country}]</#if>
+											<#if entry?has_next>;<?linebreak?></#if>
+										</td>
+									</#list>
+								<#else>
+									<td></td>
+									<td></td>
+								</#if>
+							</#list>    
+						</tr>
+					</#list>
 	            </tbody>
 	        </table>
+
+			<#if mrlLOQ?? && mrlLOQ==true>
+				<para>*MRL at LOQ</para>
+			</#if>
 		</#if>
-		
 	</#compress>
 </#macro>
 
+
 <#function sanitizeUUID uuidPath>
-	
 	<#local uuid><@com.text uuidPath/></#local>
-	<#--  <#if uuid?matches("[az09-]{5,100}/[az09-]{5,100}", 'r')>-->
+
+	<#--  <#if uuid?matches("[az09-]{5,100}/[az09-]{5,100}", 'r')> -->
+
 	<#if uuid?matches(".{2,50}/.{2,50}", "r")>
 		<#local uuid=uuid?replace(".*/", '', 'r')/>
+
 		<#-- <#local uuid=uuid?replace("^[az09-]{5,100}/", '', 'r')/> -->
 	</#if>
+
 	<#return uuid/>
 </#function>
